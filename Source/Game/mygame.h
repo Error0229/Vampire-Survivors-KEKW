@@ -38,7 +38,12 @@
  *      3. Use ShowInitProgress(percent) to display loading progress.
 */
 
-
+#include "Map.h"
+#include "Enemy.h"
+#include "Weapon.h"
+#include "Pickups.h"
+#include "Passive.h"
+#include "Player.h"
 namespace game_framework {
 	/////////////////////////////////////////////////////////////////////////////
 	// Constants
