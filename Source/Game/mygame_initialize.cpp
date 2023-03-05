@@ -34,6 +34,7 @@ void CGameStateInit::OnInit()
 
 void CGameStateInit::OnBeginState()
 {
+	 // load backgrond (¶}©l­¶­±)
 }
 
 void CGameStateInit::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -48,4 +49,5 @@ void CGameStateInit::OnLButtonDown(UINT nFlags, CPoint point)
 
 void CGameStateInit::OnShow()
 {
+	// show background
 }
