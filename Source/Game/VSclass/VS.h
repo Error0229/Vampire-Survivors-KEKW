@@ -6,3 +6,4 @@
 #include "Weapon.h"
 #include "Pickup.h"
 #include "Player.h"
+#include "VSObject.h"
