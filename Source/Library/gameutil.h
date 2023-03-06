@@ -66,6 +66,7 @@
 // Header for STL (Standard Template Library)
 /////////////////////////////////////////////////////////////////////////////
 
+#include <set>
 #include <list>
 #include <vector>
 #include <map>

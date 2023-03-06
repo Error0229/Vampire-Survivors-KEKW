@@ -1,8 +1,14 @@
 #include "stdafx.h"
 #include "../../Library/gameutil.h"
+#include "VSMath.h"
 #include "VSObject.h"
 VSObject::VSObject()
 {
+	_speed = 0;
+}
+VSObject::VSObject(vector<char*> filename) :VSObject()
+{
+	this->load_skin(filename);
 }
 VSObject::~VSObject()
 {
@@ -25,10 +31,19 @@ void VSObject::set_pos(int x, int y)
 	this->_position.x = x;
 	this->_position.y = y;
 }
-void VSObject::move_toward(CPoint pos, float speed)
+
+void VSObject::update_pos(CPoint target)
 {
-	this->_position.x += long((pos.x - this->_position.x) * speed);
-	this->_position.y += long((pos.y - this->_position.y) * speed);
+	this->_target = target;
+	this->update_pos();
+}
+void VSObject::update_pos()
+{
+	// have a speed and moving in a 2d plane
+	this->_position.x += VSOM(this->_speed * (this->_target.x - this->_position.x) / fast_sqrt(square(this->_target.x - this->_position.x) + square(this->_target.y - this->_position.y)));
+	this->_position.y += VSOM(this->_speed * (this->_target.y - this->_position.y) / fast_sqrt(square(this->_target.x - this->_position.x) + square(this->_target.y - this->_position.y)));
+	
+
 }
 CPoint VSObject::get_pos()
 {

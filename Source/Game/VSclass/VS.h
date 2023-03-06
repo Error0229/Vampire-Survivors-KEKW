@@ -1,4 +1,6 @@
 #pragma once
+#include "VSMath.h"
+#include "VSObject.h"
 #include "Button.h"
 #include "Enemy.h"
 #include "Map.h"
@@ -6,4 +8,3 @@
 #include "Weapon.h"
 #include "Pickup.h"
 #include "Player.h"
-#include "VSObject.h"

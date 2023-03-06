@@ -3,11 +3,10 @@ class Player {
 public:
 	Player();
 	~Player();
-	void set_pos(int, int);
 private:
 	game_framework ::CMovingBitmap _skin;
-	vector<Weapon> _weapons;
-	vector<Passive> _passives;
+	vector<Weapon*> _weapons;
+	vector<Passive*> _passives;
 	int _x, _y;
 	int _hp, _max_hp;
 	int _exp, _max_exp;

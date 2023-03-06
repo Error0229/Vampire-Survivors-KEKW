@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "../../Library/gameutil.h"
+#include "VSObject.h"
 #include "Weapon.h"
 using namespace game_framework;
 Weapon::Weapon()
@@ -8,15 +9,21 @@ Weapon::Weapon()
 Weapon::~Weapon()
 {
 }
-Weapon::Weapon(CMovingBitmap skin, CMovingBitmap bullet, int type, int level, int damage, int speed, int range) {
-	this->_skin = skin;
-	this->_bullet = bullet;
+Weapon::Weapon(int type, vector<char*>& skin, vector<char*>& bullet, int damage, float speed, float range) {
+	this->load_skin(skin);
+	this->_base_bullet->load_skin(bullet);
 	this->_type = type;
-	this->_level = level;
 	this->_damage = damage;
 	this->_speed = speed;
 	this->_range = range;
 }
+void Weapon::update_bullet() {
+	for (auto& bullet : _bullet_set) {
+		bullet->update_pos();
+	}
+}
 void Weapon::show_bullet() {
-	this->_bullet.ShowBitmap();
+	for (auto& bullet : _bullet_set) {
+		bullet->show_skin();
+	}
 }

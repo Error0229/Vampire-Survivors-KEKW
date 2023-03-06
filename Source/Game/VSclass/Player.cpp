@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "../../Library/gameutil.h"
+#include "VSObject.h"
 #include "Weapon.h"
 #include "Passive.h"
 #include "Player.h"
@@ -9,9 +10,4 @@ Player::Player()
 }
 Player::~Player()
 {
-}
-void Player::set_pos(int x, int y)
-{
-	this->_x = x;
-	this->_y = y;
 }

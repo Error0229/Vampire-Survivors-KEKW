@@ -1,5 +1,5 @@
 #pragma once
-class Passive {
+class Passive : public VSObject {
 public:
 	Passive();
 	~Passive();
@@ -7,5 +7,4 @@ public:
 private:
 	int _level;
 	int _type;
-	game_framework::CMovingBitmap _skin;
 };
