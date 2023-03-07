@@ -93,6 +93,7 @@ namespace game_framework {
 		void  SetTopLeft(int, int);			// 將圖的左上角座標移至 (x,y)
 		void  ShowBitmap();					// 將圖貼到螢幕
 		void  ShowBitmap(double factor);	// 將圖貼到螢幕 factor < 1時縮小，>1時放大。注意：需要VGA卡硬體的支援，否則會很慢
+		void  ShowBitmap(double factor, bool is_mirror);	
 		void  SelectShowBitmap(int select);
 		int   GetSelectShowBitmap();
 		void  ToggleAnimation();
@@ -107,6 +108,7 @@ namespace game_framework {
 		clock_t last_time = clock();
 		bool isAnimation = false;
 		bool isAnimationDone = true;
+		bool _is_mirrored;
 		bool once = false;
 		vector<unsigned> SurfaceID;
 		bool     isBitmapLoaded = false;	// whether a bitmap has been loaded

@@ -62,5 +62,6 @@ void CGameStateInit::OnShow()
 {
 	// show background
 	background->show_skin();
-	button_start->show_button();
+	//button_start->show_button();
+	button_start->show_skin();
 }

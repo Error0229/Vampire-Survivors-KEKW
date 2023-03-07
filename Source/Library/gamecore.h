@@ -77,6 +77,7 @@ namespace game_framework {
 		CDDraw();								// private constructor
 		static void  BltBitmapToBack(unsigned SurfaceID, int x, int y);
 		static void  BltBitmapToBack(unsigned SurfaceID, int x, int y, double factor);
+		static void  BltBitmapToBack(unsigned SurfaceID, int x, int y, double factor, bool is_mirrow);
 		static void  BltBitmapToBitmap(unsigned SourceID, unsigned TargetID, int x, int y);
 		static void	 CheckDDFail(char *s);
 		static bool  CreateSurface();

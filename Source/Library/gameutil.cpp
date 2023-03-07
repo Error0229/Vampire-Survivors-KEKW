@@ -163,6 +163,26 @@ namespace game_framework {
 			selector = selector % SurfaceID.size();
 		}
 	}
+	void CMovingBitmap::ShowBitmap(double factor, bool is_mirror)
+	{
+		GAME_ASSERT(isBitmapLoaded, "A bitmap must be loaded before ShowBitmap() is called !!!");
+		CDDraw::BltBitmapToBack(SurfaceID[selector], location.left, location.top, factor,  is_mirror);
+		if (isAnimation == true && clock() - last_time >= delayCount) {
+			selector += 1;
+			last_time = clock();
+			if (selector == SurfaceID.size() && animationCount > 0) {
+				animationCount -= 1;
+			}
+			if (selector == SurfaceID.size() && (once || animationCount == 0)) {
+				isAnimation = false;
+				isAnimationDone = true;
+				selector = SurfaceID.size() - 1;
+				return;
+			}
+			selector = selector % SurfaceID.size();
+		}
+	}
+
 
 	void CMovingBitmap::SelectShowBitmap(int _select) {
 		GAME_ASSERT(_select < (int) SurfaceID.size(), "選擇圖片時索引出界");
