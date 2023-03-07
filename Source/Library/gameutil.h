@@ -66,6 +66,7 @@
 // Header for STL (Standard Template Library)
 /////////////////////////////////////////////////////////////////////////////
 
+#include "../Core/StdAfx.h" // prevent sometimes intelliscense bugged
 #include <set>
 #include <list>
 #include <vector>
@@ -108,7 +109,6 @@ namespace game_framework {
 		clock_t last_time = clock();
 		bool isAnimation = false;
 		bool isAnimationDone = true;
-		bool _is_mirrored;
 		bool once = false;
 		vector<unsigned> SurfaceID;
 		bool     isBitmapLoaded = false;	// whether a bitmap has been loaded

@@ -18,7 +18,8 @@ void Map::load_map(vector<char*> filename, COLORREF color)
 }
 void Map::show_map()
 {
-	
+	this->_skin.SetTopLeft(this->_position.x - ( this->_skin.Width() >> 1 ) + player_dx, this->_position.y - ( this->_skin.Height() >> 1 ) + player_dy);
+	this->_skin.ShowBitmap();
 }
 void Map::map_padding()
 {

@@ -1,5 +1,6 @@
 //#define	 INITGUID
 #include "stdafx.h"
+#include "../Core/StdAfx.h" // prevent sometimes intelliscense bugged
 #include "../Core/Game.h"
 #include "../Core/MainFrm.h"
 #include "../Core/Resource.h"
@@ -152,7 +153,7 @@ namespace game_framework {
 	void CGame::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	{
 		if (running)
-			if ((nFlags & 0x4000) == 0) // 去除auto repeat
+			if ((nFlags & 0x4000) == 0) // 去除auto repeat // this one look like disable long press
 				gameState->OnKeyDown(nChar, nRepCnt, nFlags);
 #ifdef _UNITTEST					// invike unit test if _UNITTEST is defined
 		void runTest();
@@ -450,6 +451,7 @@ namespace game_framework {
 			blt_flag |= DDBLT_DDFX;
 			ddBltFx.dwDDFX = DDBLTFX_MIRRORLEFTRIGHT;
 			ddrval = lpDDSBack->Blt(TargetRect, lpDDS[SurfaceID], NULL, blt_flag, &ddBltFx);
+
 		}
 		else
 		{
@@ -789,9 +791,11 @@ namespace game_framework {
 	int CDDraw::RegisterBitmap(char *filename, COLORREF ColorKey)
 	{
 		unsigned i;
-		for (i = 0; i < lpDDS.size(); i++)
+		for (i = 0; i < lpDDS.size(); i++) 
 			if (BitmapName[i].compare(filename) == 0)
 				return i;
+		// O(N) but if the pic already loaded it won't load again
+		// since this is in init part, no need to optimize this part for now
 		//
 		// Enlarge the size of vectors
 		//

@@ -11,3 +11,9 @@ Player::Player()
 Player::~Player()
 {
 }
+void Player::update_pos(CPoint target) {
+	CPoint pos = _position;
+	VSObject::update_pos(target);
+	VSObject::player_dx -= _position.x - pos.x ;
+	VSObject::player_dy -= _position.y - pos.y ;
+}

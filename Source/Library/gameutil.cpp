@@ -1,5 +1,6 @@
 //#define	 INITGUID
 #include "stdafx.h"
+#include "../Core/StdAfx.h" // prevent sometimes intelliscense bugged
 #include "../Core/game.h"
 #include "../Core/MainFrm.h"
 #include "../Core/Resource.h"
@@ -47,7 +48,7 @@ namespace game_framework {
 		const int nx = 0;
 		const int ny = 0;
 
-		GAME_ASSERT(!isBitmapLoaded, "A bitmap has been loaded. You can not load another bitmap !!!");
+		// GAME_ASSERT(!isBitmapLoaded, "A bitmap has been loaded. You can not load another bitmap !!!");
 		CBitmap bitmap;
 		BOOL rval = bitmap.LoadBitmap(IDB_BITMAP);
 		GAME_ASSERT(rval, "Load bitmap failed !!! Please check bitmap ID (IDB_XXX).");
@@ -64,8 +65,7 @@ namespace game_framework {
 	{
 		const int nx = 0;
 		const int ny = 0;
-
-		GAME_ASSERT(!isBitmapLoaded, "A bitmap has been loaded. You can not load another bitmap !!!");
+		//  GAME_ASSERT(!isBitmapLoaded, "A bitmap has been loaded. You can not load another bitmap !!!");
 
 		HBITMAP hbitmap = (HBITMAP)LoadImage(NULL, filename, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 		if (hbitmap == NULL) {
