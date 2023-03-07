@@ -85,6 +85,18 @@
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Program Files\Microsoft DirectX SDK %28February 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Program Files\Microsoft DirectX SDK %28February 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir);</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir);</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir);</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UnitTest|Win32'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir);</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -96,7 +108,7 @@
       </HeaderFileName>
     </Midl>
     <ClCompile>
-      <Optimization>Disabled</Optimization>
+      <Optimization>MaxSpeed</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -111,6 +123,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -159,6 +172,7 @@
       <WarningLevel>Level3</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -206,6 +220,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -228,6 +243,11 @@
       <OutputFile>.\UnitTest/game.bsc</OutputFile>
     </Bscmake>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="RES\GAME.RC2" />
   </ItemGroup>
@@ -248,10 +268,12 @@
     <ClCompile Include="Source\Game\VSclass\Passive.cpp" />
     <ClCompile Include="Source\Game\VSclass\Pickup.cpp" />
     <ClCompile Include="Source\Game\VSclass\Player.cpp" />
+    <ClCompile Include="Source\Game\VSclass\VSMath.cpp" />
     <ClCompile Include="Source\Game\VSclass\Weapon.cpp" />
     <ClCompile Include="Source\Library\audio.cpp" />
     <ClCompile Include="Source\Library\gamecore.cpp" />
     <ClCompile Include="Source\Library\gameutil.cpp" />
+    <ClCompile Include="Source\Game\VSclass\VSObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Game\VSclass\Button.h" />
@@ -263,6 +285,7 @@
     <ClInclude Include="Source\Core\StdAfx.h" />
     <ClInclude Include="Source\Game\config.h" />
     <ClInclude Include="Source\Game\VSclass\Enemy.h" />
+    <ClInclude Include="Source\Game\VSclass\VSMath.h" />
     <ClInclude Include="Source\Game\VSclass\Map.h" />
     <ClInclude Include="Source\Game\mygame.h" />
     <ClInclude Include="Source\Game\VSclass\Passive.h" />
@@ -273,6 +296,7 @@
     <ClInclude Include="Source\Library\audio.h" />
     <ClInclude Include="Source\Library\gamecore.h" />
     <ClInclude Include="Source\Library\gameutil.h" />
+    <ClInclude Include="Source\Game\VSclass\VSObject.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Source\Core\game.rc" />

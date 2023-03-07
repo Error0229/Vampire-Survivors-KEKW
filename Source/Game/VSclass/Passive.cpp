@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "../../Library/gameutil.h"
+#include "VSObject.h"
 #include "Passive.h"
 Passive::Passive()
 {

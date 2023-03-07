@@ -1,12 +1,14 @@
 #pragma once 
-class Weapon {
+class Weapon : public VSObject {
 public:
 	Weapon();
-	Weapon(game_framework::CMovingBitmap, game_framework::CMovingBitmap, int, int, int, int, int);
+	Weapon(int, vector<char*>&, vector<char*>&, int, float, float);
 	~Weapon();
-	void show_bullet();
-private:
-	game_framework::CMovingBitmap _skin;
-	game_framework::CMovingBitmap _bullet;
-	int _type, _level, _damage, _speed, _range;
+	void show_proj();
+	void update_proj();
+protected:
+	VSObject* _base_proj;
+	set<VSObject*> _proj_set;
+	int _type, _level, _damage;
+	float _speed, _range;
 };

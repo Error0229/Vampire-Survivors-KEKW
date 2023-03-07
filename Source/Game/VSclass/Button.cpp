@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "../../Library/gameutil.h"
+#include "VSObject.h"
 #include "Button.h"
 Button::Button() 
 {
@@ -17,17 +18,9 @@ bool Button::is_hover(int mouse_x, int mouse_y)
 		_skin.Top() + _skin.Width()  >= mouse_y
 	);
 }
-void Button::set_pos(int x, int y)
-{
-	_x = x;
-	_y = y;
-}
+
 void Button::show_button() 
 {
-	_skin.ShowBitmap();
+	VSObject::show_skin();
 }
 
-game_framework::CMovingBitmap& Button::get_skin()
-{
-	return _skin;
-}

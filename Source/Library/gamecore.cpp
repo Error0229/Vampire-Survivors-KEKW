@@ -419,6 +419,45 @@ namespace game_framework {
 		ddrval = lpDDSBack->Blt(TargetRect, lpDDS[SurfaceID], NULL, blt_flag, NULL);
 		CheckDDFail("Blt Bitmap to Back Failed");
 	}
+	void CDDraw::BltBitmapToBack(unsigned SurfaceID, int x, int y, double factor, bool is_mirror)
+	{
+		GAME_ASSERT(lpDDSBack && (SurfaceID < lpDDS.size()) && lpDDS[SurfaceID], "Internal Error: Incorrect SurfaceID in BltBitmapToBack");
+		CRect TargetRect;
+		TargetRect.left = x;
+		TargetRect.top = y;
+		TargetRect.right = x + (int)((BitmapRect[SurfaceID].right - BitmapRect[SurfaceID].left) * factor);
+		TargetRect.bottom = y + (int)((BitmapRect[SurfaceID].bottom - BitmapRect[SurfaceID].top) * factor);
+
+		if (factor == 0) {
+			return;
+		}
+
+		int blt_flag = 0;
+		if (BitmapColorKey[SurfaceID] != CLR_INVALID)
+			blt_flag = DDBLT_WAIT | DDBLT_KEYSRC ;
+		else
+			blt_flag = DDBLT_WAIT;
+		if (lpDDSBack->IsLost())
+			RestoreSurface();
+		if (lpDDS[SurfaceID]->IsLost())
+			RestoreSurface();
+
+		DDBLTFX ddBltFx;
+		ZeroMemory(&ddBltFx, sizeof(DDBLTFX));
+		ddBltFx.dwSize = sizeof(DDBLTFX);
+		if (is_mirror) 
+		{
+			blt_flag |= DDBLT_DDFX;
+			ddBltFx.dwDDFX = DDBLTFX_MIRRORLEFTRIGHT;
+			ddrval = lpDDSBack->Blt(TargetRect, lpDDS[SurfaceID], NULL, blt_flag, &ddBltFx);
+		}
+		else
+		{
+			ddrval = lpDDSBack->Blt(TargetRect, lpDDS[SurfaceID], NULL, blt_flag, NULL);
+		}
+
+		CheckDDFail("Blt Bitmap to Back Failed");
+	}
 
 	void CDDraw::BltBitmapToBitmap(unsigned SourceID, unsigned TargetID, int x, int y)
 	{

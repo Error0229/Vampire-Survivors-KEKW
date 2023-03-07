@@ -1,14 +1,12 @@
 #pragma once
-class Player {
+class Player :public VSObject{
 public:
 	Player();
 	~Player();
-	void set_pos(int, int);
 private:
 	game_framework ::CMovingBitmap _skin;
-	vector<Weapon> _weapons;
-	vector<Passive> _passives;
-	int _x, _y;
+	vector<Weapon*> _weapons;
+	vector<Passive*> _passives;
 	int _hp, _max_hp;
 	int _exp, _max_exp;
 	int _level;
