@@ -17,6 +17,10 @@ VSObject::~VSObject()
 {
 	VSObject::unshow_skin();
 }
+void VSObject::load_skin(char* filename, COLORREF color)
+{
+	this->_skin.LoadBitmap(filename, color);
+}
 void VSObject::load_skin(vector<char*> filename, COLORREF color)
 {
 	this->_skin.LoadBitmap(filename, color);

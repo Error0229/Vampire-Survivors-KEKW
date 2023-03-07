@@ -52,8 +52,8 @@ void CGameStateInit::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	if (button_start->is_hover(point.x, point.y)) 
 	{
-		free (button_start);
-		free (background);
+		delete button_start;
+		delete background;
 		GotoGameState(GAME_STATE_RUN);		// ¤Á´«¦ÜGAME_STATE_RUN
 	}
 }

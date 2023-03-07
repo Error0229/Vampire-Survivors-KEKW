@@ -4,11 +4,11 @@ public:
 	Weapon();
 	Weapon(int, vector<char*>&, vector<char*>&, int, float, float);
 	~Weapon();
-	void show_bullet();
-	void update_bullet();
+	void show_proj();
+	void update_proj();
 protected:
-	VSObject* _base_bullet;
-	set<VSObject*> _bullet_set;
+	VSObject* _base_proj;
+	set<VSObject*> _proj_set;
 	int _type, _level, _damage;
 	float _speed, _range;
 };

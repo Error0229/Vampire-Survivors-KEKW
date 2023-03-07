@@ -6,6 +6,7 @@ public:
 	VSObject(vector<char*> filename);
 	virtual ~VSObject();
 	void load_skin(vector<char*> filename, COLORREF color= RGB(255,255,255));
+	void load_skin(char* filename, COLORREF color = RGB(255, 255, 255));
 	void show_skin(double factor = 1.0);
 	void unshow_skin();
 	void set_default_direct(int dir);
