@@ -163,7 +163,7 @@ namespace game_framework {
 			selector = selector % SurfaceID.size();
 		}
 	}
-	void CMovingBitmap::ShowBitmap(double factor, bool is_mirror)
+	void CMovingBitmap::ShowBitmap(double factor, bool is_mirror) //important msg!! it only work on my laptop for now
 	{
 		GAME_ASSERT(isBitmapLoaded, "A bitmap must be loaded before ShowBitmap() is called !!!");
 		CDDraw::BltBitmapToBack(SurfaceID[selector], location.left, location.top, factor,  is_mirror);
