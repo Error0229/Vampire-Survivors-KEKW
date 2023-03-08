@@ -1,4 +1,5 @@
 #pragma once
+enum direction { UP, DOWN, LEFT, RIGHT };
 class VSObject
 {
 public:
@@ -7,15 +8,16 @@ public:
 	virtual ~VSObject();
 	void load_skin(vector<char*> filename, COLORREF color= RGB(255,255,255));
 	void load_skin(char* filename, COLORREF color = RGB(255, 255, 255));
-	void show_skin(double factor = 1.0);
+	virtual void show_skin(double factor = 1.0);
 	void unshow_skin();
 	void set_default_direct(int dir);
 	void set_animation(int delay, bool _once);
 	void enable_animation();
 	void set_pos(CPoint);
 	void set_pos(int, int);
+	void set_speed(int);
 	CPoint get_pos();
-	void update_pos(CPoint);
+	virtual void update_pos(CPoint);
 	void update_pos();
 	int get_height();
 	int get_width();

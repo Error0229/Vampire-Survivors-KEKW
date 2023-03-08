@@ -3,7 +3,6 @@
 #include "VSMath.h"
 #include "VSObject.h"
 
-enum direction{UP, DOWN, LEFT, RIGHT};
 VSObject::VSObject()
 {
 	_is_mirror = 0;
@@ -36,7 +35,7 @@ void VSObject::unshow_skin()
 }
 void VSObject::set_default_direct(int dir) 
 {
-	this->_direct = dir;
+	this->_default_direct = dir;
 }
 void VSObject::set_animation(int delay, bool _once)
 {
@@ -56,7 +55,10 @@ void VSObject::set_pos(int x, int y)
 	this->_position.x = x;
 	this->_position.y = y;
 }
-
+void VSObject::set_speed(int speed)
+{
+	this->_speed = speed;
+}
 void VSObject::update_pos(CPoint target)
 {
 	this->_target = target;
@@ -74,6 +76,7 @@ void VSObject::update_pos()
 {
 	// have a speed and moving in a 2d plane
 	int dis = distance(_target, this->_position);
+	if (dis < 1) return;
 	this->_direct = (this->_target.x > this->_position.x) ? RIGHT : LEFT;
 	this->_is_mirror = (_direct != _default_direct);
 	this->_position.x += VSOM(this->_speed * (this->_target.x - this->_position.x) / dis);

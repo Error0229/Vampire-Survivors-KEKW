@@ -3,8 +3,8 @@ class Player :public VSObject{
 public:
 	Player();
 	~Player();
+	void update_pos(CPoint) override;
 private:
-	game_framework ::CMovingBitmap _skin;
 	vector<Weapon*> _weapons;
 	vector<Passive*> _passives;
 	int _hp, _max_hp;
