@@ -12,6 +12,13 @@ void Enemy::set_level(int level)
 {
 	this->_level = level;
 }
+void Enemy::set_stat(int level, int health, int damage, int speed)
+{
+	_level = level;
+	_health = health;
+	_damage = damage;
+	_speed = speed;
+}
 void Enemy::load_by_name(char* name)
 {
 	char tmp[100];

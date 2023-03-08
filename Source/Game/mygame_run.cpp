@@ -30,6 +30,7 @@ void CGameStateRun::OnBeginState()
 void CGameStateRun::OnMove()							// 移動遊戲元素
 {
 	player.update_pos(mouse_pos);
+	bat1.update_pos(player.get_pos());
 }
 
 void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
@@ -42,14 +43,15 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	map.load_map({ "resources/dummy1.bmp" });
 	map.set_pos(0, 0);
 	bat1.load_by_name("XLMantis");
-	bat1.set_pos(CPoint(0, 0));
+	bat1.set_pos(CPoint(-300, -400));
+	bat1.set_stat();
 	bat1.set_animation(200, false);
 	bat1.enable_animation();
 }
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	bat1.hurt(1000000);
+	//bat1.hurt(1000000);
 }
 
 void CGameStateRun::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -78,9 +80,6 @@ void CGameStateRun::OnRButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
 {
 }
 
-void CGameStateRun::OnMove()							// 移動遊戲元素
-{
-}
 void CGameStateRun::OnShow()
 {
 	map.show_skin();
