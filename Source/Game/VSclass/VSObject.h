@@ -21,6 +21,7 @@ public:
 	void update_pos();
 	int get_height();
 	int get_width();
+
 	static int player_dx;
 	static int player_dy; // every time player move should update these
 	friend bool is_overlapped(VSObject&, VSObject&);
