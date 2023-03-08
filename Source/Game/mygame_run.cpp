@@ -29,6 +29,10 @@ void CGameStateRun::OnBeginState()
 
 void CGameStateRun::OnMove()							// 移動遊戲元素
 {
+	CPoint p;
+	GetCursorPos(&p);
+	mouse_pos.x = p.x - VSObject::player_dx;
+	mouse_pos.y = p.y - VSObject::player_dy;
 	player.update_pos(mouse_pos);
 	bat1.update_pos(player.get_pos());
 }
@@ -69,7 +73,7 @@ void CGameStateRun::OnLButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
 
 void CGameStateRun::OnMouseMove(UINT nFlags, CPoint point)	// 處理滑鼠的動作
 {
-	mouse_pos = CPoint(point.x - VSObject::player_dx, point.y - VSObject::player_dy);
+	// mouse_pos = CPoint(point.x - VSObject::player_dx, point.y - VSObject::player_dy);
 }
 
 void CGameStateRun::OnRButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
