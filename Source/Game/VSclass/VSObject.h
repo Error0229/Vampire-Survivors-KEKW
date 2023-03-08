@@ -18,7 +18,7 @@ public:
 	void set_speed(int);
 	CPoint get_pos();
 	virtual void update_pos(CPoint);
-	void update_pos();
+	virtual void update_pos();
 	int get_height();
 	int get_width();
 
