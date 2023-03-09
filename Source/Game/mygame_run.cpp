@@ -34,7 +34,8 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 	mouse_pos.x = p.x - VSObject::player_dx;
 	mouse_pos.y = p.y - VSObject::player_dy;
 	player.update_pos(mouse_pos);
-	bat1.update_pos(player.get_pos());
+	for ( auto& i : xlmantis )
+		i.update_pos(player.get_pos());
 }
 
 void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
@@ -46,16 +47,17 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	player.set_speed(300);
 	map.load_map({ "resources/dummy1.bmp" });
 	map.set_pos(0, 0);
-	bat1.load_by_name("XLMantis");
-	bat1.set_pos(CPoint(-300, -400));
-	bat1.set_stat();
-	bat1.set_animation(200, false);
-	bat1.enable_animation();
+	
+	load_enemy_type(xlmantis, "XLMantis", 10);
+	for ( int i = 0; i < (int)xlmantis.size(); i++ ) {
+		xlmantis[i].set_pos(CPoint(-300 + 60 * i, -400 + 80 * i));
+	}
 }
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	//bat1.hurt(1000000);
+	for ( auto& i : xlmantis )
+		i.hurt(1000000);
 }
 
 void CGameStateRun::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -88,6 +90,6 @@ void CGameStateRun::OnShow()
 {
 	map.show_skin();
 	player.show_skin();
-
-	bat1.show_skin();
+	for(auto& i: xlmantis )
+		i.show_skin();
 }

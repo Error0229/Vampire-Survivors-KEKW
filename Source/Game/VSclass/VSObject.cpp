@@ -79,8 +79,10 @@ void VSObject::update_pos()
 	if (dis < 1) return;
 	this->_direct = (this->_target.x > this->_position.x) ? RIGHT : LEFT;
 	this->_is_mirror = (_direct != _default_direct);
-	this->_position.x += VSOM(this->_speed * (this->_target.x - this->_position.x) / dis);
-	this->_position.y += VSOM(this->_speed * (this->_target.y - this->_position.y) / dis);
+	int dx = VSOM(this->_speed * ( this->_target.x - this->_position.x ) / dis);
+	int dy = VSOM(this->_speed * ( this->_target.y - this->_position.y ) / dis);
+	this->_position.x += dx;
+	this->_position.y += dy;
 }
 CPoint VSObject::get_pos()
 {
@@ -104,5 +106,16 @@ int VSObject::get_width()
 {
 	return this->_skin.Width();
 }
+
+bool VSObject::is_animation_done()
+{
+	return this->_skin.IsAnimationDone();
+}
+
+void VSObject::set_is_mirror(bool is_mirror)
+{
+	this->_is_mirror = is_mirror;
+}
+
 int VSObject::player_dx = 400;
 int VSObject::player_dy = 300;
