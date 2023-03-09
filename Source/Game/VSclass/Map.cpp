@@ -49,7 +49,7 @@ void Map::map_padding(CPoint player_pos)
 	int ddy[ 4 ] = { -1, -1, 1, 1 };
 	int w = this->get_width();
 	int h = this->get_height();
-	_map_center.x = w * lround(player_pos.x / static_cast<float>( w ));
+	_map_center.x = w * lround(player_pos.x / static_cast<float>( w )); // all the problems come from here
 	_map_center.y = h * lround(player_pos.y / static_cast<float>( h ));
 	for ( int qr = 0; qr < 4; qr++ ) {
 		if (!( ddx[ qr ] * ( player_pos.x - _map_center.x ) > 0 && ddy[ qr ] * ( player_pos.y - _map_center.y ) > 0 ) ){
