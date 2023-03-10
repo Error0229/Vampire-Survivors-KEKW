@@ -1,4 +1,19 @@
 #pragma once
+#define VS_ASSERT(boolexp,str)											\
+		if (!(boolexp)) {													\
+			int id;															\
+			char s[300]="";													\
+			sprintf(s,"Game fatal error:\n\n%s\n\nFile: %s\n\nLine: %d"		\
+				"\n\n(Press Retry to debug the application, "				\
+				"if it is executed in debug mode.)"							\
+				"\n(Press Cancel otherwise.)",								\
+				 str , __FILE__,__LINE__);									\
+			id = AfxMessageBox(s, MB_RETRYCANCEL);							\
+																			\
+			if (id == IDCANCEL)												\
+				exit(1);													\
+			AfxDebugBreak();												\
+		}
 enum direction { UP, DOWN, LEFT, RIGHT };
 class VSObject
 {
