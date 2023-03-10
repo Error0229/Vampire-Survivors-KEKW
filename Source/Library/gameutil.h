@@ -65,8 +65,11 @@
 /////////////////////////////////////////////////////////////////////////////
 // Header for STL (Standard Template Library)
 /////////////////////////////////////////////////////////////////////////////
-
+#pragma once
 #include "../Core/StdAfx.h" // prevent sometimes intelliscense bugged
+#include <utility>
+#include <deque>
+#include <queue>
 #include <set>
 #include <list>
 #include <vector>
