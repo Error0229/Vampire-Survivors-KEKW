@@ -31,9 +31,9 @@ void CGameStateInit::OnInit()
 	// 此OnInit動作會接到CGameStaterRun::OnInit()，所以進度還沒到100%
 	//
 	button_start = new Button();
-	button_start->load_skin({"resources/button_start.bmp"});
+	button_start->load_skin({"resources/ui/button_start.bmp"});
 	button_start->set_pos(0,0);
-	background = new VSObject({"resources/background.bmp"});
+	background = new VSObject({"resources/ui/background_1.bmp"});
 	background->set_pos(0,0);
 
 }

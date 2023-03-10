@@ -40,12 +40,12 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 
 void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 {
-	player.load_skin({ "resources/Dog_01.bmp", "resources/Dog_02.bmp" ,"resources/Dog_03.bmp" ,"resources/Dog_04.bmp" ,"resources/Dog_05.bmp" });
+	player.load_skin({ "resources/character/Dog_01.bmp", "resources/character/Dog_02.bmp" ,"resources/character/Dog_03.bmp" ,"resources/character/Dog_04.bmp" ,"resources/character/Dog_05.bmp" });
 	player.set_pos(0, 0);
 	player.set_default_direct(RIGHT);
 	player.set_animation(150, false);
 	player.set_speed(300);
-	map.load_map({ "resources/dummy1.bmp" });
+	map.load_map({ "resources/map/dummy1.bmp" });
 	map.set_pos(0, 0);
 	
 	load_enemy_type(xlmantis, "XLMantis", 10);

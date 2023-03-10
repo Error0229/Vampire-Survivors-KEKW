@@ -81,8 +81,9 @@ void VSObject::update_pos()
 	this->_is_mirror = (_direct != _default_direct);
 	int dx = VSOM(this->_speed * ( this->_target.x - this->_position.x ) / dis);
 	int dy = VSOM(this->_speed * ( this->_target.y - this->_position.y ) / dis);
-	this->_position.x += dx;
-	this->_position.y += dy;
+	this->_position.x += dx + ( dx > 0 );
+	this->_position.y += dy + ( dy > 0 );
+
 }
 CPoint VSObject::get_pos()
 {
