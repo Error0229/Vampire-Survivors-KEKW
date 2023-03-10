@@ -31,11 +31,14 @@ public:
 	void set_pos(CPoint);
 	void set_pos(int, int);
 	void set_speed(int);
+	void set_is_mirror(bool);
+	bool is_animation_done();
 	CPoint get_pos();
 	virtual void update_pos(CPoint);
-	void update_pos();
+	virtual void update_pos();
 	int get_height();
 	int get_width();
+
 	static int player_dx;
 	static int player_dy; // every time player move should update these
 	friend bool is_overlapped(VSObject&, VSObject&);
@@ -46,7 +49,7 @@ protected:
 	CPoint _position;
 	CPoint _target;
 	bool _is_mirror = 0;
-	int _direct, _default_direct;
+	int _direct, _default_direct=LEFT;
 	int _speed;
 };
 
