@@ -6,8 +6,7 @@ public:
 	void set_level(int);
 	void set_stat(int, int, int, int);
 	void load_by_name(char*);
-	virtual void show_skin(double factor = 1.0) override;
-	void show_skin(double factor, Enemy&);
+	void show_skin(double factor = 1.0) override;
 	void set_enable(bool enable=true);
 	bool is_dead();
 	void hurt(int damage);
