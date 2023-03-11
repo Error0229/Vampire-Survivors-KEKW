@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "../Core/Resource.h"
 #include <mmsystem.h>
 #include <ddraw.h>
@@ -33,8 +33,9 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 	mouse_pos.x = p.x - VSObject::player_dx;
 	mouse_pos.y = p.y - VSObject::player_dy;
 	player.update_pos(mouse_pos);
-	for ( auto& i : xlmantis )
+	for ( auto& i : xlmantis ) {
 		i.update_pos(player.get_pos());
+	}
 }
 
 void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
@@ -90,6 +91,16 @@ void CGameStateRun::OnShow()
 	map.map_padding(player.get_pos());
 	map.show_map();
 	player.show_skin();
-	for(auto& i: xlmantis )
-		i.show_skin();
+	for ( int i = 0; i < (int)xlmantis.size(); i++ ) {
+		for ( int j = 0; j <= i; j++ ) {
+			if ( is_overlapped(xlmantis[ i ], xlmantis[ j ])) {
+				xlmantis[i].show_skin(1, xlmantis[ j ]);
+				break;
+			}
+			if ( i == j ) {
+				xlmantis[ i ].show_skin();
+			}
+		}
+	}
+	
 }

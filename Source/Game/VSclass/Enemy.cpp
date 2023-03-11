@@ -2,6 +2,7 @@
 #include "../../Library/gameutil.h"
 #include "VSObject.h"
 #include "Enemy.h"
+#include "VSMath.h"
 Enemy::Enemy()
 {
 }
@@ -61,15 +62,34 @@ bool Enemy::is_enable()
 	return _is_enable;
 }
 
-void Enemy::show_skin(double factor)
+void Enemy::show_skin(double factor, Enemy& other)
 {
 	if ( !_is_enable )
 		return;
 	if (!is_dead()) {
 		this->_skin.SetTopLeft(this->_position.x - (this->_skin.Width() >> 1) + player_dx, this->_position.y - (this->_skin.Height() >> 1) + player_dy);
+		this->resolve_collide(other);
 		this->_skin.ShowBitmap(factor, _is_mirror);
 	}
 	else{
+		if ( _corpse.is_animation_done() ) {
+			_corpse.unshow_skin();
+			_is_enable = false;
+		}
+		else {
+			_corpse.show_skin(factor);
+		}
+	}
+}
+void Enemy::show_skin(double factor)
+{
+	if ( !_is_enable )
+		return;
+	if ( !is_dead() ) {
+		this->_skin.SetTopLeft(this->_position.x - ( this->_skin.Width() >> 1 ) + player_dx, this->_position.y - ( this->_skin.Height() >> 1 ) + player_dy);
+		this->_skin.ShowBitmap(factor, _is_mirror);
+	}
+	else {
 		if ( _corpse.is_animation_done() ) {
 			_corpse.unshow_skin();
 			_is_enable = false;
@@ -106,4 +126,18 @@ void load_enemy_type(vector<Enemy>& vec, char* name, int n, int level, int healt
 	for ( int i = 0; i < n; i++ ) {
 		vec.push_back(tmp);
 	}
+}
+
+void Enemy::resolve_collide(Enemy& other) {
+	//when this object collide with other, move this to the extension of the vec
+	CPoint vec = this->get_pos() - other.get_pos();
+	int len = fast_sqrt(vec.x * vec.x + vec.y * vec.y);
+	int ratio = 1;
+	if ( len == 0 )
+		return;
+	if ( abs(vec.x) > abs(vec.y) ) 
+		ratio = ( ( this->get_width() >> 1 ) + ( other.get_width() >> 1 ) ) / len ;
+	else 
+		ratio = ( ( this->get_height() >> 1 ) + ( other.get_height() >> 1 ) ) / len;
+	set_pos(_position.x + vec.x * ratio, _position.y + vec.y * ratio);
 }
