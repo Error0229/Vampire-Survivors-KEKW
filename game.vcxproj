@@ -250,6 +250,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="RES\GAME.RC2" />
+    <None Include="Source\Game\VSclass\weapon_stats.csv" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Game\VSclass\Button.cpp" />

@@ -39,11 +39,14 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 
 void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 {
+	Weapon::load_weapon_stats();
 	player.load_skin({ "resources/character/Dog_01.bmp", "resources/character/Dog_02.bmp" ,"resources/character/Dog_03.bmp" ,"resources/character/Dog_04.bmp" ,"resources/character/Dog_05.bmp" });
 	player.set_pos(0, 0);
 	player.set_default_direct(RIGHT);
 	player.set_animation(150, false);
 	player.set_speed(300);
+	Weapon *w = new Weapon(0);
+	player.acquire_weapon(w);
 	map.load_map({ "resources/map/dummy1.bmp" });
 	map.set_pos(0, 0);
 	

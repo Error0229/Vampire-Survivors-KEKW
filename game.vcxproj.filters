@@ -19,6 +19,7 @@
     <None Include="RES\GAME.RC2">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="Source\Game\VSclass\weapon_stats.csv" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Library\audio.cpp">

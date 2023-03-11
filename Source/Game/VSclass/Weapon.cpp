@@ -2,11 +2,12 @@
 #include "../../Library/gameutil.h"
 #include "VSObject.h"
 #include "Weapon.h"
-#include "Weapon_stat.h"
+#include <fstream>
+#include <sstream>
 using namespace game_framework;
 #define var_name(var) (#var)
 enum weapon_names {
-	Whip, Magic_Wand, Knife, Axe, Cross, King_Bible,
+	WHIP, Magic_Wand, Knife, Axe, Cross, King_Bible,
 	Fire_Wand, Garlic, Santa_water, Runetracer, Lightning_Ring,
 	Pentagram, Peacechone, Ebony_Wings, Phiera_Der_Tuphello,
 	Eight_The_Sparrow, Gatti_Amari, Song_of_Mana, Shadow_Pinion,
@@ -15,7 +16,7 @@ enum weapon_names {
 	Bracelet, Candybox, Victory_Sword, Flame_of_Misspell
 };
 enum evolution_weapon_names {
-	Bloody_Tear, Holy_Wand, Thousand_Edge, Death_Spiral, Heaven_Sword,
+	Bloody_Tear = 32, Holy_Wand, Thousand_Edge, Death_Spiral, Heaven_Sword,
 	Unholy_Vespers, Hellfire, Soul_Easter, La_Borra, NO_FUTURE,
 	Thunder_Loop, Gorgeous_Moon, Vicious_Hunger, Mannajja,
 	Valkyrie_Turner, Infinite_Corridor, Crimson_Shroud,
@@ -29,7 +30,7 @@ Weapon::Weapon()
 Weapon::~Weapon()
 {
 }
-Weapon::Weapon(int type, vector<char*>& skin, vector<char*>& proj, vector<int> stats) {
+Weapon::Weapon(int type, char* skin, vector<char*>& proj, vector<int> stats) {
 	this->load_skin(skin);
 	this->_base_proj->load_skin(proj);
 	this->_type = type;
@@ -40,6 +41,9 @@ Weapon::Weapon(int type, vector<char*>& skin, vector<char*>& proj, vector<int> s
 	_pool_limit = stats[ 13 ], _chance = stats[ 14 ], _crit_multi = stats[ 15 ],
 	_block_by_wall = stats[ 16 ];
 }
+Weapon::Weapon(int type) {
+	
+}
 void Weapon::update_proj() {
 	for ( auto& bullet : _proj_set ) {
 		bullet->update_pos();
@@ -48,5 +52,27 @@ void Weapon::update_proj() {
 void Weapon::show_proj() {
 	for ( auto& bullet : _proj_set ) {
 		bullet->show_skin();
+	}
+}
+void Weapon::load_weapon_stats() {
+	ifstream file("weapon_stats");
+	string header, line, skin_file, base_proj;
+	vector <char*> proj_name;
+	getline(file, header); // nouse
+
+	while ( getline(file, line) ) {
+		stringstream ss(line);
+		string token;
+		vector<int> stats;
+		getline(ss, skin_file, ',');
+		getline(ss, base_proj, ',');
+
+		getline(ss, token, ',');
+		string name = token;
+		while ( getline(ss, token, ',') ) {
+			stats.push_back(stoi(token));
+		}
+
+		_weapon_stats[name] = stats;
 	}
 }

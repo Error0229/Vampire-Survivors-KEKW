@@ -1,0 +1,2 @@
+name, type, level, max_level, damage, speed, area, rarity, amount, duration, pierce, cooldown, proj_interval, hitbox_delay, knock_back, pool_limit, chance, crit_multi, block_by_wall
+Whip,0,1,8,10,-1,1,100,1,-1,-1,1350,100,-1,1,30,20,200,0

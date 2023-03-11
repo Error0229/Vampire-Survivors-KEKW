@@ -17,3 +17,6 @@ void Player::update_pos(CPoint target) {
 	VSObject::player_dx -= _position.x - pos.x ;
 	VSObject::player_dy -= _position.y - pos.y ;
 }
+void Player::acquire_weapon(Weapon* weapon) {
+	_weapons.push_back(weapon);
+}
