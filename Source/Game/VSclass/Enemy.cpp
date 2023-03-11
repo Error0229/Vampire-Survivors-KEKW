@@ -2,6 +2,7 @@
 #include "../../Library/gameutil.h"
 #include "VSObject.h"
 #include "Enemy.h"
+#include "VSMath.h"
 Enemy::Enemy()
 {
 }
@@ -60,16 +61,15 @@ bool Enemy::is_enable()
 {
 	return _is_enable;
 }
-
 void Enemy::show_skin(double factor)
 {
 	if ( !_is_enable )
 		return;
-	if (!is_dead()) {
-		this->_skin.SetTopLeft(this->_position.x - (this->_skin.Width() >> 1) + player_dx, this->_position.y - (this->_skin.Height() >> 1) + player_dy);
+	if ( !is_dead() ) {
+		this->_skin.SetTopLeft(this->_position.x - ( this->_skin.Width() >> 1 ) + player_dx, this->_position.y - ( this->_skin.Height() >> 1 ) + player_dy);
 		this->_skin.ShowBitmap(factor, _is_mirror);
 	}
-	else{
+	else {
 		if ( _corpse.is_animation_done() ) {
 			_corpse.unshow_skin();
 			_is_enable = false;
@@ -106,4 +106,24 @@ void load_enemy_type(vector<Enemy>& vec, char* name, int n, int level, int healt
 	for ( int i = 0; i < n; i++ ) {
 		vec.push_back(tmp);
 	}
+}
+
+void Enemy::resolve_collide(Enemy& other) {
+	//when this object collide with other, move this to the extension of the vec
+	if ( (_position.x == other._position.x && _position.y == other._position.y) || is_dead())
+		return;
+	//the dx, dy version is integer-optimize, but it works horribly
+	double ratio;
+	//int dx = _position.x - other._position.x;
+	//int dy = _position.y - other._position.y;
+	if (abs(_position.x - other._position.x) > abs(_position.y - other._position.y)) {
+		ratio = (double)((other.get_width() >> 1) + (get_width() >> 1) - abs(_position.x - other._position.x)) / (double)abs(_position.x - other._position.x);
+		//dx *= ((other.get_width() >> 1) + (get_width() >> 1) - abs(_position.x - other._position.x)) / abs(_position.x - other._position.x);
+	}
+	else {
+		ratio = (double)((other.get_height() >> 1) + (get_height() >> 1) - abs(_position.y - other._position.y)) / (double)abs(_position.y - other._position.y);
+		//dy *= ((other.get_height() >> 1) + (get_height() >> 1) - abs(_position.y - other._position.y)) / abs(_position.y - other._position.y);
+	}
+	set_pos(_position.x + (int)((_position.x - other._position.x) * ratio), _position.y + (int)((_position.y - other._position.y) * ratio));
+	//set_pos(_position.x + dx, _position.y + dy);
 }

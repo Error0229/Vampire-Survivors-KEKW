@@ -26,17 +26,6 @@ void CGameStateRun::OnBeginState()
 {
 }
 
-void CGameStateRun::OnMove()							// 移動遊戲元素
-{
-	CPoint p;
-	GetCursorPos(&p);
-	mouse_pos.x = p.x - VSObject::player_dx;
-	mouse_pos.y = p.y - VSObject::player_dy;
-	player.update_pos(mouse_pos);
-	player.update_proj_pos();
-	for ( auto& i : xlmantis )
-		i.update_pos(player.get_pos());
-}
 
 void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 {
@@ -50,9 +39,11 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	map.load_map({ "resources/map/dummy1.bmp" });
 	map.set_pos(0, 0);
 	
-	load_enemy_type(xlmantis, "XLMantis", 10);
+	load_enemy_type(xlmantis, "XLMantis", 10, 1, 1, 1, 200);
 	for ( int i = 0; i < (int)xlmantis.size(); i++ ) {
-		xlmantis[i].set_pos(CPoint(-300 + 60 * i, -400 + 80 * i));
+		xlmantis[i].set_pos(-300 + 60 * i, -400 + 80 * i);
+		//xlmantis[i].set_pos(-300 + 60 * i, 0);
+		//xlmantis[i].set_pos(0, -400 + 80 * i);
 	}
 }
 
@@ -88,12 +79,32 @@ void CGameStateRun::OnRButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動
 {
 }
 
+void CGameStateRun::OnMove()							// 移動遊戲元素
+{
+	CPoint p;
+	GetCursorPos(&p);
+	mouse_pos.x = p.x - VSObject::player_dx;
+	mouse_pos.y = p.y - VSObject::player_dy;
+	player.update_pos(mouse_pos);
+	player.update_proj_pos();
+	for ( int i = 0; i < (int)xlmantis.size(); i++ ) {
+		xlmantis[i].update_pos(player.get_pos());
+		//xlmantis[i].update_pos(CPoint(0, 0));
+		for ( int j = 0; j < (int)xlmantis.size(); j++ ) {
+			if (i!=j && is_overlapped(xlmantis[ i ], xlmantis[ j ])) {
+				xlmantis[i].resolve_collide(xlmantis[ j ]);
+			}
+		}
+	}
+}
+
 void CGameStateRun::OnShow()
 {
 	map.map_padding(player.get_pos());
 	map.show_map();
 	player.show_skin();
 	player.show_proj_skin();
-	for(auto& i: xlmantis )
-		i.show_skin();
+	for ( int i = 0; i < (int)xlmantis.size(); i++ ) {
+		xlmantis[ i ].show_skin();
+	}
 }

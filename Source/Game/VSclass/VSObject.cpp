@@ -92,13 +92,13 @@ CPoint VSObject::get_pos()
 }
 bool is_overlapped(VSObject& obj1, VSObject& obj2)
 {
-	return
+	int dx = abs(obj1._position.x - obj2._position.x);
+	int dy = abs(obj1._position.y - obj2._position.y);
+	return 
 		(
-		obj1._position.x <= obj2._position.x + obj2._skin.Width() &&
-		obj1._position.x + obj1._skin.Width() >= obj2._position.x &&
-		obj1._position.y <= obj2._position.y + obj2._skin.Height() &&
-		obj1._position.y + obj1._skin.Height() >= obj2._position.y
-	);
+			dx < ((int)(obj1._skin.Width() + obj2._skin.Width()) >> 1) &&
+			dy < ((int)(obj1._skin.Height() + obj2._skin.Height()) >> 1)
+		);
 }
 int VSObject::get_height()
 {
