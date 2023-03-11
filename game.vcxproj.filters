@@ -64,6 +64,7 @@
     <ClCompile Include="Source\Game\VSclass\Button.cpp" />
     <ClCompile Include="Source\Game\VSclass\VSMath.cpp" />
     <ClCompile Include="Source\Game\VSclass\VSObject.cpp" />
+    <ClCompile Include="Source\Game\VSclass\Projectile.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Library\audio.h">
@@ -109,6 +110,7 @@
     <ClInclude Include="Source\Game\VSclass\VS.h" />
     <ClInclude Include="Source\Game\VSclass\VSMath.h" />
     <ClInclude Include="Source\Game\VSclass\VSObject.h" />
+    <ClInclude Include="Source\Game\VSclass\Projectile.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Source\Core\game.rc">

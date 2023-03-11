@@ -20,3 +20,13 @@ void Player::update_pos(CPoint target) {
 void Player::acquire_weapon(Weapon* weapon) {
 	_weapons.push_back(weapon);
 }
+void Player::update_proj_pos() {
+	for ( auto& w : _weapons ) {
+		w->update_proj(_position, _direct, this->get_width(), this->get_width());
+	}
+}
+void Player::show_proj_skin() {
+	for ( auto& w : _weapons ) {
+		w->show_proj();
+	}
+}

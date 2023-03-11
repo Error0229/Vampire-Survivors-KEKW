@@ -33,6 +33,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 	mouse_pos.x = p.x - VSObject::player_dx;
 	mouse_pos.y = p.y - VSObject::player_dy;
 	player.update_pos(mouse_pos);
+	player.update_proj_pos();
 	for ( auto& i : xlmantis )
 		i.update_pos(player.get_pos());
 }
@@ -45,8 +46,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	player.set_default_direct(RIGHT);
 	player.set_animation(150, false);
 	player.set_speed(300);
-	Weapon *w = new Weapon(0);
-	player.acquire_weapon(w);
+	player.acquire_weapon(Weapon::_base_weapon[0]);
 	map.load_map({ "resources/map/dummy1.bmp" });
 	map.set_pos(0, 0);
 	
@@ -93,6 +93,7 @@ void CGameStateRun::OnShow()
 	map.map_padding(player.get_pos());
 	map.show_map();
 	player.show_skin();
+	player.show_proj_skin();
 	for(auto& i: xlmantis )
 		i.show_skin();
 }

@@ -9,7 +9,7 @@ VSObject::VSObject()
 	_is_mirror = 0;
 	_speed = 0;
 }
-VSObject::VSObject(vector<char*> filename) :VSObject()
+VSObject::VSObject(vector<char*> filename, COLORREF color) :VSObject()
 {
 	this->load_skin(filename);
 }
@@ -38,9 +38,9 @@ void VSObject::set_default_direct(int dir)
 {
 	this->_default_direct = dir;
 }
-void VSObject::set_animation(int delay, bool _once)
+void VSObject::set_animation(int delay, bool _once, int cooldown)
 {
-	this->_skin.SetAnimation(delay, _once);
+	this->_skin.SetAnimation(delay, _once, cooldown);
 }
 void VSObject::enable_animation()
 {
@@ -117,6 +117,10 @@ bool VSObject::is_animation_done()
 void VSObject::set_is_mirror(bool is_mirror)
 {
 	this->_is_mirror = is_mirror;
+}
+int VSObject::get_direct()
+{
+	return this->_direct;
 }
 
 int VSObject::player_dx = 400;
