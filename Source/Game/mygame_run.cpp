@@ -34,10 +34,13 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	player.set_default_direct(RIGHT);
 	player.set_animation(150, false);
 	player.set_speed(300);
+
+	player.load_bleed();
+
 	map.load_map({ "resources/map/dummy1.bmp" });
 	map.set_pos(0, 0);
 	
-	load_enemy_type(xlmantis, "XLMantis", 10, 1, 1, 1, 200);
+	load_enemy_type(xlmantis, "XLMantis", 10, 1, 10, 1, 200);
 	for ( int i = 0; i < (int)xlmantis.size(); i++ ) {
 		xlmantis[i].set_pos(-300 + 60 * i, -400 + 80 * i);
 		//xlmantis[i].set_pos(-300 + 60 * i, 0);
@@ -89,9 +92,14 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		xlmantis[i].update_pos(player.get_pos());
 		//xlmantis[i].update_pos(CPoint(0, 0));
 		for ( int j = 0; j < (int)xlmantis.size(); j++ ) {
-			if (i!=j && is_overlapped(xlmantis[ i ], xlmantis[ j ])) {
+			if (i != j && (!xlmantis[i].is_dead()) && is_overlapped(xlmantis[i], xlmantis[j])) {
 				xlmantis[i].resolve_collide(xlmantis[ j ]);
 			}
+		}
+		if ((!xlmantis[i].is_dead()) && is_overlapped(xlmantis[i], player)) {
+			player.hurt(1);
+			xlmantis[i].hurt(1);
+			xlmantis[i].resolve_collide(player);
 		}
 	}
 }
