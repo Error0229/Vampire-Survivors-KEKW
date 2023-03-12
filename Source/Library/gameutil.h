@@ -118,6 +118,7 @@ namespace game_framework {
 		vector<unsigned> SurfaceID;
 		bool     isBitmapLoaded = false;	// whether a bitmap has been loaded
 		CRect    location;			// location of the bitmap
+		vector<CSize>	_bitmap_size;		// size of the bitmap
 	};
 
 	class CTextDraw {

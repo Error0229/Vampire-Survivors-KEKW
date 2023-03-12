@@ -120,7 +120,7 @@ void VSObject::set_is_mirror(bool is_mirror)
 }
 int VSObject::get_direct()
 {
-	return this->_direct;
+	return this->_default_direct;
 }
 
 int VSObject::player_dx = 400;

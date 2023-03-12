@@ -31,17 +31,6 @@ namespace game_framework {
 		isBitmapLoaded = false;
 	}
 
-	int CMovingBitmap::Height()
-	{
-		GAME_ASSERT(isBitmapLoaded, "A bitmap must be loaded before Height() is called !!!");
-		return location.bottom - location.top;
-	}
-
-	int CMovingBitmap::Left()
-	{
-		GAME_ASSERT(isBitmapLoaded, "A bitmap must be loaded before Left() is called !!!");
-		return location.left;
-	}
 
 	void CMovingBitmap::LoadBitmap(int IDB_BITMAP, COLORREF color)
 	{
@@ -57,6 +46,7 @@ namespace game_framework {
 		location.left = nx; location.top = ny;
 		location.right = nx + bitmapSize.bmWidth;
 		location.bottom = ny + bitmapSize.bmHeight;
+		_bitmap_size.push_back({ bitmapSize.bmWidth ,bitmapSize.bmHeight });
 		SurfaceID.push_back(CDDraw::RegisterBitmap(IDB_BITMAP, color));
 		isBitmapLoaded = true;
 	}
@@ -79,6 +69,7 @@ namespace game_framework {
 		location.left = nx; location.top = ny;
 		location.right = nx + bitmapSize.bmWidth;
 		location.bottom = ny + bitmapSize.bmHeight;
+		_bitmap_size.push_back({ bitmapSize.bmWidth ,bitmapSize.bmHeight });
 		SurfaceID.push_back(CDDraw::RegisterBitmap(filename, color));
 		isBitmapLoaded = true;
 
@@ -239,9 +230,20 @@ namespace game_framework {
 	int CMovingBitmap::Width()
 	{
 		GAME_ASSERT(isBitmapLoaded, "A bitmap must be loaded before Width() is called !!!");
-		return location.right - location.left;
+		return _bitmap_size[ selector ].cx;
 	}
 
+	int CMovingBitmap::Height()
+	{
+		GAME_ASSERT(isBitmapLoaded, "A bitmap must be loaded before Height() is called !!!");
+		return _bitmap_size[selector].cy;
+	}
+
+	int CMovingBitmap::Left()
+	{
+		GAME_ASSERT(isBitmapLoaded, "A bitmap must be loaded before Left() is called !!!");
+		return location.left;
+	}
 	void CMovingBitmap::ToggleAnimation() {
 		selector = 0;
 		isAnimation = true;

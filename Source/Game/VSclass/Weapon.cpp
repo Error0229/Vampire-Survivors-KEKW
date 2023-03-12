@@ -35,10 +35,10 @@ void Weapon::update_proj(CPoint player_pos, int player_direction, int player_w, 
 			for ( int i = 0; i < this->_amount; i++ ) {
 				proj->set_is_mirror( ( player_direction != proj->get_direct() ));
 				if (( player_direction == RIGHT  && !(i&1) ) || ( player_direction == LEFT && ( i & 1 ) ) ) {
-					proj->set_pos({ player_pos.x - ( player_w ) , player_pos.y + ( ( i * player_h ) >> 2 ) });
+					proj->set_pos({ player_pos.x + (proj->get_width() >> 1) - (player_w >> 1) , player_pos.y - ( ( i * player_h ) >> 2 )});
 				}
 				else {
-					proj->set_pos({ player_pos.x + ( player_w ) , player_pos.y + ( ( i * player_h ) >> 2 ) });
+					proj->set_pos({ player_pos.x - ( proj->get_width() >> 1 ) + ( player_w >> 1 ) , player_pos.y - ( ( i * player_h ) >> 2 ) });
 				}
 			}
 			break;
