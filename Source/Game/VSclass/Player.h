@@ -4,6 +4,9 @@ public:
 	Player();
 	~Player();
 	void update_pos(CPoint) override;
+	void acquire_weapon(Weapon*);
+	void update_proj_pos();
+	void show_proj_skin();
 	void hurt(int damage);
 	void show_skin(double factor = 1.0);
 	void load_bleed();
@@ -11,7 +14,7 @@ private:
 	VSObject _bleed_animation;
 	vector<Weapon*> _weapons;
 	vector<Passive*> _passives;
-	int _hp=100, _max_hp;
+	int _hp, _max_hp;
 	int _exp, _max_exp;
 	int _level;
 	int _attack, _defense;
@@ -25,7 +28,7 @@ private:
 	int _skill_cd_max;
 	int _range;
 	int _might;
-	int _speed;	
+	int _speed;	//this have same name with VSObject::speed, might change in the future
 	int _recovery;
 	int _aoe;
 	int _projectile_amount;

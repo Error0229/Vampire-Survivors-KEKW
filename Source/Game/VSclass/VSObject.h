@@ -15,30 +15,34 @@
 			AfxDebugBreak();												\
 		}
 enum direction { UP, DOWN, LEFT, RIGHT };
+#define BLACK (RGB(0,0,0))
+#define WHITE (RGB(255,255,255))
 class VSObject
 {
 public:
 	VSObject();
-	VSObject(vector<char*> filename);
+	VSObject(vector<char*> filename, COLORREF color = WHITE);
 	virtual ~VSObject();
 	void load_skin(vector<char*> filename, COLORREF color= RGB(255,255,255));
 	void load_skin(char* filename, COLORREF color = RGB(255, 255, 255));
 	virtual void show_skin(double factor = 1.0);
 	void unshow_skin();
 	void set_default_direct(int dir);
-	void set_animation(int delay, bool _once);
+	void set_animation(int delay, bool _once, int cooldown = 0);
 	void enable_animation();
 	void set_pos(CPoint);
 	void set_pos(int, int);
 	void set_speed(int);
-	void set_is_mirror(bool);
-	bool is_animation_done();
 	CPoint get_pos();
 	virtual void update_pos(CPoint);
 	virtual void update_pos();
+	void set_is_mirror(bool);
+	bool is_animation_done();
+	int get_direct();
 	int get_height();
 	int get_width();
 	void resolve_collide(VSObject&);
+
 	static int player_dx;
 	static int player_dy; // every time player move should update these
 	friend bool is_overlapped(VSObject&, VSObject&);

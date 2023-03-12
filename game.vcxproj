@@ -173,6 +173,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -250,8 +251,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="RES\GAME.RC2" />
+    <None Include="Source\Game\VSclass\weapon_stats.csv" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Game\VSclass\Projectile.cpp" />
     <ClCompile Include="Source\Game\VSclass\Button.cpp" />
     <ClCompile Include="Source\Core\game.cpp" />
     <ClCompile Include="Source\Core\gameDoc.cpp" />
@@ -276,6 +279,7 @@
     <ClCompile Include="Source\Game\VSclass\VSObject.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Game\VSclass\Projectile.h" />
     <ClInclude Include="Source\Game\VSclass\Button.h" />
     <ClInclude Include="Source\Core\Game.h" />
     <ClInclude Include="Source\Core\gameDoc.h" />
