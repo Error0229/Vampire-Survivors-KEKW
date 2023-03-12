@@ -88,7 +88,7 @@ namespace game_framework {
 		CMovingBitmap();
 		int   Height();						// 取得圖形的高度
 		int   Left();						// 取得圖形的左上角的 x 座標
-		void  SetAnimation(int delay, bool _once);
+		void  SetAnimation(int delay, bool _once, int cooldown = 0);
 		void  LoadBitmap(int, COLORREF = CLR_INVALID);		// 載入圖，指定圖的編號(resource)及透明色
 		void  LoadBitmap(char*, COLORREF = CLR_INVALID);	// 載入圖，指定圖的檔名及透明色
 		void  LoadBitmap(vector<char*>, COLORREF = CLR_INVALID);	// 載入圖，指定圖的檔名及透明色
@@ -108,6 +108,8 @@ namespace game_framework {
 	protected:
 		int selector = 0;
 		int delayCount = 10;
+		int animation_cooldown  = 0;
+		clock_t last_animation_done = 0;
 		int animationCount = -1;
 		clock_t last_time = clock();
 		bool isAnimation = false;
@@ -116,6 +118,7 @@ namespace game_framework {
 		vector<unsigned> SurfaceID;
 		bool     isBitmapLoaded = false;	// whether a bitmap has been loaded
 		CRect    location;			// location of the bitmap
+		vector<CSize>	_bitmap_size;		// size of the bitmap
 	};
 
 	class CTextDraw {

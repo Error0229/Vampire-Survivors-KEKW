@@ -4,6 +4,9 @@ public:
 	Player();
 	~Player();
 	void update_pos(CPoint) override;
+	void acquire_weapon(Weapon*);
+	void update_proj_pos();
+	void show_proj_skin();
 private:
 	vector<Weapon*> _weapons;
 	vector<Passive*> _passives;
