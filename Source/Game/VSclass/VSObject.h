@@ -33,14 +33,15 @@ public:
 	void set_pos(CPoint);
 	void set_pos(int, int);
 	void set_speed(int);
-	void set_is_mirror(bool);
-	bool is_animation_done();
 	CPoint get_pos();
 	virtual void update_pos(CPoint);
 	virtual void update_pos();
+	void set_is_mirror(bool);
+	bool is_animation_done();
+	int get_direct();
 	int get_height();
 	int get_width();
-	int get_direct();
+	void resolve_collide(VSObject&);
 
 	static int player_dx;
 	static int player_dy; // every time player move should update these

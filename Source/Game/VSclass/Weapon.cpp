@@ -42,7 +42,6 @@ void Weapon::update_proj(CPoint player_pos, int player_direction, int player_w, 
 				}
 			}
 			break;
-		
 		}
 	}
 }
@@ -87,7 +86,6 @@ void Weapon::load_weapon_stats() {
 
 			}
 			w->_proj_set.insert(p);
-
 		}
 		Weapon::_base_weapon[ type ] = w;
 	}
