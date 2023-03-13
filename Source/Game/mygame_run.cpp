@@ -5,6 +5,7 @@
 #include "../Library/audio.h"
 #include "../Library/gameutil.h"
 #include "../Library/gamecore.h"
+#include "config.h"
 #include "mygame.h"
 #include "VSclass/VS.h"
 
@@ -83,6 +84,8 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 {
 	CPoint p;
 	GetCursorPos(&p);
+	HWND targetWindow = FindWindow(NULL, GAME_TITLE);
+	ScreenToClient(targetWindow, &p);
 	mouse_pos.x = p.x - VSObject::player_dx;
 	mouse_pos.y = p.y - VSObject::player_dy;
 	player.update_pos(mouse_pos);
