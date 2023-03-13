@@ -3,11 +3,11 @@
 #include "VSObject.h"
 #include "Weapon.h"
 #include "Passive.h"
-#include "Pickup.h"
 #include "Player.h"
 using namespace game_framework;
 Player::Player()
 {
+	_pickup_range = 100;
 	//for some reason, load skin in constructor will cause the some error
 	//_bleed_animation.load_skin({ "resources/character/Blood1.bmp", "resources/character/Blood2.bmp", "resources/character/Blood3.bmp" });
 	//_bleed_animation.set_animation(50, false);
@@ -57,11 +57,14 @@ void Player::show_proj_skin() {
 		w->show_proj();
 	}
 }
-void Player::pick_up_xp(Pickup& xp_gem)
+void Player::pick_up_xp(int xp_value)
 {
-	xp_gem.set_enable(false);
-	_xp += xp_gem.get_xp_value();
+	_xp += xp_value;
 	if (_xp >= _max_xp) {
 		//leveling up
 	}
+}
+int Player::get_pickup_range()
+{
+	return _pickup_range;
 }

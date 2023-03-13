@@ -40,6 +40,7 @@ void Pickup::spawn_xp(CPoint pos, int xp)
 	_is_enable = true;
 	_position = pos;
 	_xp_value = xp;
+	set_speed(0);
 }
 
 void Pickup::show_skin(double factor)
@@ -58,4 +59,9 @@ void Pickup::show_skin(double factor)
 		break;
 	}
 	VSObject::show_skin(factor);
+}
+
+bool Pickup::is_enable()
+{
+	return _is_enable;
 }

@@ -10,6 +10,7 @@ public:
 	int get_xp_value();
 	void spawn_xp(CPoint, int);
 	void show_skin(double factor = 1.0);
+	bool is_enable();
 private:
 	int _type, _level;
 	int _xp_value;

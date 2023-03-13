@@ -51,8 +51,12 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	for ( auto& i : xlmantis )
-		i.hurt(1000000);
+	for (int i = 0; i < (int)xlmantis.size();i++) {
+		if (xlmantis[i].hurt(1000000)) {
+			xp_gem[i].spawn_xp(xlmantis[i].get_pos(), xlmantis[i].get_xp_value());
+		}
+
+	}
 }
 
 void CGameStateRun::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -103,6 +107,18 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			if (xlmantis[i].hurt(1)) {
 				//when the enemy die from this damage
 				xp_gem[i].spawn_xp(xlmantis[i].get_pos(), xlmantis[i].get_xp_value());
+			}
+		}
+	}
+
+	// suck xp
+	for (auto& i : xp_gem) {
+		if (i.is_enable() && distance(player, i) < player.get_pickup_range()) {
+			i.set_speed(1000);
+			i.update_pos(player.get_pos());
+			if (is_overlapped(player, i)) {
+				i.set_enable(false);
+				player.pick_up_xp(i.get_xp_value());
 			}
 		}
 	}
