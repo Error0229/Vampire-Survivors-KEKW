@@ -40,11 +40,13 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 
 	map.load_map({ "resources/map/dummy1.bmp" });
 	map.set_pos(0, 0);
-	
-	load_enemy_type(xlmantis, "XLMantis", 10, 1, 10, 1, 200);
+
+	load_enemy_type(xlmantis, "XLMantis", 10, 1, 10, 1, 200, 1);
 	for ( int i = 0; i < (int)xlmantis.size(); i++ ) {
 		xlmantis[i].set_pos(-300 + 60 * i, -400 + 80 * i);
 	}
+
+	Pickup::load_xp(xp_gem, 10);
 }
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -86,7 +88,6 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 	mouse_pos.x = p.x - VSObject::player_dx;
 	mouse_pos.y = p.y - VSObject::player_dy;
 	player.update_pos(mouse_pos);
-	TRACE(_T("%d,%d\n"),player.get_pos().x, player.get_pos().y);
 	player.update_proj_pos();
 	for ( int i = 0; i < (int)xlmantis.size(); i++ ) {
 		xlmantis[i].update_pos(player.get_pos());
@@ -97,9 +98,12 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			}
 		}
 		if ((!xlmantis[i].is_dead()) && is_overlapped(xlmantis[i], player)) {
-			player.hurt(1);
-			xlmantis[i].hurt(1);
 			xlmantis[i].resolve_collide(player);
+			player.hurt(1);
+			if (xlmantis[i].hurt(1)) {
+				//when the enemy die from this damage
+				xp_gem[i].spawn_xp(xlmantis[i].get_pos(), xlmantis[i].get_xp_value());
+			}
 		}
 	}
 }
@@ -112,4 +116,6 @@ void CGameStateRun::OnShow()
 	for ( int i = 0; i < (int)xlmantis.size(); i++ ) {
 		xlmantis[ i ].show_skin();
 	}
+	for (auto &i:xp_gem)
+		i.show_skin();
 }

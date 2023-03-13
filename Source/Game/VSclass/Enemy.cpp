@@ -13,12 +13,13 @@ void Enemy::set_level(int level)
 {
 	this->_level = level;
 }
-void Enemy::set_stat(int level, int health, int damage, int speed)
+void Enemy::set_stat(int level, int health, int damage, int speed, int xp_value)
 {
 	_level = level;
 	_health = health;
 	_damage = damage;
 	_speed = speed;
+	_xp_value = xp_value;
 }
 void Enemy::load_by_name(char* name)
 {
@@ -79,7 +80,7 @@ void Enemy::show_skin(double factor)
 		}
 	}
 }
-void Enemy::hurt(int damage) 
+bool Enemy::hurt(int damage) 
 {
 	if (!is_dead()) {
 		_health -= damage;
@@ -89,8 +90,10 @@ void Enemy::hurt(int damage)
 			_death_animation.set_animation(100, true);
 			_death_animation.set_is_mirror(_is_mirror);
 			_death_animation.enable_animation();
+			return true;
 		}
 	}
+	return false;
 }
 
 void Enemy::set_enable(bool enable) 
@@ -98,10 +101,15 @@ void Enemy::set_enable(bool enable)
 	_is_enable = enable;
 }
 
-void load_enemy_type(vector<Enemy>& vec, char* name, int n, int level, int health, int damage, int speed) {
+int Enemy::get_xp_value()
+{
+	return _xp_value;
+}
+
+void load_enemy_type(vector<Enemy>& vec, char* name, int n, int level, int health, int damage, int speed, int xp_value) {
 	Enemy tmp;
 	tmp.load_by_name(name);
-	tmp.set_stat(level, health, damage, speed);
+	tmp.set_stat(level, health, damage, speed, xp_value);
 	tmp.set_animation(50, false);
 	for ( int i = 0; i < n; i++ ) {
 		vec.push_back(tmp);

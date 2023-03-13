@@ -54,6 +54,6 @@ protected:
 	CPoint _target;
 	bool _is_mirror = 0;
 	int _direct, _default_direct=LEFT;
-	int _speed;
+	int _speed=0;
 };
 

@@ -3,6 +3,7 @@
 #include "VSObject.h"
 #include "Weapon.h"
 #include "Passive.h"
+#include "Pickup.h"
 #include "Player.h"
 using namespace game_framework;
 Player::Player()
@@ -54,5 +55,13 @@ void Player::update_proj_pos() {
 void Player::show_proj_skin() {
 	for ( auto& w : _weapons ) {
 		w->show_proj();
+	}
+}
+void Player::pick_up_xp(Pickup& xp_gem)
+{
+	xp_gem.set_enable(false);
+	_xp += xp_gem.get_xp_value();
+	if (_xp >= _max_xp) {
+		//leveling up
 	}
 }

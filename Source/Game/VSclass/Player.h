@@ -10,12 +10,13 @@ public:
 	void hurt(int damage);
 	void show_skin(double factor = 1.0);
 	void load_bleed();
+	void pick_up_xp(Pickup&);
 private:
 	VSObject _bleed_animation;
 	vector<Weapon*> _weapons;
 	vector<Passive*> _passives;
 	int _hp, _max_hp;
-	int _exp, _max_exp;
+	int _xp, _max_xp;
 	int _level;
 	int _attack, _defense;
 	int _cd;
