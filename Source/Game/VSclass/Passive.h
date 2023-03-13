@@ -5,6 +5,11 @@ public:
 	Passive(int);
 	~Passive();
 	void level_up();
+	int get_type();
+	int get_effect();
+	int get_level();
+	bool is_max_level();
+	int get_alt_effect();
 private:
 	int _level, _stacking;
 	int _type, _rarity,  _max_level;
@@ -19,6 +24,6 @@ enum passive_type {
 	MAGNET, LUCK, GROWTH, GREED, REVIVAL, CURSE, 
 	SILVER, GOLD, pLEFT, pRIGHT, PANDORA
 };
-enum stacking {
+enum stacking_type {
 	Additive = 1, Multiplicative 
 };

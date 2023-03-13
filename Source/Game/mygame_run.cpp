@@ -38,7 +38,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	player.set_animation(150, false);
 	player.load_bleed();
 	player.acquire_weapon(Weapon::_base_weapon[0]);
-
+	player.acquire_passive(new Passive(0));
 	map.load_map({ "resources/map/dummy1.bmp" });
 	map.set_pos(0, 0);
 	
@@ -50,6 +50,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
+	player.level_up_passive(0);
 	for ( auto& i : xlmantis )
 		i.hurt(1000000);
 }

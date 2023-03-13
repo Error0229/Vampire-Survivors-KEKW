@@ -16,6 +16,7 @@ Passive::Passive(int type) {
 		_level = 1;
 		_max_level = 5;
 		_stacking = Additive;
+		this->load_skin("Resources/Passive/Spinach.bmp");
 		break;
 	case ARMOR:
 		_name = "Armor";
@@ -25,6 +26,7 @@ Passive::Passive(int type) {
 		_level = 1;
 		_max_level = 5;
 		_stacking = Additive;
+		this->load_skin("Resources/Passive/Armor.bmp");
 		break;
 	case MAXHEALTH:
 		_name = "Hollow Heart";
@@ -34,6 +36,7 @@ Passive::Passive(int type) {
 		_level = 1;
 		_max_level = 5;
 		_stacking = Multiplicative;
+		this->load_skin("Resources/Passive/Hollow Heart.bmp");
 		break;
 	case REGEN:
 		_name = "Pummarola";
@@ -43,15 +46,17 @@ Passive::Passive(int type) {
 		_level = 1;
 		_max_level = 5;
 		_stacking = Additive;
+		this->load_skin("Resources/Passive/Pummarola.bmp");
 		break;
 	case COOLDOWN:
 		_name = "Empty Tome";
 		_rarity = 50;
 		_level_up_msg = { "", "Reduces weapons cooldown by 8%", "Cooldown reduced by 8.0%" };
-		_effect_by_level = { 0, 8, 16, 24, 32, 40 };
+		_effect_by_level = { 0, -8, -16, -24, -32, -40 };
 		_level = 1;
 		_max_level = 5;
 		_stacking = Additive;
+		this->load_skin("Resources/Passive/Empty Tome.bmp");
 		break;
 	case AREA:
 		_name = "Candelabrador";
@@ -61,6 +66,7 @@ Passive::Passive(int type) {
 		_level = 1;
 		_max_level = 5;
 		_stacking = Additive;
+		this->load_skin("Resources/Passive/Candelabrador.bmp");
 		break;
 	case SPEED:
 		_name = "Bracer";
@@ -70,6 +76,7 @@ Passive::Passive(int type) {
 		_level = 1;
 		_max_level = 5;
 		_stacking = Additive;
+		this->load_skin("Resources/Passive/Bracer.bmp");
 		break;
 	case DURATION:
 		_name = "Spellbinder";
@@ -79,6 +86,7 @@ Passive::Passive(int type) {
 		_level = 1;
 		_max_level = 5;
 		_stacking = Additive;
+		this->load_skin("Resources/Passive/Spellbinder.bmp");
 		break;
 	case AMOUNT:
 		_name = "Duplicator";
@@ -88,6 +96,7 @@ Passive::Passive(int type) {
 		_level = 1;
 		_max_level = 2;
 		_stacking = Additive;
+		this->load_skin("Resources/Passive/Duplicator.bmp");
 		break;
 	case MOVESPEED:
 		_name = "Wings";
@@ -97,6 +106,7 @@ Passive::Passive(int type) {
 		_level = 1;
 		_max_level = 5;
 		_stacking = Additive;
+		this->load_skin("Resources/Passive/Wings.bmp");
 		break;
 	case MAGNET:
 		_name = "Attractorb";
@@ -107,7 +117,8 @@ Passive::Passive(int type) {
 		_effect_by_level = { 0, 150, 200, 250, 300, 400 };
 		_level = 1;
 		_max_level = 5;
-		_stacking = Health recovery increases by 0.1 HP per second.Max Health increases by 5 % .;
+		_stacking = Additive;
+		this->load_skin("Resources/Passive/Attractorb.bmp");
 		break;
 	case LUCK:
 		_name = "Clover";
@@ -117,6 +128,7 @@ Passive::Passive(int type) {
 		_level = 1;
 		_max_level = 5;
 		_stacking = Additive;
+		this->load_skin("Resources/Passive/Clover.bmp");
 		break;
 	case GROWTH:
 		_name = "Crown";
@@ -126,6 +138,7 @@ Passive::Passive(int type) {
 		_level = 1;
 		_max_level = 5;
 		_stacking = Additive;
+		this->load_skin("Resources/Passive/Crown.bmp");
 		break;
 	case GREED:
 		_name = "Stone Mask";
@@ -135,15 +148,17 @@ Passive::Passive(int type) {
 		_level = 1;
 		_max_level = 5;
 		_stacking = Additive;
+		this->load_skin("Resources/Passive/Stone Mask.bmp");
 		break;
 	case REVIVAL:
-		_name = "Tiragsu";
+		_name = "Tiragisu";
 		_rarity = 40;
 		_level_up_msg = { "", "Revives once with 50% health", "Adds 1 Revival" };
 		_effect_by_level = { 0, 1, 2 };
 		_level = 1;
 		_max_level = 2;
 		_stacking = Additive;
+		this->load_skin("Resources/Passive/Tiragisu.bmp");
 	case CURSE:
 		_name = "Skull O\'Maniac";
 		_rarity = 40;
@@ -151,6 +166,8 @@ Passive::Passive(int type) {
 		_effect_by_level = { 0, 10, 20, 30, 40, 50 };
 		_level = 1;
 		_max_level = 5;
+		_stacking = Additive;
+		this->load_skin("Resources/Passive/Skull OManiac.bmp");
 	case SILVER:
 		_name = "Silver Ring";
 		_rarity = 10;
@@ -159,6 +176,7 @@ Passive::Passive(int type) {
 		_level = 1;
 		_max_level = 9;
 		_stacking = Additive;
+		this->load_skin("Resources/Passive/Silver Ring.bmp");
 		break;
 	case GOLD:
 		_name = "Gold Ring";
@@ -168,6 +186,7 @@ Passive::Passive(int type) {
 		_level = 1;
 		_max_level = 9;
 		_stacking = Additive;
+		this->load_skin("Resources/Passive/Gold Ring.bmp");
 		break;
 	case pLEFT:
 		_name = "Metaglio Left";
@@ -178,6 +197,7 @@ Passive::Passive(int type) {
 		_level = 1;
 		_max_level = 9;
 		_stacking = Additive | Multiplicative;
+		this->load_skin("Resources/Passive/Metaglio Left.bmp");
 	case pRIGHT:
 		_name = "Metaglio Right";
 		_rarity = 10;
@@ -186,6 +206,7 @@ Passive::Passive(int type) {
 		_level = 1;
 		_max_level = 9;
 		_stacking = Additive;
+		this->load_skin("Resources/Passive/Metaglio Right.bmp");
 		break;
 	case PANDORA:
 		_name = "Torrona\'s Box";
@@ -197,6 +218,7 @@ Passive::Passive(int type) {
 		_level = 1;
 		_max_level = 9;
 		_stacking = Additive;
+		this->load_skin("Resources/Passive/Torronas Box.bmp");
 		break;
 	}
 }
@@ -205,5 +227,28 @@ Passive::~Passive()
 }
 void Passive::level_up()
 {
-	this->_level = _level + 1;
+	if (is_max_level()) {
+		VS_ASSERT(false, "The level already max don\'t keep upgrading :(");
+	}
+	_level += 1;
+}
+int Passive::get_type()
+{
+	return _type;
+}
+int Passive::get_effect()
+{
+	return _effect_by_level[_level] - _effect_by_level[_level - 1];
+}
+int Passive::get_alt_effect()
+{
+	return _alt_effect[_level] - _alt_effect[_level - 1];
+}
+int Passive::get_level()
+{
+	return _level;
+}
+bool Passive::is_max_level()
+{
+	return (_level == _max_level);
 }
