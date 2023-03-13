@@ -14,6 +14,7 @@ private:
 	VSObject _bleed_animation;
 	vector<Weapon*> _weapons;
 	vector<Passive*> _passives;
+	vector<int> stats;
 	int _hp, _max_hp;
 	int _exp, _max_exp;
 	int _level;
