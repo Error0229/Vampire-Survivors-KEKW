@@ -171,7 +171,7 @@ Passive::Passive(int type) {
 	case SILVER:
 		_name = "Silver Ring";
 		_rarity = 10;
-		_level_up_msg = { "Wear ... Clock ...", "Effect last 5% longer. Base area up by 5%" };
+		_level_up_msg = {"", "Wear ... Clock ...", "Effect last 5% longer. Base area up by 5%" };
 		_effect_by_level = { 0, 0, 5, 10, 15, 20, 25, 30, 35, 40 };
 		_level = 1;
 		_max_level = 9;
@@ -181,7 +181,7 @@ Passive::Passive(int type) {
 	case GOLD:
 		_name = "Gold Ring";
 		_rarity = 10;
-		_level_up_msg = { "... With ... Lancet", "Increases enemy speed, health, quantity, and frequency by 5%" };
+		_level_up_msg = {"", "... With ... Lancet", "Increases enemy speed, health, quantity, and frequency by 5%" };
 		_effect_by_level = { 0, 0, 5, 10, 15, 20, 25, 30, 35, 40 };
 		_level = 1;
 		_max_level = 9;
@@ -191,7 +191,7 @@ Passive::Passive(int type) {
 	case pLEFT:
 		_name = "Metaglio Left";
 		_rarity = 10;
-		_level_up_msg = { "Channels dark powers to protect the bearer", "Health recovery increases by 0.1 HP per second. Max Health increases by 5%" };
+		_level_up_msg = {"", "Channels dark powers to protect the bearer", "Health recovery increases by 0.1 HP per second. Max Health increases by 5%" };
 		_effect_by_level = { 0, 0, 105, 110, 116, 122, 128, 134, 140, 148 };
 		_alt_effect = { 0, 0, 10, 20, 30, 40, 50, 60, 70, 80 };
 		_level = 1;
@@ -201,7 +201,7 @@ Passive::Passive(int type) {
 	case pRIGHT:
 		_name = "Metaglio Right";
 		_rarity = 10;
-		_level_up_msg = { "Channels dark powers to curse the bearer", "Increases enemy speed, health, quantity, and frequency by 5%" };
+		_level_up_msg = {"", "Channels dark powers to curse the bearer", "Increases enemy speed, health, quantity, and frequency by 5%" };
 		_effect_by_level = { 0, 0, 5, 10, 15, 20, 25, 30, 35, 40 };
 		_level = 1;
 		_max_level = 9;
@@ -212,7 +212,7 @@ Passive::Passive(int type) {
 		_name = "Torrona\'s Box";
 		_rarity = 40;
 		string msg = "Increases Might, Projectile Speed, Duration, and Area by 3%";
-		_level_up_msg = { "Cursed item, but increases Might, Projectile Speed, Duration, and Area by 4%",
+		_level_up_msg = {"", "Cursed item, but increases Might, Projectile Speed, Duration, and Area by 4%",
 		msg, msg, msg, msg, msg, msg, msg, "Increases enemy speed, health, quantity, and frequency by 100%" };
 		_effect_by_level = { 0, 4, 7, 10, 13, 16, 19, 22, 25, 100 };
 		_level = 1;
