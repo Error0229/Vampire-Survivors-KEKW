@@ -104,11 +104,11 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 	for ( int i = 0; i < (int)enemy.size(); i++ ) {
 		enemy[i].update_pos(player.get_pos());
 		for ( int j = 0; j < (int)enemy.size(); j++ ) {
-			if (i != j && (!enemy[i].is_dead()) && (enemy[i].is_enable()) && is_overlapped(enemy[i], enemy[j])) {
+			if (i != j && enemy[i].is_collide_with(enemy[j])) {
 				enemy[i].resolve_collide(enemy[ j ]);
 			}
 		}
-		if ((!enemy[i].is_dead()) && (enemy[i].is_enable()) && is_overlapped(enemy[i], player)) {
+		if (enemy[i].is_collide_with(player)) {
 			enemy[i].resolve_collide(player);
 			player.hurt(enemy[i].get_power());
 			if (enemy[i].hurt(1)) {
