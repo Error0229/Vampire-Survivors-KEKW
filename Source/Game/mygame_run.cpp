@@ -40,17 +40,26 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 
 	map.load_map({ "resources/map/dummy1.bmp" });
 	map.set_pos(0, 0);
+
+	Enemy::load_templete_enemies();
+	for (int i = 0; i < 10; i++)
+		enemy.push_back(Enemy::get_templete_enemy(GHOST));
 	
-	load_enemy_type(xlmantis, "XLMantis", 10, 1, 10, 1, 200);
-	for ( int i = 0; i < (int)xlmantis.size(); i++ ) {
-		xlmantis[i].set_pos(-300 + 60 * i, -400 + 80 * i);
+	for ( int i = 0; i < (int)enemy.size(); i++ ) {
+		enemy[i].spawn(CPoint(-300 + 60 * i, -400 + 80 * i));
 	}
+
+	Pickup::load_xp(xp_gem, 10);
 }
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	for ( auto& i : xlmantis )
-		i.hurt(1000000);
+	for (int i = 0; i < (int)enemy.size();i++) {
+		if (enemy[i].hurt(1000000)) {
+			xp_gem[i].spawn_xp(enemy[i].get_pos(), enemy[i].get_xp_value());
+		}
+
+	}
 }
 
 void CGameStateRun::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -86,20 +95,32 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 	mouse_pos.x = p.x - VSObject::player_dx;
 	mouse_pos.y = p.y - VSObject::player_dy;
 	player.update_pos(mouse_pos);
-	TRACE(_T("%d,%d\n"),player.get_pos().x, player.get_pos().y);
 	player.update_proj_pos();
-	for ( int i = 0; i < (int)xlmantis.size(); i++ ) {
-		xlmantis[i].update_pos(player.get_pos());
-		//xlmantis[i].update_pos(CPoint(0, 0));
-		for ( int j = 0; j < (int)xlmantis.size(); j++ ) {
-			if (i != j && (!xlmantis[i].is_dead()) && is_overlapped(xlmantis[i], xlmantis[j])) {
-				xlmantis[i].resolve_collide(xlmantis[ j ]);
+	for ( int i = 0; i < (int)enemy.size(); i++ ) {
+		enemy[i].update_pos(player.get_pos());
+		for ( int j = 0; j < (int)enemy.size(); j++ ) {
+			if (i != j && (!enemy[i].is_dead()) && (enemy[i].is_enable()) && is_overlapped(enemy[i], enemy[j])) {
+				enemy[i].resolve_collide(enemy[ j ]);
 			}
 		}
-		if ((!xlmantis[i].is_dead()) && is_overlapped(xlmantis[i], player)) {
-			player.hurt(1);
-			xlmantis[i].hurt(1);
-			xlmantis[i].resolve_collide(player);
+		if ((!enemy[i].is_dead()) && (enemy[i].is_enable()) && is_overlapped(enemy[i], player)) {
+			enemy[i].resolve_collide(player);
+			player.hurt(enemy[i].get_power());
+			if (enemy[i].hurt(1)) {
+				//when the enemy die from this damage
+				xp_gem[i].spawn_xp(enemy[i].get_pos(), enemy[i].get_xp_value());
+			}
+		}
+	}
+	// suck xp
+	for (auto& i : xp_gem) {
+		if (i.is_enable() && distance(player, i) < player.get_pickup_range()) {
+			i.set_speed(1000);
+			i.update_pos(player.get_pos());
+			if (is_overlapped(player, i)) {
+				i.set_enable(false);
+				player.pick_up_xp(i.get_xp_value());
+			}
 		}
 	}
 }
@@ -109,7 +130,9 @@ void CGameStateRun::OnShow()
 	map.show_map();
 	player.show_skin();
 	player.show_proj_skin();
-	for ( int i = 0; i < (int)xlmantis.size(); i++ ) {
-		xlmantis[ i ].show_skin();
+	for ( int i = 0; i < (int)enemy.size(); i++ ) {
+		enemy[ i ].show_skin();
 	}
+	for (auto &i:xp_gem)
+		i.show_skin();
 }

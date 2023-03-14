@@ -10,18 +10,20 @@ public:
 	void hurt(int damage);
 	void show_skin(double factor = 1.0);
 	void load_bleed();
+	void pick_up_xp(int);
+	int get_pickup_range();
 private:
 	VSObject _bleed_animation;
 	vector<Weapon*> _weapons;
 	vector<Passive*> _passives;
 	int _hp, _max_hp;
-	int _exp, _max_exp;
+	int _xp, _max_xp;
 	int _level;
 	int _attack, _defense;
 	int _cd;
 	int _weapon_type, _weapon_level;
 	int _passive_type, _passive_level;
-	int _pickups_range;
+	int _pickup_range;
 	int _direction;
 	int _skill;
 	int _skill_cd;
