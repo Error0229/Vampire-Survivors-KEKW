@@ -1,16 +1,15 @@
 #pragma once 
 #include "Projectile.h"
 enum weapon_names {
-	WHIP = 0, Magic_Wand, Knife, Axe, Cross, King_Bible,
-	Fire_Wand, Garlic, Santa_water, Runetracer, Lightning_Ring,
-	Pentagram, Peacechone, Ebony_Wings, Phiera_Der_Tuphello,
-	Eight_The_Sparrow, Gatti_Amari, Song_of_Mana, Shadow_Pinion,
-	Clock_Lancet, Laurel, Vento_Sacro, Bone, Cherry_Bomb,
-	Carrello, Celestial_Dusting, La_Robba, Greastest_Jubilee,
-	Bracelet, Candybox, Victory_Sword, Flame_of_Misspell
+	WHIP = 0, MAGIC_MISSILE, KNIFE, AXE, CROSS, HOLYBOOK,
+	FIREBALL, GARLIC, HOLYWATER, DIAMOND, LIGHTNING,
+	PENTAGRAM, SILF, SILF2, GUNS, GUNS2, GATTI, SONG, 
+	TRAPING, LANCET, LAUREL, VENTO, BONE, CHERRY,
+	CART2, FLOWER, LAROBBA, JUBILEE, TRIASS01, CANDYBOX,
+	VICTORY, MISSPELL
 };
 enum evolution_weapon_names {
-	Bloody_Tear = 32, Holy_Wand, Thousand_Edge, Death_Spiral, Heaven_Sword,
+	VAMPIRICA = 32, HOLY_MISSLE, THOUSAND, SCYTHE, Heaven_Sword,
 	Unholy_Vespers, Hellfire, Soul_Easter, La_Borra, NO_FUTURE,
 	Thunder_Loop, Gorgeous_Moon, Vicious_Hunger, Mannajja,
 	Valkyrie_Turner, Infinite_Corridor, Crimson_Shroud,
