@@ -41,10 +41,13 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	player.acquire_passive(new Passive(0));
 	map.load_map({ "resources/map/dummy1.bmp" });
 	map.set_pos(0, 0);
+	QT = QuadTree(-Player::player_dx, -Player::player_dy, 800, 600, 5, 10, 0);
+	QT.clear();
 
 	Enemy::load_templete_enemies();
 	for (int i = 0; i < 10; i++)
 		enemy.push_back(Enemy::get_templete_enemy(GHOST));
+
 	
 	for ( int i = 0; i < (int)enemy.size(); i++ ) {
 		enemy[i].spawn(CPoint(-300 + 60 * i, -400 + 80 * i));
@@ -101,12 +104,22 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 	mouse_pos.y = p.y - VSObject::player_dy;
 	player.update_pos(mouse_pos);
 	player.update_proj_pos();
+	QT.set_range(-Player::player_dx, -Player::player_dy, 800, 600);
+	for (Enemy& i_enemy : enemy) {
+		if (!i_enemy.is_dead())
+			QT.insert((VSObject*)(&i_enemy));
+	}
 	for ( int i = 0; i < (int)enemy.size(); i++ ) {
 		enemy[i].update_pos(player.get_pos());
-		for ( int j = 0; j < (int)enemy.size(); j++ ) {
+		/*for ( int j = 0; j < (int)enemy.size(); j++ ) {
 			if (i != j && (!enemy[i].is_dead()) && (enemy[i].is_enable()) && is_overlapped(enemy[i], enemy[j])) {
 				enemy[i].resolve_collide(enemy[ j ]);
 			}
+		}*/
+		vector <VSObject*> result;
+		QT.query(result, (VSObject*)(&enemy[i]));
+		for (VSObject* obj : result) {
+			enemy[i].resolve_collide(*((Enemy*)obj));
 		}
 		if ((!enemy[i].is_dead()) && (enemy[i].is_enable()) && is_overlapped(enemy[i], player)) {
 			enemy[i].resolve_collide(player);
@@ -117,6 +130,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			}
 		}
 	}
+	QT.clear();
 	// suck xp
 	for (auto& i : xp_gem) {
 		if (i.is_enable() && distance(player, i) < player.get_pickup_range()) {

@@ -15,6 +15,13 @@
 			AfxDebugBreak();												\
 		}
 enum direction { UP, DOWN, LEFT, RIGHT };
+enum VSObject_types {
+	PLAYER,
+	ENEMY,
+	PROJECTILE,
+	PICKUP,
+	WALL
+};
 #define BLACK (RGB(0,0,0))
 #define WHITE (RGB(255,255,255))
 class VSObject
@@ -48,6 +55,7 @@ public:
 	friend bool is_overlapped(VSObject&, VSObject&);
 	friend int distance(VSObject&, VSObject&);
 	friend int distance(CPoint&, CPoint&);
+	friend class QuadTree; // Friend :)
 protected:
 	game_framework::CMovingBitmap _skin;
 	CPoint _position;

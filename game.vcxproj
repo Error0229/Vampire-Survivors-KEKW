@@ -254,6 +254,7 @@
     <None Include="Source\Game\VSclass\weapon_stats.csv" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Game\VSclass\QuadTree.cpp" />
     <ClCompile Include="Source\Game\VSclass\Projectile.cpp" />
     <ClCompile Include="Source\Game\VSclass\Button.cpp" />
     <ClCompile Include="Source\Core\game.cpp" />
@@ -279,6 +280,7 @@
     <ClCompile Include="Source\Game\VSclass\VSObject.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Game\VSclass\QuadTree.h" />
     <ClInclude Include="Source\Game\VSclass\Projectile.h" />
     <ClInclude Include="Source\Game\VSclass\Button.h" />
     <ClInclude Include="Source\Core\Game.h" />
