@@ -7,7 +7,7 @@
 using namespace game_framework;
 Player::Player()
 {
-	_pickup_range = 100;
+	_magnet = 100;
 	//for some reason, load skin in constructor will cause the some error
 	//_bleed_animation.load_skin({ "resources/character/Blood1.bmp", "resources/character/Blood2.bmp", "resources/character/Blood3.bmp" });
 	//_bleed_animation.set_animation(50, false);
@@ -147,12 +147,12 @@ void Player::show_proj_skin() {
 }
 void Player::pick_up_xp(int xp_value)
 {
-	_xp += xp_value;
-	if (_xp >= _max_xp) {
+	_exp += xp_value;
+	if (_exp >= _max_exp) {
 		//leveling up
 	}
 }
 int Player::get_pickup_range()
 {
-	return _pickup_range;
+	return _magnet;
 }
