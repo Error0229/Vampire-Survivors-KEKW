@@ -5,6 +5,7 @@
 #include "../Library/audio.h"
 #include "../Library/gameutil.h"
 #include "../Library/gamecore.h"
+#include "config.h"
 #include "mygame.h"
 #include "VSclass/VS.h"
 
@@ -37,7 +38,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	player.set_animation(150, false);
 	player.load_bleed();
 	player.acquire_weapon(Weapon::_base_weapon[0]);
-
+	player.acquire_passive(new Passive(0));
 	map.load_map({ "resources/map/dummy1.bmp" });
 	map.set_pos(0, 0);
 
@@ -54,6 +55,8 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
+
+  player.level_up_passive(0);
 	for (int i = 0; i < (int)enemy.size();i++) {
 		if (enemy[i].hurt(1000000)) {
 			xp_gem[i].spawn_xp(enemy[i].get_pos(), enemy[i].get_xp_value());
@@ -92,6 +95,8 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 {
 	CPoint p;
 	GetCursorPos(&p);
+	HWND targetWindow = FindWindow(NULL, GAME_TITLE);
+	ScreenToClient(targetWindow, &p);
 	mouse_pos.x = p.x - VSObject::player_dx;
 	mouse_pos.y = p.y - VSObject::player_dy;
 	player.update_pos(mouse_pos);
