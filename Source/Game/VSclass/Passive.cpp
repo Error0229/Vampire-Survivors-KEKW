@@ -159,6 +159,7 @@ Passive::Passive(int type) {
 		_max_level = 2;
 		_stacking = Additive;
 		this->load_skin("Resources/Passive/Tiragisu.bmp");
+		break;
 	case CURSE:
 		_name = "Skull O\'Maniac";
 		_rarity = 40;
@@ -168,6 +169,7 @@ Passive::Passive(int type) {
 		_max_level = 5;
 		_stacking = Additive;
 		this->load_skin("Resources/Passive/Skull OManiac.bmp");
+		break;
 	case SILVER:
 		_name = "Silver Ring";
 		_rarity = 10;
@@ -198,6 +200,7 @@ Passive::Passive(int type) {
 		_max_level = 9;
 		_stacking = Additive | Multiplicative;
 		this->load_skin("Resources/Passive/Metaglio Left.bmp");
+		break;
 	case pRIGHT:
 		_name = "Metaglio Right";
 		_rarity = 10;

@@ -22,18 +22,20 @@ class Weapon : public VSObject {
 public:
 	Weapon();
 	Weapon(int, char*, vector<char*>, vector<int>);
-	Weapon(int);
 	~Weapon();
 	void show_proj();
 	void update_proj(CPoint, int, int, int);
+	void upgrade();
 	static void load_weapon_stats();
 	static map<int, Weapon*> _base_weapon; //name, stats
 protected:
 	Projectile* _base_proj;
 	set<Projectile*> _proj_set;
 	string _name;
-	int _type, _level, _max_level, _damage, _speed, _area, _rarity,   
+	int _type, _level, _max_level, _damage, _speed, _rarity,   
 		_amount, _duration, _pierce, _cooldown, _proj_interval,
 		_hitbox_delay, _knock_back, _pool_limit, _chance, 
-		_crit_multi, _block_by_wall;  
+		_crit_multi, _block_by_wall;
+	double _area;
+	vector<string> _level_up_msg;
 };

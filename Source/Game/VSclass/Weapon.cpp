@@ -19,14 +19,28 @@ Weapon::Weapon(int type, char* skin, vector<char*> proj, vector<int> stats) {
 	this->_base_proj = new Projectile(proj, BLACK);
 	this->_type = type;
 	_level = stats[ 0 ], _max_level = stats[ 1 ], _damage = stats[ 2 ],
-	_speed = stats[ 3 ], _area = stats[ 4 ], _rarity = stats[ 5 ], _amount = stats[ 6 ],
+	_speed = stats[ 3 ], _area = (double)stats[ 4 ], _rarity = stats[ 5 ], _amount = stats[ 6 ],
 	_duration = stats[ 7 ], _pierce = stats[ 8 ], _cooldown = stats[ 9 ],
 	_proj_interval = stats[ 10 ], _hitbox_delay = stats[ 11 ], _knock_back = stats[ 12 ],
 	_pool_limit = stats[ 13 ], _chance = stats[ 14 ], _crit_multi = stats[ 15 ],
 	_block_by_wall = stats[ 16 ];
-}
-Weapon::Weapon(int type) {
-	
+
+	switch (_type) {
+	case WHIP:
+		_level_up_msg = { 
+			"",
+			"Attacks horizontally, passes through enemies." , 
+			"Fires 1 more projectile.", 
+			"Base damage up by 5."
+			"Base damage up by 5. Base area up by 10%."
+			"Base damage up by 5."
+			"Base damage up by 5. Base area up by 10%."
+			"Base damage up by 5.",
+			"Base damage up by 5.",
+			"Base damage up by 5."
+		};
+		break;
+	}
 }
 void Weapon::update_proj(CPoint player_pos, int player_direction, int player_w, int player_h) {
 	for ( Projectile* proj : _proj_set ) {
@@ -48,6 +62,39 @@ void Weapon::update_proj(CPoint player_pos, int player_direction, int player_w, 
 void Weapon::show_proj() {
 	for ( auto& proj : _proj_set ) {
 		proj ->show_skin();
+	}
+}
+void Weapon::upgrade()
+{
+	_level++;
+	switch (_type) {
+	case WHIP:
+		switch (_level) {
+		case 2:
+			_amount += 1;
+			break;
+		case 3:
+			_damage += 5;
+			break;
+		case 4:
+			_damage += 5;
+			_area += 0.1;
+			break;
+		case 5:
+			_damage += 5;
+			break;
+		case 6:
+			_damage += 5;
+			_area += 0.1;
+			break;
+		case 7:
+			_damage += 5;
+			break;
+		case 8:
+			_damage += 5;
+			break;
+		}
+		break;
 	}
 }
 void Weapon::load_weapon_stats() {

@@ -44,7 +44,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 
 	Enemy::load_templete_enemies();
 	for (int i = 0; i < 10; i++)
-		enemy.push_back(Enemy::get_templete_enemy(GHOST));
+		enemy.push_back(Enemy::get_templete_enemy(BAT1));
 	
 	for ( int i = 0; i < (int)enemy.size(); i++ ) {
 		enemy[i].spawn(CPoint(-300 + 60 * i, -400 + 80 * i));
