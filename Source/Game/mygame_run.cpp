@@ -45,15 +45,16 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	QT.clear();
 
 	Enemy::load_templete_enemies();
-	for (int i = 0; i < 10; i++)
-		enemy.push_back(Enemy::get_templete_enemy(GHOST));
+	for (int i = 0; i < 100; i++)
+		enemy.push_back(Enemy::get_templete_enemy(BAT2));
 
 	
+
 	for ( int i = 0; i < (int)enemy.size(); i++ ) {
-		enemy[i].spawn(CPoint(-300 + 60 * i, -400 + 80 * i));
+		enemy[i].spawn(CPoint(-300 + 30 * i/10, -400 + 40 * i%10));
 	}
 
-	Pickup::load_xp(xp_gem, 10);
+	Pickup::load_xp(xp_gem, 100);
 }
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -119,15 +120,19 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		vector <VSObject*> result;
 		QT.query(result, (VSObject*)(&enemy[i]));
 		for (VSObject* obj : result) {
-			enemy[i].resolve_collide(*((Enemy*)obj));
+			enemy[i].append_collide(*((Enemy*)obj), 0.75, 0.5);
 		}
-		if ((!enemy[i].is_dead()) && (enemy[i].is_enable()) && is_overlapped(enemy[i], player)) {
-			enemy[i].resolve_collide(player);
+		enemy[i].update_collide();
+		if (enemy[i].is_collide_with(player)) {
+			enemy[i].append_collide(player, 1, 0.5);
+			enemy[i].update_collide();
 			player.hurt(enemy[i].get_power());
+			/*
 			if (enemy[i].hurt(1)) {
 				//when the enemy die from this damage
 				xp_gem[i].spawn_xp(enemy[i].get_pos(), enemy[i].get_xp_value());
 			}
+			*/
 		}
 	}
 	QT.clear();

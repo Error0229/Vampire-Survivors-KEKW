@@ -6,6 +6,7 @@
 
 VSObject::VSObject()
 {
+	_collision = CPoint(0, 0);
 	_is_mirror = 0;
 	_speed = 0;
 }
@@ -84,20 +85,19 @@ void VSObject::update_pos()
 	int dy = VSOM(this->_speed * ( this->_target.y - this->_position.y ) / dis);
 	this->_position.x += dx + ( dx > 0 );
 	this->_position.y += dy + ( dy > 0 );
-
 }
 CPoint VSObject::get_pos()
 {
 	return this->_position;
 }
-bool is_overlapped(VSObject& obj1, VSObject& obj2)
+bool is_overlapped(VSObject& obj1, VSObject& obj2, double overlap_bound)
 {
 	int dx = abs(obj1._position.x - obj2._position.x);
 	int dy = abs(obj1._position.y - obj2._position.y);
 	return 
 		(
-			dx < ((int)(obj1._skin.Width() + obj2._skin.Width()) >> 1) &&
-			dy < ((int)(obj1._skin.Height() + obj2._skin.Height()) >> 1)
+			dx < ((int)((obj1.get_width() + obj2.get_width()) >> 1) * overlap_bound) &&
+			dy < ((int)((obj1.get_height() + obj2.get_height()) >> 1) * overlap_bound)
 		);
 }
 int VSObject::get_height()
@@ -123,24 +123,34 @@ int VSObject::get_direct()
 	return this->_default_direct;
 }
 
-void VSObject::resolve_collide(VSObject& other) {
-	//when this object collide with other, move this to the extension of the vec
-	if (_position.x == other._position.x && _position.y == other._position.y)
+void VSObject::append_collide(VSObject& other, double overlap_bound, double factor) {
+	// compute what will happen when this obj collide with other, add the result to variable _collision
+	// after many tests, i think constant factor is good enough
+	// the greater factor is, the farer this obj get push
+	if ((_position == other._position) || !is_overlapped(*this, other, overlap_bound))
 		return;
-	//the dx, dy version is integer-optimize, but it works horribly
-	double ratio;
-	//int dx = _position.x - other._position.x;
-	//int dy = _position.y - other._position.y;
-	if (abs(_position.x - other._position.x) > abs(_position.y - other._position.y)) {
-		ratio = (double)((other.get_width() >> 1) + (get_width() >> 1) - abs(_position.x - other._position.x)) / (double)abs(_position.x - other._position.x);
-		//dx *= ((other.get_width() >> 1) + (get_width() >> 1) - abs(_position.x - other._position.x)) / abs(_position.x - other._position.x);
+	double raw_ratio;
+	double dx = (double)abs(_position.x - other._position.x);
+	double dy = (double)abs(_position.y - other._position.y);
+	if (dx > dy) {
+		double w = (double)((other.get_width() >> 1) + (get_width() >> 1)) * overlap_bound;
+		raw_ratio = (w - dx) / dx;
 	}
 	else {
-		ratio = (double)((other.get_height() >> 1) + (get_height() >> 1) - abs(_position.y - other._position.y)) / (double)abs(_position.y - other._position.y);
-		//dy *= ((other.get_height() >> 1) + (get_height() >> 1) - abs(_position.y - other._position.y)) / abs(_position.y - other._position.y);
+		double h = (double)((other.get_height() >> 1) + (get_height() >> 1)) * overlap_bound;
+		raw_ratio = (h - dy) / dy;
 	}
-	set_pos(_position.x + (int)((_position.x - other._position.x) * ratio), _position.y + (int)((_position.y - other._position.y) * ratio));
-	//set_pos(_position.x + dx, _position.y + dy);
+	_collision.x += (int)((_position.x - other._position.x) * raw_ratio * factor);
+	_collision.y += (int)((_position.y - other._position.y) * raw_ratio * factor);
 }
+
+void VSObject::update_collide()
+{
+	// apply the collision to _position
+	// maight integrated into update_pos in the future if we need the real vector implentment
+	this->_position += _collision;
+	_collision = (0, 0);
+}
+
 int VSObject::player_dx = 400;
 int VSObject::player_dy = 300;
