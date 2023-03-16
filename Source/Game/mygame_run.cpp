@@ -31,6 +31,9 @@ void CGameStateRun::OnBeginState()
 void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 {
 	Weapon::load_weapon_stats();
+	Pickup::load_template_pickup();
+	Enemy::load_template_enemies();
+
 	player.load_skin({ "resources/character/Dog_01.bmp", "resources/character/Dog_02.bmp" ,"resources/character/Dog_03.bmp" ,"resources/character/Dog_04.bmp" ,"resources/character/Dog_05.bmp" });
 	player.set_pos(0, 0);
 	player.set_speed(300);
@@ -44,17 +47,13 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	QT = QuadTree(-Player::player_dx, -Player::player_dy, 800, 600, 5, 10, 0);
 	QT.clear();
 
-	Enemy::load_templete_enemies();
-	for (int i = 0; i < 100; i++)
-		enemy.push_back(Enemy::get_templete_enemy(BAT2));
-
-	
-
+	for (int i = 0; i < 100; i++) {
+		enemy.push_back(Enemy::get_template_enemy(BAT2));
+		xp.push_back(Pickup::get_template_pickup(XP));
+	}
 	for ( int i = 0; i < (int)enemy.size(); i++ ) {
 		enemy[i].spawn(CPoint(-300 + 30 * i/10, -400 + 40 * i%10));
 	}
-
-	Pickup::load_xp(xp_gem, 100);
 }
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -63,7 +62,7 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
   player.level_up_passive(0);
 	for (int i = 0; i < (int)enemy.size();i++) {
 		if (enemy[i].hurt(1000000)) {
-			xp_gem[i].spawn_xp(enemy[i].get_pos(), enemy[i].get_xp_value());
+			xp[i].spawn_xp(enemy[i].get_pos(), enemy[i].get_xp_value());
 		}
 
 	}
@@ -127,23 +126,22 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			enemy[i].append_collide(player, 1, 0.5);
 			enemy[i].update_collide();
 			player.hurt(enemy[i].get_power());
-			/*
 			if (enemy[i].hurt(1)) {
 				//when the enemy die from this damage
-				xp_gem[i].spawn_xp(enemy[i].get_pos(), enemy[i].get_xp_value());
+				xp[i].spawn_xp(enemy[i].get_pos(), enemy[i].get_xp_value());
 			}
-			*/
 		}
 	}
 	QT.clear();
 	// suck xp
-	for (auto& i : xp_gem) {
+	for (auto& i : xp) {
 		if (i.is_enable() && distance(player, i) < player.get_pickup_range()) {
 			i.set_speed(1000);
 			i.update_pos(player.get_pos());
 			if (is_overlapped(player, i)) {
-				i.set_enable(false);
-				player.pick_up_xp(i.get_xp_value());
+				i.despawn();
+				if (player.pick_up_xp(i.get_xp_value()))
+					TRACE("AAAAAAAAAAAAAAAAAAAAA\n");
 			}
 		}
 	}
@@ -157,6 +155,6 @@ void CGameStateRun::OnShow()
 	for ( int i = 0; i < (int)enemy.size(); i++ ) {
 		enemy[ i ].show_skin();
 	}
-	for (auto &i:xp_gem)
+	for (auto &i:xp)
 		i.show_skin();
 }

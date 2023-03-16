@@ -145,12 +145,14 @@ void Player::show_proj_skin() {
 		w->show_proj();
 	}
 }
-void Player::pick_up_xp(int xp_value)
+bool Player::pick_up_xp(int xp_value)
 {
 	_exp += xp_value;
 	if (_exp >= _max_exp) {
-		//leveling up
+		_exp = 0;
+		return true;
 	}
+	return false;
 }
 int Player::get_pickup_range()
 {

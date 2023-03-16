@@ -13,7 +13,7 @@ public:
 	void hurt(int damage);
 	void show_skin(double factor = 1.0);
 	void load_bleed();
-	void pick_up_xp(int);
+	bool pick_up_xp(int);
 	int get_pickup_range();
 private:
 	VSObject _bleed_animation;
