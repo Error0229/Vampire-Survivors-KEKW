@@ -15,6 +15,13 @@
 			AfxDebugBreak();												\
 		}
 enum direction { UP, DOWN, LEFT, RIGHT };
+enum VSObject_types {
+	PLAYER,
+	ENEMY,
+	PROJECTILE,
+	PICKUP,
+	WALL
+};
 #define BLACK (RGB(0,0,0))
 #define WHITE (RGB(255,255,255))
 class VSObject
@@ -41,17 +48,20 @@ public:
 	int get_direct();
 	int get_height();
 	int get_width();
-	void resolve_collide(VSObject&);
+	void append_collide(VSObject&, double overlap_bound, double factor);
+	void update_collide();
 
 	static int player_dx;
 	static int player_dy; // every time player move should update these
-	friend bool is_overlapped(VSObject&, VSObject&);
+	friend bool is_overlapped(VSObject&, VSObject&, double overlap_bound=1);
 	friend int distance(VSObject&, VSObject&);
 	friend int distance(CPoint&, CPoint&);
+	friend class QuadTree; // Friend :)
 protected:
 	game_framework::CMovingBitmap _skin;
 	CPoint _position;
 	CPoint _target;
+	CPoint _collision;
 	bool _is_mirror = 0;
 	int _direct, _default_direct=LEFT;
 	int _speed=0;

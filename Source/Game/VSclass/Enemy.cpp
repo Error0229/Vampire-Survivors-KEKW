@@ -77,18 +77,18 @@ bool Enemy::hurt(int damage)
 	return false;
 }
 
-bool Enemy::is_collide_with(VSObject& obj)
+bool Enemy::is_collide_with(VSObject& obj, double overlap_bound)
 {
 	if (is_dead() || (!_is_enable))
 		return false;
-	return is_overlapped(*this, obj);
+	return is_overlapped(*this, obj, overlap_bound);
 }
 
-bool Enemy::is_collide_with(Enemy& obj)
+bool Enemy::is_collide_with(Enemy& obj, double overlap_bound)
 {
 	if (is_dead() || (!_is_enable) || obj.is_dead() || (!obj._is_enable))
 		return false;
-	return is_overlapped(*this, obj);
+	return is_overlapped(*this, obj, overlap_bound);
 }
 
 void Enemy::spawn(CPoint pos, int move_animation_delay, int death_animation_delay, int player_lvl)
