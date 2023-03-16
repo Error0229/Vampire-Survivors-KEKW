@@ -44,14 +44,14 @@ void Player::hurt(int damage) {
 		_hp = 0;
 	}
 }
-void Player::acquire_weapon(Weapon* weapon) {
+void Player::acquire_weapon(shared_ptr<Weapon> weapon) {
 	_weapons.push_back(weapon);
 }
-void Player::acquire_passive(Passive* passive) {
-	_passives.push_back(passive);
+void Player::acquire_passive(shared_ptr<Passive> passive) {
 	update_passive(passive);
+	_passives.push_back(move(passive));
 }
-void Player::update_passive(Passive* p) {
+void Player::update_passive(shared_ptr<Passive> p) {
 	int effect = p->get_effect();
 	switch (p->get_type()) {
 	case POWER:

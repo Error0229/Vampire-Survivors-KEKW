@@ -1,5 +1,6 @@
 #pragma once 
 #include "Projectile.h"
+#include <memory>
 enum weapon_names {
 	WHIP = 0, Magic_Wand, Knife, Axe, Cross, King_Bible,
 	Fire_Wand, Garlic, Santa_water, Runetracer, Lightning_Ring,
@@ -27,10 +28,10 @@ public:
 	void update_proj(CPoint, int, int, int);
 	void upgrade();
 	static void load_weapon_stats();
-	static map<int, Weapon*> _base_weapon; //name, stats
+	static map<int, shared_ptr<Weapon>> _base_weapon; //name, stats
 protected:
-	Projectile* _base_proj;
-	set<Projectile*> _proj_set;
+	shared_ptr<Projectile> _base_proj;
+	set< shared_ptr <Projectile> > _proj_set;
 	string _name;
 	int _type, _level, _max_level, _damage, _speed, _rarity,   
 		_amount, _duration, _pierce, _cooldown, _proj_interval,

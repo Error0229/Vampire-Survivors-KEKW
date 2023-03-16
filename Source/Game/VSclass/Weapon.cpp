@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "../../Library/gameutil.h"
 #include "VSObject.h"
 #include "Projectile.h"
@@ -16,7 +16,7 @@ Weapon::~Weapon()
 }
 Weapon::Weapon(int type, char* skin, vector<char*> proj, vector<int> stats) {
 	this->load_skin(skin);
-	this->_base_proj = new Projectile(proj, BLACK);
+	this->_base_proj = make_shared<Projectile>(proj, BLACK);
 	this->_type = type;
 	_level = stats[ 0 ], _max_level = stats[ 1 ], _damage = stats[ 2 ],
 	_speed = stats[ 3 ], _area = (double)stats[ 4 ], _rarity = stats[ 5 ], _amount = stats[ 6 ],
@@ -43,7 +43,7 @@ Weapon::Weapon(int type, char* skin, vector<char*> proj, vector<int> stats) {
 	}
 }
 void Weapon::update_proj(CPoint player_pos, int player_direction, int player_w, int player_h) {
-	for ( Projectile* proj : _proj_set ) {
+	for ( const shared_ptr<Projectile>& proj : _proj_set ) {
 		switch (this->_type){
 		case WHIP:
 			for ( int i = 0; i < this->_amount; i++ ) {
@@ -60,7 +60,7 @@ void Weapon::update_proj(CPoint player_pos, int player_direction, int player_w, 
 	}
 }
 void Weapon::show_proj() {
-	for ( auto& proj : _proj_set ) {
+	for (const auto& proj : _proj_set ) {
 		proj ->show_skin();
 	}
 }
@@ -120,9 +120,9 @@ void Weapon::load_weapon_stats() {
 		while ( getline(ss, token, ',') ) {
 			stats.push_back(stoi(token));
 		}
-		Weapon* w = new Weapon(type, const_cast<char*>(skin_file.c_str()), proj_vec, stats);
+		shared_ptr<Weapon> w = make_shared<Weapon>(type, const_cast<char*>(skin_file.c_str()), proj_vec, stats);
 		for ( int i = 0; i < w->_amount; i++ ) {
-			Projectile* p = new Projectile(proj_vec, BLACK);
+			shared_ptr<Projectile> p(make_shared<Projectile>(proj_vec, BLACK));
 			switch ( w->_type ) {
 			case WHIP:
 				p->set_pos(0, 0);
@@ -137,4 +137,4 @@ void Weapon::load_weapon_stats() {
 		Weapon::_base_weapon[ type ] = w;
 	}
 }
-map <int, Weapon*> Weapon::_base_weapon;
+map <int, shared_ptr<Weapon>> Weapon::_base_weapon;

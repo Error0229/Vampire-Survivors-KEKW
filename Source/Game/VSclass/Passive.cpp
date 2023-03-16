@@ -241,7 +241,7 @@ int Passive::get_type()
 }
 int Passive::get_effect()
 {
-	return _effect_by_level[_level] - _effect_by_level[_level - 1];
+	return (_effect_by_level[_level] - _effect_by_level[_level - 1]);
 }
 int Passive::get_alt_effect()
 {
