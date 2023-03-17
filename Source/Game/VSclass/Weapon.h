@@ -28,10 +28,12 @@ public:
 	void update_proj(CPoint, int, int, int);
 	void upgrade();
 	static void load_weapon_stats();
-	static map<int, shared_ptr<Weapon>> _base_weapon; //name, stats
+	static map<int, Weapon> _base_weapon; //name, stats
+	int obj_type = WEAPON;
 protected:
-	shared_ptr<Projectile> _base_proj;
-	set< shared_ptr <Projectile> > _proj_set;
+	Projectile _base_proj;
+	deque<Projectile> _proj_q;
+	deque<Projectile> _unused_proj_q;
 	string _name;
 	int _type, _level, _max_level, _damage, _speed, _rarity,   
 		_amount, _duration, _pierce, _cooldown, _proj_interval,

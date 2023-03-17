@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "Enemy.h"
 class Projectile : public VSObject
 {
 public:
@@ -13,7 +14,8 @@ public:
 		this->_order = rhs._order;
 		return *this;
 	}
-	void 💥_with_enemy(VSObject* enemy);
+	void collide_with_enemy(Enemy& ,int damage, int duration);
+	int obj_type = PROJECTILE;
 
 	static int order;
 protected:

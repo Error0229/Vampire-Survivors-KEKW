@@ -38,7 +38,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	player.set_animation(150, false);
 	player.load_bleed();
 	player.acquire_weapon(Weapon::_base_weapon[0]);
-	player.acquire_passive(make_shared<Passive>(0));
+	player.acquire_passive(Passive(0));
 	map.load_map({ "resources/map/dummy1.bmp" });
 	map.set_pos(0, 0);
 	QT = QuadTree(-Player::player_dx, -Player::player_dy, 800, 600, 5, 10, 0);
@@ -106,6 +106,9 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 	player.update_pos(mouse_pos);
 	player.update_proj_pos();
 	QT.set_range(-Player::player_dx, -Player::player_dy, 800, 600);
+	for (auto& weapon : player.get_weapon_all()) {
+		QT.insert((VSObject*)(&weapon));
+	}
 	for (Enemy& i_enemy : enemy) {
 		if (!i_enemy.is_dead())
 			QT.insert((VSObject*)(&i_enemy));

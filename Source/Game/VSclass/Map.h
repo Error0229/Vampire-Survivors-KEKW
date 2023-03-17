@@ -8,6 +8,7 @@ public:
 	void show_map();
 	void set_map_center(CPoint);
 	void map_padding(CPoint);
+	int obj_type = MAP;
 private:
 	bool _show_enable = false;
 	CPoint _map_center;

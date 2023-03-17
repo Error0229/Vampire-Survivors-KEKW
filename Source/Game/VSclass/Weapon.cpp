@@ -16,7 +16,7 @@ Weapon::~Weapon()
 }
 Weapon::Weapon(int type, char* skin, vector<char*> proj, vector<int> stats) {
 	this->load_skin(skin);
-	this->_base_proj = make_shared<Projectile>(proj, BLACK);
+	this->_base_proj = Projectile(proj, BLACK);
 	this->_type = type;
 	_level = stats[ 0 ], _max_level = stats[ 1 ], _damage = stats[ 2 ],
 	_speed = stats[ 3 ], _area = (double)stats[ 4 ], _rarity = stats[ 5 ], _amount = stats[ 6 ],
@@ -43,16 +43,16 @@ Weapon::Weapon(int type, char* skin, vector<char*> proj, vector<int> stats) {
 	}
 }
 void Weapon::update_proj(CPoint player_pos, int player_direction, int player_w, int player_h) {
-	for ( const shared_ptr<Projectile>& proj : _proj_set ) {
+	for (Projectile &proj : _proj_q ) {
 		switch (this->_type){
 		case WHIP:
 			for ( int i = 0; i < this->_amount; i++ ) {
-				proj->set_is_mirror( ( player_direction != proj->get_direct() ));
+				proj.set_is_mirror( ( player_direction != proj.get_direct() ));
 				if (( player_direction == RIGHT  && !(i&1) ) || ( player_direction == LEFT && ( i & 1 ) ) ) {
-					proj->set_pos({ player_pos.x + (proj->get_width() >> 1) - (player_w >> 1) , player_pos.y - ( ( i * player_h ) >> 2 )});
+					proj.set_pos({ player_pos.x + (proj.get_width() >> 1) - (player_w >> 1) , player_pos.y - ( ( i * player_h ) >> 2 )});
 				}
 				else {
-					proj->set_pos({ player_pos.x - ( proj->get_width() >> 1 ) + ( player_w >> 1 ) , player_pos.y - ( ( i * player_h ) >> 2 ) });
+					proj.set_pos({ player_pos.x - ( proj.get_width() >> 1 ) + ( player_w >> 1 ) , player_pos.y - ( ( i * player_h ) >> 2 ) });
 				}
 			}
 			break;
@@ -60,8 +60,8 @@ void Weapon::update_proj(CPoint player_pos, int player_direction, int player_w, 
 	}
 }
 void Weapon::show_proj() {
-	for (const auto& proj : _proj_set ) {
-		proj ->show_skin();
+	for (Projectile& proj : _proj_q ) {
+		proj.show_skin();
 	}
 }
 void Weapon::upgrade()
@@ -120,21 +120,21 @@ void Weapon::load_weapon_stats() {
 		while ( getline(ss, token, ',') ) {
 			stats.push_back(stoi(token));
 		}
-		shared_ptr<Weapon> w = make_shared<Weapon>(type, const_cast<char*>(skin_file.c_str()), proj_vec, stats);
-		for ( int i = 0; i < w->_amount; i++ ) {
-			shared_ptr<Projectile> p(make_shared<Projectile>(proj_vec, BLACK));
-			switch ( w->_type ) {
+		Weapon w = Weapon(type, const_cast<char*>(skin_file.c_str()), proj_vec, stats);
+		for ( int i = 0; i < w._amount; i++ ) {
+			Projectile p(proj_vec, BLACK);
+			switch ( w._type ) {
 			case WHIP:
-				p->set_pos(0, 0);
-				p->set_default_direct(RIGHT);
-				p->set_animation(w->_proj_interval << 1, false, w->_cooldown);
-				p->enable_animation();
+				p.set_pos(0, 0);
+				p.set_default_direct(RIGHT);
+				p.set_animation(w._proj_interval << 1, false, w._cooldown);
+				p.enable_animation();
 				break;
 
 			}
-			w->_proj_set.insert(p);
+			w._proj_q.emplace_back(p);
 		}
 		Weapon::_base_weapon[ type ] = w;
 	}
 }
-map <int, shared_ptr<Weapon>> Weapon::_base_weapon;
+map <int, Weapon> Weapon::_base_weapon;

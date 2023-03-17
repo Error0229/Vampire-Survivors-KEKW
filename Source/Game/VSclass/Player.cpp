@@ -44,16 +44,19 @@ void Player::hurt(int damage) {
 		_hp = 0;
 	}
 }
-void Player::acquire_weapon(shared_ptr<Weapon> weapon) {
+void Player::acquire_weapon(Weapon& weapon) {
 	_weapons.push_back(weapon);
 }
-void Player::acquire_passive(shared_ptr<Passive> passive) {
-	update_passive(passive);
-	_passives.push_back(move(passive));
+vector <Weapon>& Player::get_weapon_all() {
+	return _weapons;
 }
-void Player::update_passive(shared_ptr<Passive> p) {
-	int effect = p->get_effect();
-	switch (p->get_type()) {
+void Player::acquire_passive(Passive& passive) {
+	update_passive(passive);
+	_passives.push_back(passive);
+}
+void Player::update_passive(Passive& p) {
+	int effect = p.get_effect();
+	switch (p.get_type()) {
 	case POWER:
 		_might += effect;
 		break;
@@ -111,13 +114,13 @@ void Player::update_passive(shared_ptr<Passive> p) {
 		break;
 	case pLEFT:
 		_max_health += effect;
-		_recovery += p->get_alt_effect();
+		_recovery += p.get_alt_effect();
 		break;
 	case pRIGHT:
 		_curse += effect;
 		break;
 	case PANDORA:
-		if (p->is_max_level()) {
+		if (p.is_max_level()) {
 			_curse += effect;
 		}
 		else {
@@ -131,18 +134,18 @@ void Player::update_passive(shared_ptr<Passive> p) {
 	
 }
 void Player::level_up_passive(int index) {
-	_passives[index]->level_up();
+	_passives[index].level_up();
 	update_passive(_passives[index]);
 }
 
 void Player::update_proj_pos() {
 	for ( auto& w : _weapons ) {
-		w->update_proj(_position, _direct, this->get_width(), this->get_width());
+		w.update_proj(_position, _direct, this->get_width(), this->get_width());
 	}
 }
 void Player::show_proj_skin() {
 	for ( auto& w : _weapons ) {
-		w->show_proj();
+		w.show_proj();
 	}
 }
 void Player::pick_up_xp(int xp_value)

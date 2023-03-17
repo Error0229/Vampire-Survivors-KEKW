@@ -124,7 +124,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <AdditionalIncludeDirectories>$(ProjectDir)Source</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -174,7 +174,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -223,7 +223,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -249,7 +249,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>

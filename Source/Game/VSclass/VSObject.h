@@ -16,11 +16,15 @@
 		}
 enum direction { UP, DOWN, LEFT, RIGHT };
 enum VSObject_types {
+	VSOBJECT = 499,
 	PLAYER,
+	PASSIVE,
 	ENEMY,
+	WEAPON,
 	PROJECTILE,
 	PICKUP,
-	WALL
+	WALL,
+	MAP
 };
 #define BLACK (RGB(0,0,0))
 #define WHITE (RGB(255,255,255))
@@ -50,13 +54,14 @@ public:
 	int get_width();
 	void append_collide(VSObject&, double overlap_bound, double factor);
 	void update_collide();
-
+	void is_collide_with(VSObject* other);
 	static int player_dx;
 	static int player_dy; // every time player move should update these
 	friend bool is_overlapped(VSObject&, VSObject&, double overlap_bound=1);
 	friend int distance(VSObject&, VSObject&);
 	friend int distance(CPoint&, CPoint&);
 	friend class QuadTree; // Friend :)
+	int obj_type = VSOBJECT;
 protected:
 	game_framework::CMovingBitmap _skin;
 	CPoint _position;
