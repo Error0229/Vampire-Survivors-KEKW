@@ -14,6 +14,7 @@ public:
 	void show_skin(double factor = 1.0);
 	void load_bleed();
 	bool pick_up_xp(int);
+	bool apply_level_up();
 	int get_pickup_range();
 private:
 	VSObject _bleed_animation;

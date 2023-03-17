@@ -94,6 +94,7 @@ namespace game_framework {
 	protected:
 		void OnMove();									// 移動遊戲元素
 		void OnShow();									// 顯示這個狀態的遊戲畫面
+		void update_mouse_pos();
 		void level_up_event();
 		CPoint mouse_pos;								// 滑鼠的座標
 		Map map;
@@ -101,6 +102,7 @@ namespace game_framework {
 		vector<Enemy> enemy;
 		vector<Pickup> xp;
 		QuadTree QT;
+		int _gamerun_status, _next_status;
 	};
 
 	/////////////////////////////////////////////////////////////////////////////
