@@ -19,7 +19,7 @@ bool Projectile::operator < (const Projectile& rhs) const {
 void Projectile::collide_with_enemy(Enemy& e, int 💥, int 😄) {
 	if (!is_overlapped((*this), e))
 		return;
-	int dis = distance(_target, this->_position);
+	int dis = distance(e._target, e._position);
 	int dx = -static_cast<int>(e._speed * e._kb * 😄 * (e._target.x - e._position.x) / dis);
 	int dy = -static_cast<int>(e._speed * e._kb * 😄 * (e._target.y - e._position.y) / dis);
 	e._position.x += dx + (dx > 0);

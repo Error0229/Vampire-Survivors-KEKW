@@ -106,12 +106,26 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 	player.update_pos(mouse_pos);
 	player.update_proj_pos();
 	QT.set_range(-Player::player_dx, -Player::player_dy, 800, 600);
+	vector <VSObject*> result = {};
 	for (auto& weapon : player.get_weapon_all()) {
-		QT.insert((VSObject*)(&weapon));
+		for (Projectile& proj : weapon.get_all_proj()) {
+			QT.insert((VSObject*)(&proj));
+		}
 	}
 	for (Enemy& i_enemy : enemy) {
 		if (!i_enemy.is_dead())
 			QT.insert((VSObject*)(&i_enemy));
+	}
+	for (auto& weapon : player.get_weapon_all()) {
+		for (Projectile& proj : weapon.get_all_proj()) {
+			result = {};
+			QT.query(result, (VSObject*)(&proj));
+			for (VSObject* obj : result) {
+				if (obj->obj_type == ENEMY) {
+					proj.collide_with_enemy(*((Enemy*)obj), weapon.get_damage(), weapon.get_duration());
+				}
+			}
+		}
 	}
 	for (int i = 0; i < (int)enemy.size(); i++) {
 		enemy[i].update_pos(player.get_pos());
@@ -120,7 +134,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 				enemy[i].resolve_collide(enemy[ j ]);
 			}
 		}*/
-		vector <VSObject*> result;
+		result = {};
 		QT.query(result, (VSObject*)(&enemy[i]));
 		for (VSObject* obj : result) {
 			enemy[i].append_collide(*((Enemy*)obj), 0.75, 0.5);
@@ -138,6 +152,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			*/
 		}
 	}
+
 	QT.clear();
 	// suck xp
 	for (auto& i : xp_gem) {

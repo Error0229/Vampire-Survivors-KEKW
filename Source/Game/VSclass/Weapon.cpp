@@ -64,6 +64,9 @@ void Weapon::show_proj() {
 		proj.show_skin();
 	}
 }
+deque<Projectile>& Weapon::get_all_proj() {
+	return _proj_q;
+}
 void Weapon::upgrade()
 {
 	_level++;
@@ -136,5 +139,11 @@ void Weapon::load_weapon_stats() {
 		}
 		Weapon::_base_weapon[ type ] = w;
 	}
+}
+int Weapon::get_damage() {
+	return _damage;
+}
+int Weapon::get_duration() {
+	return _duration;
 }
 map <int, Weapon> Weapon::_base_weapon;

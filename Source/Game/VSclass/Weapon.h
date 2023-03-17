@@ -27,9 +27,12 @@ public:
 	void show_proj();
 	void update_proj(CPoint, int, int, int);
 	void upgrade();
+	deque<Projectile>& get_all_proj();
 	static void load_weapon_stats();
 	static map<int, Weapon> _base_weapon; //name, stats
 	int obj_type = WEAPON;
+	int get_damage();
+	int get_duration();
 protected:
 	Projectile _base_proj;
 	deque<Projectile> _proj_q;
