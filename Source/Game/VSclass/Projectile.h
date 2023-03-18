@@ -15,7 +15,6 @@ public:
 		return *this;
 	}
 	void collide_with_enemy(Enemy& ,int damage, int duration);
-	int obj_type = PROJECTILE;
 
 	static int order;
 protected:

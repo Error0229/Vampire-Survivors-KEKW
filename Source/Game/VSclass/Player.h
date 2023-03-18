@@ -16,7 +16,6 @@ public:
 	void load_bleed();
 	void pick_up_xp(int);
 	int get_pickup_range();
-	int obj_type = PLAYER;
 private:
 	VSObject _bleed_animation;
 	vector<Weapon> _weapons;

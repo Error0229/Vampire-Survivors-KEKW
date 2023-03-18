@@ -10,6 +10,7 @@ using namespace game_framework;
 
 Weapon::Weapon()
 {
+	obj_type = WEAPON;
 }
 Weapon::~Weapon()
 {

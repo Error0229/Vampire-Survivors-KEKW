@@ -30,7 +30,6 @@ public:
 	deque<Projectile>& get_all_proj();
 	static void load_weapon_stats();
 	static map<int, Weapon> _base_weapon; //name, stats
-	int obj_type = WEAPON;
 	int get_damage();
 	int get_duration();
 protected:

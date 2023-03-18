@@ -4,6 +4,7 @@
 #include "Passive.h"
 Passive::Passive()
 {
+	obj_type = PASSIVE;
 }
 Passive::Passive(int type) {
 	_type = type;
