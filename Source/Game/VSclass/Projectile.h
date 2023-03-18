@@ -1,4 +1,5 @@
-#pragma once
+﻿#pragma once
+#include "Enemy.h"
 class Projectile : public VSObject
 {
 public:
@@ -7,6 +8,14 @@ public:
 	~Projectile();
 	void set_order(int);
 	bool operator < (const Projectile& rhs) const;
+	Projectile& operator = (const Projectile& rhs) {
+		this->_position = rhs._position;
+		this->_skin = rhs._skin;
+		this->_order = rhs._order;
+		return *this;
+	}
+	void collide_with_enemy(Enemy& ,int damage, int duration);
+
 	static int order;
 protected:
 	int _order;

@@ -11,6 +11,7 @@ public:
 	void spawn_xp(CPoint, int);
 	void show_skin(double factor = 1.0);
 	bool is_enable();
+	int obj_type = PICKUP;
 private:
 	int _type, _level;
 	int _xp_value;

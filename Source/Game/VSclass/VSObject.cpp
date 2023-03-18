@@ -143,7 +143,9 @@ void VSObject::append_collide(VSObject& other, double overlap_bound, double fact
 	_collision.x += (int)((_position.x - other._position.x) * raw_ratio * factor);
 	_collision.y += (int)((_position.y - other._position.y) * raw_ratio * factor);
 }
+void VSObject::is_collide_with(VSObject* other) {
 
+}
 void VSObject::update_collide()
 {
 	// apply the collision to _position

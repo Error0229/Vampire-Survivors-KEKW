@@ -4,9 +4,10 @@ public:
 	Player();
 	~Player();
 	void update_pos(CPoint) override;
-	void acquire_weapon(Weapon*);
-	void acquire_passive(Passive*);
-	void update_passive(Passive*);
+	void acquire_weapon(Weapon&);
+	void acquire_passive(Passive&);
+	void update_passive(Passive&);
+	vector <Weapon>& get_weapon_all();
 	void update_proj_pos();
 	void level_up_passive(int);
 	void show_proj_skin();
@@ -17,8 +18,8 @@ public:
 	int get_pickup_range();
 private:
 	VSObject _bleed_animation;
-	vector<Weapon*> _weapons;
-	vector<Passive*> _passives;
+	vector<Weapon> _weapons;
+	vector<Passive> _passives;
 	vector<int> stats;
 	int _might, _armor, _max_health, _recovery, _cooldown, _area, 
 		_proj_speed, _duration, _amount, _move_speed, _magnet,

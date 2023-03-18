@@ -8,6 +8,7 @@ constexpr int PADDING_NUM = 4;
 
 Map::Map()
 {
+	obj_type = MAP;
 }
 Map::Map(vector<char*> filename) : VSObject(filename)
 {

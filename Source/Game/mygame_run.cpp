@@ -15,7 +15,7 @@ using namespace game_framework;
 // 這個class為遊戲的遊戲執行物件，主要的遊戲程式都在這裡
 /////////////////////////////////////////////////////////////////////////////
 
-CGameStateRun::CGameStateRun(CGame *g) : CGameState(g)
+CGameStateRun::CGameStateRun(CGame* g) : CGameState(g)
 {
 }
 
@@ -38,7 +38,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	player.set_animation(150, false);
 	player.load_bleed();
 	player.acquire_weapon(Weapon::_base_weapon[0]);
-	player.acquire_passive(new Passive(0));
+	player.acquire_passive(Passive(0));
 	map.load_map({ "resources/map/dummy1.bmp" });
 	map.set_pos(0, 0);
 	QT = QuadTree(-Player::player_dx, -Player::player_dy, 800, 600, 5, 10, 0);
@@ -48,10 +48,10 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	for (int i = 0; i < 100; i++)
 		enemy.push_back(Enemy::get_templete_enemy(BAT2));
 
-	
 
-	for ( int i = 0; i < (int)enemy.size(); i++ ) {
-		enemy[i].spawn(CPoint(-300 + 30 * i/10, -400 + 40 * i%10));
+
+	for (int i = 0; i < (int)enemy.size(); i++) {
+		enemy[i].spawn(CPoint(-300 + 30 * i / 10, -400 + 40 * i % 10));
 	}
 
 	Pickup::load_xp(xp_gem, 100);
@@ -60,8 +60,8 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 
-  player.level_up_passive(0);
-	for (int i = 0; i < (int)enemy.size();i++) {
+	player.level_up_passive(0);
+	for (int i = 0; i < (int)enemy.size(); i++) {
 		if (enemy[i].hurt(1000000)) {
 			xp_gem[i].spawn_xp(enemy[i].get_pos(), enemy[i].get_xp_value());
 		}
@@ -71,7 +71,7 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void CGameStateRun::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	
+
 }
 
 void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
@@ -106,18 +106,35 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 	player.update_pos(mouse_pos);
 	player.update_proj_pos();
 	QT.set_range(-Player::player_dx, -Player::player_dy, 800, 600);
+	vector <VSObject*> result = {};
+	for (auto& weapon : player.get_weapon_all()) {
+		for (Projectile& proj : weapon.get_all_proj()) {
+			QT.insert((VSObject*)(&proj));
+		}
+	}
 	for (Enemy& i_enemy : enemy) {
 		if (!i_enemy.is_dead())
 			QT.insert((VSObject*)(&i_enemy));
 	}
-	for ( int i = 0; i < (int)enemy.size(); i++ ) {
+	for (auto& weapon : player.get_weapon_all()) {
+		for (Projectile& proj : weapon.get_all_proj()) {
+			result = {};
+			QT.query(result, (VSObject*)(&proj));
+			for (VSObject* obj : result) {
+				if (obj->obj_type == ENEMY) {
+					proj.collide_with_enemy(*((Enemy*)obj), weapon.get_damage(), weapon.get_duration());
+				}
+			}
+		}
+	}
+	for (int i = 0; i < (int)enemy.size(); i++) {
 		enemy[i].update_pos(player.get_pos());
 		/*for ( int j = 0; j < (int)enemy.size(); j++ ) {
 			if (i != j && (!enemy[i].is_dead()) && (enemy[i].is_enable()) && is_overlapped(enemy[i], enemy[j])) {
 				enemy[i].resolve_collide(enemy[ j ]);
 			}
 		}*/
-		vector <VSObject*> result;
+		result = {};
 		QT.query(result, (VSObject*)(&enemy[i]));
 		for (VSObject* obj : result) {
 			enemy[i].append_collide(*((Enemy*)obj), 0.75, 0.5);
@@ -135,6 +152,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			*/
 		}
 	}
+
 	QT.clear();
 	// suck xp
 	for (auto& i : xp_gem) {
@@ -154,9 +172,9 @@ void CGameStateRun::OnShow()
 	map.show_map();
 	player.show_skin();
 	player.show_proj_skin();
-	for ( int i = 0; i < (int)enemy.size(); i++ ) {
-		enemy[ i ].show_skin();
+	for (int i = 0; i < (int)enemy.size(); i++) {
+		enemy[i].show_skin();
 	}
-	for (auto &i:xp_gem)
+	for (auto& i : xp_gem)
 		i.show_skin();
 }
