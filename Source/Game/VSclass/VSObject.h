@@ -62,7 +62,7 @@ public:
 	friend bool is_overlapped(VSObject&, VSObject&, double overlap_bound=1);
 	friend int distance(VSObject&, VSObject&);
 	friend int distance(CPoint&, CPoint&);
-	friend class QuadTree; // Friend :)
+	friend class QuadTree; 
 	int obj_type = VSOBJECT;
 protected:
 	game_framework::CMovingBitmap _skin;
@@ -73,6 +73,5 @@ protected:
 	int _direct, _default_direct=LEFT;
 	int _speed=0;
 	double _fx, _fy;
-	double _fspeed;
 };
 

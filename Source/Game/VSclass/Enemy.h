@@ -39,6 +39,7 @@ public:
 	void set_level(int);
 	void set_enable(bool enable=true);
 	void spawn(CPoint pos, int move_animation_delay = 100, int death_animation_delay = 100, int player_lvl=1);
+	void update_pos(CPoint) override;
 	bool is_dead();
 	bool is_enable();
 	int get_xp_value();
@@ -52,11 +53,12 @@ public:
 	friend class Projectile;
 private:
 	// stats
-	time_t _last_time_got_hit;
+	clock_t _last_time_got_hit;
 	int _alt_speed;
 	int _id, _hp, _hp_max, _power, _mspeed, _kb_max;
 	double _kb, _res_f, _xp_value;
-	bool _res_k, _res_d, _hp_scale;
+	bool _res_k, _res_d, _hp_scale, _is_stun = 0;
+	double _stun_speed;
 	int  _level;
 	bool _is_enable; //this name is not good
 	VSObject _death_animation;

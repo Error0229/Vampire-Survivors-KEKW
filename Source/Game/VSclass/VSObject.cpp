@@ -69,7 +69,6 @@ void VSObject::set_speed(double speed) {
 void VSObject::set_speed(int speed)
 {
 	this->_speed = speed;
-	this->_fspeed = (double)speed;
 }
 void VSObject::update_pos(CPoint target)
 {
@@ -93,8 +92,8 @@ void VSObject::update_pos()
 	this->_is_mirror = (_direct != _default_direct);
 	int dx = VSOM(this->_speed * ( this->_target.x - this->_position.x ) / dis);
 	int dy = VSOM(this->_speed * ( this->_target.y - this->_position.y ) / dis);
-	_fx += (_fspeed * (double)(this->_target.x - this->_position.x) / (double)dis / 100) - (double)dx;
-	_fy += (_fspeed * (double)(this->_target.y - this->_position.y) / (double)dis / 100) - (double)dy;
+	_fx += (_speed * (double)(this->_target.x - this->_position.x) / (double)dis / 100) - (double)dx;
+	_fy += (_speed * (double)(this->_target.y - this->_position.y) / (double)dis / 100) - (double)dy;
 	if (abs(_fx) > 1) {
 		dx += (int)_fx;
 		_fx -= (int)_fx;
