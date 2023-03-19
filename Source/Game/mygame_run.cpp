@@ -41,6 +41,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	Enemy::load_template_enemies();
 
 	_gamerun_status = PLAYING;
+	_next_status = PLAYING;
 
 	player.load_skin({ "resources/character/Dog_01.bmp", "resources/character/Dog_02.bmp" ,"resources/character/Dog_03.bmp" ,"resources/character/Dog_04.bmp" ,"resources/character/Dog_05.bmp" });
 	player.set_pos(0, 0);
@@ -62,6 +63,17 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	for ( int i = 0; i < (int)enemy.size(); i++ ) {
 		enemy[i].spawn(CPoint(-300 + 30 * i/10, -400 + 40 * i%10));
 	}
+
+	event_background.load_skin("resources/ui/event_background.bmp", BLACK);
+	level_up_button[0].load_skin("resources/ui/event_button.bmp", BLACK);
+	level_up_button[1].load_skin("resources/ui/event_button.bmp", BLACK);
+	level_up_button[2].load_skin("resources/ui/event_button.bmp", BLACK);
+	level_up_button[3].load_skin("resources/ui/event_button.bmp", BLACK);
+	level_up_choice[0] = -1;
+	level_up_choice[1] = -1;
+	level_up_choice[2] = -1;
+	level_up_choice[3] = -1;
+
 }
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -90,6 +102,27 @@ void CGameStateRun::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
 {
+	switch (_gamerun_status) {
+	case(PLAYING):
+		break;
+	case(LEVEL_UP):
+		for (int i = 0; i < 4; i++) {
+			if (level_up_button[i].is_hover(point)) {
+				level_up_choice[0] = -1;
+				level_up_choice[1] = -1;
+				level_up_choice[2] = -1;
+				level_up_choice[3] = -1;
+				if (player.apply_level_up())
+					_next_status = LEVEL_UP;
+				else
+					_next_status = PLAYING;
+				break;
+			}
+		}
+		break;
+	case(OPEN_CHEST):
+		break;
+	}
 }
 
 void CGameStateRun::OnLButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
@@ -122,7 +155,6 @@ void CGameStateRun::update_mouse_pos()
 void CGameStateRun::OnMove()							// 移動遊戲元素
 {
 	update_mouse_pos();
-	_next_status = PLAYING;
 	vector <VSObject*> result;
 	switch (_gamerun_status) {
 	case(PLAYING):
@@ -188,14 +220,16 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		//--------------------------------------------------------
 		//level up status
 		//--------------------------------------------------------
-		if (player.apply_level_up())
-			_next_status = LEVEL_UP;
-		TRACE("AAAAAAAAAAAAAAAAAAAAAAAAAa\n");
-		Sleep(1000);
+		if (level_up_choice[0] != -1)
+			break;
+		level_up_choice[0] = 1;
+		level_up_choice[1] = 1;
+		level_up_choice[2] = 1;
+		level_up_choice[3] = 1;
 		break;
 	case(OPEN_CHEST):
 		//--------------------------------------------------------
-		// level up status
+		// chest status
 		//--------------------------------------------------------
 		break;
 	}
@@ -203,6 +237,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 }
 void CGameStateRun::OnShow()
 {
+
 	map.map_padding(player.get_pos());
 	map.show_map();
 	player.show_skin();
@@ -210,6 +245,20 @@ void CGameStateRun::OnShow()
 	for (int i = 0; i < (int)enemy.size(); i++) {
 		enemy[i].show_skin();
 	}
-	for (auto &i:xp)
+	for (auto& i : xp)
 		i.show_skin();
+	
+	if (_gamerun_status == LEVEL_UP) {
+		event_background.set_pos(player.get_pos());
+		level_up_button[0].set_pos(player.get_pos() + CPoint(0, -90));
+		level_up_button[1].set_pos(player.get_pos() + CPoint(0, -10));
+		level_up_button[2].set_pos(player.get_pos() + CPoint(0, 70));
+		level_up_button[3].set_pos(player.get_pos() + CPoint(0, 150));
+		event_background.show_skin();
+		for (int i = 0; i < 4; i++) {
+			if (level_up_choice[i]!=-1) {
+				level_up_button[i].show_button();
+			}
+		}
+	}
 }

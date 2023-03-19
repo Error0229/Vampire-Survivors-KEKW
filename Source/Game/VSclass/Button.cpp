@@ -18,6 +18,10 @@ bool Button::is_hover(int mouse_x, int mouse_y)
 		_skin.Top() + _skin.Width()  >= mouse_y
 	);
 }
+bool Button::is_hover(CPoint pos)
+{
+	return is_hover(pos.x, pos.y);
+}
 
 void Button::show_button() 
 {
