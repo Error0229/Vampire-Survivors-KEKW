@@ -17,6 +17,10 @@ public:
 	bool pick_up_xp(int);
 	bool apply_level_up();
 	int get_pickup_range();
+	int weapon_count();
+	int passive_count();
+	Weapon* find_weapon(int);
+	Passive* find_passive(int);
 private:
 	VSObject _bleed_animation;
 	vector<Weapon> _weapons;

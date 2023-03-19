@@ -187,3 +187,25 @@ int Player::get_pickup_range()
 {
 	return _magnet;
 }
+int Player::weapon_count()
+{
+	return _weapons.size();
+}
+int Player::passive_count()
+{
+	return _passives.size();
+}
+Weapon* Player::find_weapon(int type)
+{
+	for(auto &i: _weapons)
+		if (i.get_type() == type)
+			return &i;
+	return nullptr;
+}
+Passive* Player::find_passive(int type)
+{
+	for (auto &i : _passives)
+		if (i.get_type() == type)
+			return &i;
+	return nullptr;
+}

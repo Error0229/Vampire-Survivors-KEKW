@@ -147,4 +147,13 @@ int Weapon::get_damage() {
 int Weapon::get_duration() {
 	return _duration;
 }
+int Weapon::get_rarity() {
+	return _rarity;
+}
+int Weapon::get_type() {
+	return _type;
+}
+bool Weapon::is_max_level() {
+	return _level == _max_level;
+}
 map <int, Weapon> Weapon::_base_weapon;

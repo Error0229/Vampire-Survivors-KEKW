@@ -10,6 +10,7 @@ public:
 	int get_level();
 	bool is_max_level();
 	int get_alt_effect();
+	int get_rarity();
 private:
 	int _level, _stacking;
 	int _type, _rarity,  _max_level;

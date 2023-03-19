@@ -2,6 +2,7 @@
 #include "../Core/Resource.h"
 #include <mmsystem.h>
 #include <ddraw.h>
+#include <random>
 #include "../Library/audio.h"
 #include "../Library/gameutil.h"
 #include "../Library/gamecore.h"
@@ -142,6 +143,52 @@ void CGameStateRun::OnRButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動
 {
 }
 
+int CGameStateRun::draw_level_up(bool has_only)
+{
+	// 0~20: passive
+	// 21~52: Weapon
+	// 53~83: evo
+	if (!has_only && player.weapon_count() >= 6 && player.passive_count() >= 6)
+		return draw_level_up(true);
+	vector<double> weights(53, 0);
+	bool can_draw;
+	for (int i = 0; i < 21; i++) {
+		can_draw = true;
+		for (auto& choice : level_up_choice) {
+			if (i == choice) {
+				can_draw = false;
+				break;
+			}
+		}
+		if (!can_draw)
+			continue;
+		if (has_only) {
+			if(i<21 && (player.find_passive(i)!=nullptr) && (!player.find_passive(i)->is_max_level()))
+				weights[i] = Passive(i).get_rarity();
+			else if(i>20 && (player.find_weapon(i-21) != nullptr) && (!player.find_weapon(i-21)->is_max_level()))
+				weights[i] = Weapon::_base_weapon[i - 21].get_rarity();
+		}
+		else {
+			if (i < 21 && (player.find_passive(i) == nullptr) && (player.passive_count() < 6))
+				weights[i] = Passive(i).get_rarity();
+			else if(i > 20 && (player.find_weapon(i - 21) == nullptr) && (player.weapon_count() < 6))
+				weights[i] = Weapon::_base_weapon[i - 21].get_rarity();
+		}
+		//TRACE(_T("%d:%lf\n"), i, weights[i]);
+	}
+	random_device rd;
+	mt19937 gen(rd());
+	discrete_distribution<> dist(weights.begin(), weights.end());
+	return dist(gen);
+}
+int CGameStateRun::draw_open_chest(bool can_evo)
+{
+	// 0~20: passive
+	// 21~52: Weapon
+	// 53~83: evo
+	return -1; //WIP
+}
+
 void CGameStateRun::update_mouse_pos()
 {
 	CPoint p;
@@ -222,10 +269,10 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		//--------------------------------------------------------
 		if (level_up_choice[0] != -1)
 			break;
-		level_up_choice[0] = 1;
-		level_up_choice[1] = 1;
-		level_up_choice[2] = 1;
-		level_up_choice[3] = 1;
+		level_up_choice[0] = draw_level_up(false);
+		level_up_choice[1] = draw_level_up(false);
+		level_up_choice[2] = draw_level_up(false);
+		level_up_choice[3] = draw_level_up(false);
 		break;
 	case(OPEN_CHEST):
 		//--------------------------------------------------------
