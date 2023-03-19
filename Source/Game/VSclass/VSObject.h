@@ -43,7 +43,9 @@ public:
 	void enable_animation();
 	void set_pos(CPoint);
 	void set_pos(int, int);
+	void set_pos(double, double);
 	void set_speed(int);
+	void set_speed(double);
 	CPoint get_pos();
 	virtual void update_pos(CPoint);
 	virtual void update_pos();
@@ -70,5 +72,7 @@ protected:
 	bool _is_mirror = 0;
 	int _direct, _default_direct=LEFT;
 	int _speed=0;
+	double _fx, _fy;
+	double _fspeed;
 };
 

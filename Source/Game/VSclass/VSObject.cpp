@@ -9,6 +9,8 @@ VSObject::VSObject()
 	_collision = CPoint(0, 0);
 	_is_mirror = 0;
 	_speed = 0;
+	_fx = 0;
+	_fy = 0;
 }
 VSObject::VSObject(vector<char*> filename, COLORREF color) :VSObject()
 {
@@ -57,9 +59,17 @@ void VSObject::set_pos(int x, int y)
 	this->_position.x = x;
 	this->_position.y = y;
 }
+void VSObject::set_pos(double x, double y) {
+	this->_position.x = (int)x;
+	this->_position.y = (int)y;
+}
+void VSObject::set_speed(double speed) {
+	this->_speed = (int)speed;
+}
 void VSObject::set_speed(int speed)
 {
 	this->_speed = speed;
+	this->_fspeed = (double)speed;
 }
 void VSObject::update_pos(CPoint target)
 {
@@ -83,6 +93,16 @@ void VSObject::update_pos()
 	this->_is_mirror = (_direct != _default_direct);
 	int dx = VSOM(this->_speed * ( this->_target.x - this->_position.x ) / dis);
 	int dy = VSOM(this->_speed * ( this->_target.y - this->_position.y ) / dis);
+	_fx += (_fspeed * (double)(this->_target.x - this->_position.x) / (double)dis / 100) - (double)dx;
+	_fy += (_fspeed * (double)(this->_target.y - this->_position.y) / (double)dis / 100) - (double)dy;
+	if (abs(_fx) > 1) {
+		dx += (int)_fx;
+		_fx -= (int)_fx;
+	}
+	if (abs(_fy) > 1) {
+		dy += (int)_fy;
+		_fy -= (int)_fy;
+	}
 	this->_position.x += dx + ( dx > 0 );
 	this->_position.y += dy + ( dy > 0 );
 }

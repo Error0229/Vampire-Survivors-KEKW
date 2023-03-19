@@ -52,6 +52,8 @@ public:
 	friend class Projectile;
 private:
 	// stats
+	time_t _last_time_got_hit;
+	int _alt_speed;
 	int _id, _hp, _hp_max, _power, _mspeed, _kb_max;
 	double _kb, _res_f, _xp_value;
 	bool _res_k, _res_d, _hp_scale;

@@ -8,6 +8,7 @@
 Enemy::Enemy()
 {
 	obj_type = ENEMY;
+	_last_time_got_hit = -1;
 }
 Enemy::~Enemy() 
 {
@@ -174,7 +175,8 @@ Enemy Enemy::load_enemy(int id, char* name, int health, int power, int mspeed, d
 	enemy._is_mirror = false;
 	enemy._position = CPoint(0, 0);
 
-	enemy._speed = 200; //this will change later
+	enemy._speed = 50; //this will change later
+	enemy._fspeed = 50.0;
 	return enemy;
 }
 
