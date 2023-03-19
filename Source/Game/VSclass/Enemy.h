@@ -49,6 +49,7 @@ public:
 	static void load_template_enemies();
 	static Enemy load_enemy(int id, char* name, int hp_max, int power, int mspeed, double kb, int kb_max, double res_f, bool res_k, bool res_d, double xp_value, bool hp_scale);
 	static Enemy get_template_enemy(int id);
+	friend class Projectile;
 private:
 	// stats
 	int _id, _hp, _hp_max, _power, _mspeed, _kb_max;

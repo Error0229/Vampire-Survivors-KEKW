@@ -7,6 +7,7 @@
 #include <sstream>
 Enemy::Enemy()
 {
+	obj_type = ENEMY;
 }
 Enemy::~Enemy() 
 {

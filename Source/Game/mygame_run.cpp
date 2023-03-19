@@ -21,7 +21,7 @@ enum gamerun_status {
 // 這個class為遊戲的遊戲執行物件，主要的遊戲程式都在這裡
 /////////////////////////////////////////////////////////////////////////////
 
-CGameStateRun::CGameStateRun(CGame *g) : CGameState(g)
+CGameStateRun::CGameStateRun(CGame* g) : CGameState(g)
 {
 }
 
@@ -49,7 +49,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	player.set_animation(150, false);
 	player.load_bleed();
 	player.acquire_weapon(Weapon::_base_weapon[0]);
-	player.acquire_passive(new Passive(0));
+	player.acquire_passive(Passive(0));
 	map.load_map({ "resources/map/dummy1.bmp" });
 	map.set_pos(0, 0);
 	QT = QuadTree(-Player::player_dx, -Player::player_dy, 800, 600, 5, 10, 0);
@@ -123,7 +123,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 {
 	update_mouse_pos();
 	_next_status = PLAYING;
-
+	vector <VSObject*> result;
 	switch (_gamerun_status) {
 	case(PLAYING):
 		//--------------------------------------------------------
@@ -131,15 +131,30 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		//--------------------------------------------------------
 		player.update_pos(mouse_pos);
 		player.update_proj_pos();
-
 		QT.set_range(-Player::player_dx, -Player::player_dy, 800, 600);
+		for (auto& weapon : player.get_weapon_all()) {
+			for (Projectile& proj : weapon.get_all_proj()) {
+				QT.insert((VSObject*)(&proj));
+			}
+		}
 		for (Enemy& i_enemy : enemy) {
-			if (!i_enemy.is_dead())
+			if (!i_enemy.is_dead() && i_enemy.is_enable())
 				QT.insert((VSObject*)(&i_enemy));
+		}
+		for (auto& weapon : player.get_weapon_all()) {
+			for (Projectile& proj : weapon.get_all_proj()) {
+				result = {};
+				QT.query(result, (VSObject*)(&proj));
+				for (VSObject* obj : result) {
+					if (obj->obj_type == ENEMY) {
+						proj.collide_with_enemy(*((Enemy*)obj), weapon.get_damage(), weapon.get_duration());
+					}
+				}
+			}
 		}
 		for (int i = 0; i < (int)enemy.size(); i++) {
 			enemy[i].update_pos(player.get_pos());
-			vector <VSObject*> result;
+			result = {};
 			QT.query(result, (VSObject*)(&enemy[i]));
 			for (VSObject* obj : result) {
 				enemy[i].append_collide(*((Enemy*)obj), 0.75, 0.5);
@@ -149,10 +164,10 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 				enemy[i].append_collide(player, 1, 0.5);
 				enemy[i].update_collide();
 				player.hurt(enemy[i].get_power());
-				if (enemy[i].hurt(1)) {
-					//when the enemy die from this damage
-					xp[i].spawn_xp(enemy[i].get_pos(), enemy[i].get_xp_value());
-				}
+				//if (enemy[i].hurt(1)) {
+				//	//when the enemy die from this damage
+				//	xp[i].spawn_xp(enemy[i].get_pos(), enemy[i].get_xp_value());
+				//}
 			}
 		}
 		QT.clear();
@@ -192,8 +207,8 @@ void CGameStateRun::OnShow()
 	map.show_map();
 	player.show_skin();
 	player.show_proj_skin();
-	for ( int i = 0; i < (int)enemy.size(); i++ ) {
-		enemy[ i ].show_skin();
+	for (int i = 0; i < (int)enemy.size(); i++) {
+		enemy[i].show_skin();
 	}
 	for (auto &i:xp)
 		i.show_skin();

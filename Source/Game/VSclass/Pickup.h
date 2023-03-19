@@ -13,6 +13,7 @@ public:
 	void despawn();
 	void show_skin(double factor = 1.0);
 	bool is_enable();
+	int obj_type = PICKUP;
 	static void load_template_pickup();
 	static Pickup get_template_pickup(int type);
 private:
