@@ -36,7 +36,9 @@ public:
 	virtual ~VSObject();
 	void load_skin(vector<char*> filename, COLORREF color= RGB(255,255,255));
 	void load_skin(char* filename, COLORREF color = RGB(255, 255, 255));
+	void load_animation(vector<char*> filename, COLORREF color = RGB(255, 255, 255));
 	virtual void show_skin(double factor = 1.0);
+	virtual void show_animation(double factor = 1.0);
 	void unshow_skin();
 	void set_default_direct(int dir);
 	void set_animation(int delay, bool _once, int cooldown = 0);
@@ -46,6 +48,7 @@ public:
 	void set_pos(double, double);
 	void set_speed(int);
 	void set_speed(double);
+	void select_show_animation(int);
 	CPoint get_pos();
 	virtual void update_pos(CPoint);
 	virtual void update_pos();
@@ -66,6 +69,8 @@ public:
 	int obj_type = VSOBJECT;
 protected:
 	game_framework::CMovingBitmap _skin;
+	vector <game_framework::CMovingBitmap> _animations;
+	int _selector = 0;
 	CPoint _position;
 	CPoint _target;
 	CPoint _collision;

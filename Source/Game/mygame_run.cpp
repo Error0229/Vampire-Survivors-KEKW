@@ -41,7 +41,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	player.acquire_passive(Passive(0));
 	map.load_map({ "resources/map/dummy1.bmp" });
 	map.set_pos(0, 0);
-	QT = QuadTree(-Player::player_dx, -Player::player_dy, 800, 600, 5, 10, 0);
+	QT = QuadTree(-Player::player_dx, -Player::player_dy, (OPEN_AS_FULLSCREEN ? RESOLUTION_X : SIZE_X), (OPEN_AS_FULLSCREEN ? RESOLUTION_Y : SIZE_Y), 6, 10, 0);
 	QT.clear();
 
 	Enemy::load_templete_enemies();
