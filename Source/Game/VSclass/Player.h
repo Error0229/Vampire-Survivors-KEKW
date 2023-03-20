@@ -4,25 +4,31 @@ public:
 	Player();
 	~Player();
 	void update_pos(CPoint) override;
+	void show_skin(double factor = 1.0);
+	void update_proj_pos();
+	void show_proj_skin();
+	
+	//weapon & passive
 	void acquire_weapon(Weapon&);
 	void acquire_passive(Passive&);
-	void update_passive(Passive&);
-	vector <Weapon>& get_weapon_all();
-	void update_proj_pos();
+	void upgrade_passive(Passive&);
 	void level_up_passive(int);
-	void show_proj_skin();
+	void obtain_item(int);
+	
+	//getter
+	int get_level();
+	int get_pickup_range();
+	int get_luck();
+	vector<Weapon>& get_weapons();
+	vector<Passive>& get_passives();
+	int weapon_count();
+	int passive_count();
+	
+	//things
 	void hurt(int damage);
-	void show_skin(double factor = 1.0);
 	void load_bleed();
 	bool pick_up_xp(int);
 	bool apply_level_up();
-	int get_pickup_range();
-	int weapon_count();
-	int passive_count();
-	Weapon* find_weapon(int);
-	Passive* find_passive(int);
-	vector<Weapon> get_weapons();
-	vector<Passive> get_passives();
 private:
 	VSObject _bleed_animation;
 	vector<Weapon> _weapons;

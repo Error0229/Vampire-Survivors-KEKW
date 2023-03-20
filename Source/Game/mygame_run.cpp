@@ -109,6 +109,7 @@ void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的
 	case(LEVEL_UP):
 		for (int i = 0; i < 4; i++) {
 			if (level_up_button[i].is_hover(point)) {
+				player.obtain_item(level_up_choice[i]);
 				level_up_choice[0] = -1;
 				level_up_choice[1] = -1;
 				level_up_choice[2] = -1;
@@ -150,7 +151,7 @@ int CGameStateRun::draw_level_up(bool pull_from_inv)
 	//63~83: passive
 	if (!pull_from_inv && player.weapon_count() >= 6 && player.passive_count() >= 6)
 		return draw_level_up(true);
-	if (player.weapon_count() + player.passive_count() == 1)
+	if (pull_from_inv && player.weapon_count() + player.passive_count() == 1)
 		return draw_level_up(false);
 	vector<double> weights(84, 0);
 	int player_items[84];
@@ -204,6 +205,12 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 {
 	update_mouse_pos();
 	vector <VSObject*> result;
+	//for level-up polling
+	double owned_chance, forth_chance;
+	vector<double> pull_owned, pull_forth;
+	random_device rd;
+	mt19937 gen(rd());
+	discrete_distribution<> dist_own, dist_forth;
 	switch (_gamerun_status) {
 	case(PLAYING):
 		//--------------------------------------------------------
@@ -212,7 +219,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		player.update_pos(mouse_pos);
 		player.update_proj_pos();
 		QT.set_range(-Player::player_dx, -Player::player_dy, 800, 600);
-		for (auto& weapon : player.get_weapon_all()) {
+		for (auto& weapon : player.get_weapons()) {
 			for (Projectile& proj : weapon.get_all_proj()) {
 				QT.insert((VSObject*)(&proj));
 			}
@@ -221,7 +228,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			if (!i_enemy.is_dead() && i_enemy.is_enable())
 				QT.insert((VSObject*)(&i_enemy));
 		}
-		for (auto& weapon : player.get_weapon_all()) {
+		for (auto& weapon : player.get_weapons()) {
 			for (Projectile& proj : weapon.get_all_proj()) {
 				result = {};
 				QT.query(result, (VSObject*)(&proj));
@@ -270,12 +277,23 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		//--------------------------------------------------------
 		if (level_up_choice[0] != -1)
 			break;
+
+		// owned_chance
+		owned_chance = 1 - 0.3 * ((player.get_level() & 1) ? 1 : 2) / (double)player.get_luck() * 100;
+		pull_owned = {((1 - owned_chance > 0) ? 1 - owned_chance : 0), owned_chance };
+		dist_own = discrete_distribution<>(pull_owned.begin(), pull_owned.end());
+		
+		// 4th_chance
+		forth_chance = 1 - (1 / (double)player.get_luck() * 100);
+		pull_forth = { 1 - forth_chance , forth_chance };
+		dist_forth = discrete_distribution<>(pull_forth.begin(), pull_forth.end());
+
 		// poll new level_up choices
-		level_up_choice[0] = draw_level_up(false);
-		level_up_choice[1] = draw_level_up(false);
+		level_up_choice[0] = draw_level_up(dist_own(gen));
+		level_up_choice[1] = draw_level_up(dist_own(gen));
 		level_up_choice[2] = draw_level_up(false);
-		level_up_choice[3] = draw_level_up(false);
-		TRACE(_T("0:%d\t1:%d\t2:%d\t3:%d\t"), level_up_choice[0], level_up_choice[1], level_up_choice[2], level_up_choice[3]);
+		level_up_choice[3] = dist_forth(gen)? draw_level_up(false):-1;
+		TRACE(_T("0:%d\t1:%d\t2:%d\t3:%d\n"), level_up_choice[0], level_up_choice[1], level_up_choice[2], level_up_choice[3]);
 		break;
 	case(OPEN_CHEST):
 		//--------------------------------------------------------

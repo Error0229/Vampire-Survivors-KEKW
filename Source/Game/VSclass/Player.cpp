@@ -9,10 +9,11 @@ Player::Player()
 {
 	obj_type = PLAYER;
 	_magnet = 100;
+	_luck = 100;
+	_speed = 200;
 	_exp = 0;
 	_max_exp = 5;
 	_level = 1;
-	_speed = 200;
 	//for some reason, load skin in constructor will cause the some error
 	//_bleed_animation.load_skin({ "resources/character/Blood1.bmp", "resources/character/Blood2.bmp", "resources/character/Blood3.bmp" });
 	//_bleed_animation.set_animation(50, false);
@@ -52,14 +53,11 @@ void Player::hurt(int damage) {
 void Player::acquire_weapon(Weapon& weapon) {
 	_weapons.push_back(weapon);
 }
-vector <Weapon>& Player::get_weapon_all() {
-	return _weapons;
-}
 void Player::acquire_passive(Passive& passive) {
-	update_passive(passive);
+	upgrade_passive(passive);
 	_passives.push_back(passive);
 }
-void Player::update_passive(Passive& p) {
+void Player::upgrade_passive(Passive& p) {
 	int effect = p.get_effect();
 	switch (p.get_type()) {
 	case POWER:
@@ -135,12 +133,11 @@ void Player::update_passive(Passive& p) {
 			_area += effect;
 		}
 		break;
-	}
-	
+	}	
 }
 void Player::level_up_passive(int index) {
 	_passives[index].level_up();
-	update_passive(_passives[index]);
+	upgrade_passive(_passives[index]);
 }
 
 void Player::update_proj_pos() {
@@ -187,6 +184,14 @@ int Player::get_pickup_range()
 {
 	return _magnet;
 }
+int Player::get_level()
+{
+	return _level;
+}
+int Player::get_luck()
+{
+	return _luck;
+}
 int Player::weapon_count()
 {
 	return _weapons.size();
@@ -195,27 +200,45 @@ int Player::passive_count()
 {
 	return _passives.size();
 }
-Weapon* Player::find_weapon(int type)
-{
-	for(auto &i: _weapons)
-		if (i.get_type() == type)
-			return &i;
-	return nullptr;
-}
-Passive* Player::find_passive(int type)
-{
-	for (auto &i : _passives)
-		if (i.get_type() == type)
-			return &i;
-	return nullptr;
-}
 
-vector<Weapon> Player::get_weapons()
+vector<Weapon>& Player::get_weapons()
 {
 	return _weapons;
 }
 
-vector<Passive> Player::get_passives()
+vector<Passive>& Player::get_passives()
 {
 	return _passives;
+}
+
+void Player::obtain_item(int type)
+{
+	bool is_own = false;
+	if (type < 32) {
+		//weapon
+		for (auto& i : _weapons) {
+			if (i.get_type() == type) {
+				i.upgrade();
+				is_own = true;
+			}
+		}
+		if (!is_own) {
+			acquire_weapon(Weapon::_base_weapon[type]);
+		}
+	}
+	else if (type < 63) {
+		//evo
+	}
+	else {
+		//passive
+		for (auto& i : _passives) {
+			if (i.get_type() == type) {
+				upgrade_passive(i);
+				is_own = true;
+			}
+		}
+		if (!is_own) {
+			acquire_passive(Passive(type));
+		}
+	}
 }
