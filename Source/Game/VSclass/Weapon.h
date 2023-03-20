@@ -2,7 +2,7 @@
 #include "Projectile.h"
 #include <memory>
 enum weapon_names {
-	WHIP = 0, Magic_Wand, Knife, Axe, Cross, King_Bible,
+	WHIP = 0, MAGIC_MISSILE, KNIFE, AXE, CROSS, HOLYBOOK,
 	Fire_Wand, Garlic, Santa_water, Runetracer, Lightning_Ring,
 	Pentagram, Peacechone, Ebony_Wings, Phiera_Der_Tuphello,
 	Eight_The_Sparrow, Gatti_Amari, Song_of_Mana, Shadow_Pinion,
