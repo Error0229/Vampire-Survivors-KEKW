@@ -105,7 +105,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 	mouse_pos.y = p.y - VSObject::player_dy;
 	player.update_pos(mouse_pos);
 	player.update_proj_pos();
-	QT.set_range(-Player::player_dx, -Player::player_dy, 800, 600);
+	QT.set_range(-Player::player_dx, -Player::player_dy, (OPEN_AS_FULLSCREEN ? RESOLUTION_X : SIZE_X), (OPEN_AS_FULLSCREEN ? RESOLUTION_Y : SIZE_Y));
 	vector <VSObject*> result = {};
 	for (auto& weapon : player.get_weapon_all()) {
 		for (Projectile& proj : weapon.get_all_proj()) {

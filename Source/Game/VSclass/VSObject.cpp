@@ -116,8 +116,8 @@ void VSObject::update_pos()
 		dy += static_cast<int>(_fy);
 		_fy -= static_cast<int>(_fy);
 	}
-	this->_position.x += dx + ( dx > 0 );
-	this->_position.y += dy + ( dy > 0 );
+	this->_position.x += dx ;
+	this->_position.y += dy ;
 }
 CPoint VSObject::get_pos()
 {
