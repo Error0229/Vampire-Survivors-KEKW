@@ -3,21 +3,18 @@
 #include <memory>
 enum weapon_names {
 	WHIP = 0, MAGIC_MISSILE, KNIFE, AXE, CROSS, HOLYBOOK,
-	Fire_Wand, Garlic, Santa_water, Runetracer, Lightning_Ring,
-	Pentagram, Peacechone, Ebony_Wings, Phiera_Der_Tuphello,
-	Eight_The_Sparrow, Gatti_Amari, Song_of_Mana, Shadow_Pinion,
-	Clock_Lancet, Laurel, Vento_Sacro, Bone, Cherry_Bomb,
-	Carrello, Celestial_Dusting, La_Robba, Greastest_Jubilee,
-	Bracelet, Candybox, Victory_Sword, Flame_of_Misspell
+	FIREBALL, GARLIC, HOLYWATER, DIAMOND, LIGHTNING,
+	PENTAGRAM, SILF, SILF2, GUNS, GUNS2, GATTI, SONG,
+	TRAPING, LANCET, LAUREL, VENTO, BONE, CHERRY,
+	CART2, FLOWER, LAROBBA, JUBILEE, TRIASSO1, CANDYBOX,
+	VICTORY, MISSPELL
 };
 enum evolution_weapon_names {
-	Bloody_Tear = 32, Holy_Wand, Thousand_Edge, Death_Spiral, Heaven_Sword,
-	Unholy_Vespers, Hellfire, Soul_Easter, La_Borra, NO_FUTURE,
-	Thunder_Loop, Gorgeous_Moon, Vicious_Hunger, Mannajja,
-	Valkyrie_Turner, Infinite_Corridor, Crimson_Shroud,
-	Bi_Bracelet, Tri_Bracelet, Ashe_of_Muspell, Anima_of_Mortaccio,
-	Vandalier, Phieraggi, Fuwalafuwaloo, Sole_Solution, Super_Candybox_II_Turbo,
-	Cygnus, Zhar_Ptytsia, Red_Muscle, Twice_Upon_a_Time, Flock_Destroyer
+	VAMPIRICA = 32, HOLY_MISSLE, THOUSAND, SCYTHE, 
+	HEAVENSWORD, VESPERS, HELLFIRE, VORTEX, BORA, 
+	ROCHER,	LOOP, SIRE, STIGRANGATTI, MANNAGGIA,
+	TRAPANO2, MISSPELL2, CORRIDOR, SHROUD, TRIASSO2,
+	TRIASSO3, GUNS3, SILF3, VENTO2, SOLES, CANDYBOX2
 };
 class Weapon : public VSObject {
 public:
@@ -34,6 +31,7 @@ public:
 	int get_duration();
 	int get_kb();
 	int get_pierce();
+	static map <int, int> evolution_pair;
 protected:
 	Projectile _base_proj;
 	deque<Projectile> _proj_q;
