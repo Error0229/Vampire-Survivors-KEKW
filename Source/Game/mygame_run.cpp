@@ -46,7 +46,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 
 	Enemy::load_templete_enemies();
 	for (int i = 0; i < 100; i++)
-		enemy.push_back(Enemy::get_templete_enemy(BAT2));
+		enemy.push_back(Enemy::get_templete_enemy(XLBAT));
 
 
 
@@ -122,7 +122,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			QT.query(result, (VSObject*)(&proj));
 			for (VSObject* obj : result) {
 				if (obj->obj_type == ENEMY) {
-					proj.collide_with_enemy(*((Enemy*)obj), weapon.get_damage(), weapon.get_duration());
+					proj.collide_with_enemy(*((Enemy*)obj), weapon.get_damage(), weapon.get_duration(), weapon.get_kb());
 				}
 			}
 		}
@@ -157,7 +157,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 	// suck xp
 	for (auto& i : xp_gem) {
 		if (i.is_enable() && distance(player, i) < player.get_pickup_range()) {
-			i.set_speed(1000);
+			i.set_speed(500);
 			i.update_pos(player.get_pos());
 			if (is_overlapped(player, i)) {
 				i.set_enable(false);

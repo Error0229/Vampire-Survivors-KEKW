@@ -147,4 +147,10 @@ int Weapon::get_damage() {
 int Weapon::get_duration() {
 	return _duration;
 }
+int Weapon::get_pierce() {
+	return _pierce;
+}
+int Weapon::get_kb() {
+	return _knock_back;
+}
 map <int, Weapon> Weapon::_base_weapon;

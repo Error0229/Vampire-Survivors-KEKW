@@ -32,6 +32,8 @@ public:
 	static map<int, Weapon> _base_weapon; //name, stats
 	int get_damage();
 	int get_duration();
+	int get_kb();
+	int get_pierce();
 protected:
 	Projectile _base_proj;
 	deque<Projectile> _proj_q;

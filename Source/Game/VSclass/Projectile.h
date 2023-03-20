@@ -14,7 +14,7 @@ public:
 		this->_order = rhs._order;
 		return *this;
 	}
-	void collide_with_enemy(Enemy& ,int damage, int duration);
+	void collide_with_enemy(Enemy& ,int damage, int duration, int weapon_kb);
 
 	static int order;
 protected:
