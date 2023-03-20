@@ -51,7 +51,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	player.set_animation(150, false);
 	player.load_bleed();
 	player.acquire_weapon(Weapon::_base_weapon[0]);
-	player.acquire_passive(Passive(0));
+	player.acquire_passive(Passive(POWER));
 	map.load_map({ "resources/map/dummy1.bmp" });
 	map.set_pos(0, 0);
 	QT = QuadTree(-Player::player_dx, -Player::player_dy, 800, 600, 5, 10, 0);
@@ -143,38 +143,39 @@ void CGameStateRun::OnRButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動
 {
 }
 
-int CGameStateRun::draw_level_up(bool has_only)
+int CGameStateRun::draw_level_up(bool pull_from_inv)
 {
-	// 0~20: passive
-	// 21~52: Weapon
-	// 53~83: evo
-	if (!has_only && player.weapon_count() >= 6 && player.passive_count() >= 6)
+	//0~31: weapon
+	//32~62: evo
+	//63~83: passive
+	if (!pull_from_inv && player.weapon_count() >= 6 && player.passive_count() >= 6)
 		return draw_level_up(true);
-	vector<double> weights(53, 0);
-	bool can_draw;
-	for (int i = 0; i < 21; i++) {
-		can_draw = true;
-		for (auto& choice : level_up_choice) {
-			if (i == choice) {
-				can_draw = false;
-				break;
-			}
-		}
-		if (!can_draw)
+	if (player.weapon_count() + player.passive_count() == 1)
+		return draw_level_up(false);
+	vector<double> weights(84, 0);
+	int player_items[84];
+	memset(player_items, 0, sizeof(player_items));
+	// store player's items, 0: not owned, 1: owned, 2: max level
+	for (auto i : player.get_weapons()) {
+		player_items[i.get_type()] = (i.is_max_level()) ? 2 : 1;
+	}
+	for (auto i : player.get_passives()) {
+		player_items[i.get_type()] = (i.is_max_level()) ? 2 : 1;
+	}
+	// calc weapon weights
+	// increase this once we made a new weapom.
+	for (int i = 0; i < 1; i++) {
+		if (level_up_choice[0] == i || level_up_choice[1] == i || level_up_choice[2] == i || level_up_choice[3] == i)
 			continue;
-		if (has_only) {
-			if(i<21 && (player.find_passive(i)!=nullptr) && (!player.find_passive(i)->is_max_level()))
-				weights[i] = Passive(i).get_rarity();
-			else if(i>20 && (player.find_weapon(i-21) != nullptr) && (!player.find_weapon(i-21)->is_max_level()))
-				weights[i] = Weapon::_base_weapon[i - 21].get_rarity();
-		}
-		else {
-			if (i < 21 && (player.find_passive(i) == nullptr) && (player.passive_count() < 6))
-				weights[i] = Passive(i).get_rarity();
-			else if(i > 20 && (player.find_weapon(i - 21) == nullptr) && (player.weapon_count() < 6))
-				weights[i] = Weapon::_base_weapon[i - 21].get_rarity();
-		}
-		//TRACE(_T("%d:%lf\n"), i, weights[i]);
+		if ((pull_from_inv && player_items[i] == 1) || (!pull_from_inv && player_items[i] == 0))
+			weights[i] = Weapon::_base_weapon[i].get_rarity();
+	}
+	// calc passive weights
+	for (int i = 63; i < 84; i++) {
+		if (level_up_choice[0] == i || level_up_choice[1] == i || level_up_choice[2] == i || level_up_choice[3] == i)
+			continue;
+		if ((pull_from_inv && player_items[i] == 1) || (!pull_from_inv && player_items[i] == 0))
+			weights[i] = Passive(i).get_rarity();
 	}
 	random_device rd;
 	mt19937 gen(rd());
@@ -269,10 +270,12 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		//--------------------------------------------------------
 		if (level_up_choice[0] != -1)
 			break;
+		// poll new level_up choices
 		level_up_choice[0] = draw_level_up(false);
 		level_up_choice[1] = draw_level_up(false);
 		level_up_choice[2] = draw_level_up(false);
 		level_up_choice[3] = draw_level_up(false);
+		TRACE(_T("0:%d\t1:%d\t2:%d\t3:%d\t"), level_up_choice[0], level_up_choice[1], level_up_choice[2], level_up_choice[3]);
 		break;
 	case(OPEN_CHEST):
 		//--------------------------------------------------------
@@ -297,10 +300,10 @@ void CGameStateRun::OnShow()
 	
 	if (_gamerun_status == LEVEL_UP) {
 		event_background.set_pos(player.get_pos());
-		level_up_button[0].set_pos(player.get_pos() + CPoint(0, -90));
-		level_up_button[1].set_pos(player.get_pos() + CPoint(0, -10));
-		level_up_button[2].set_pos(player.get_pos() + CPoint(0, 70));
-		level_up_button[3].set_pos(player.get_pos() + CPoint(0, 150));
+		level_up_button[0].set_pos(player.get_pos() + CPoint(0, -75)); //-90
+		level_up_button[1].set_pos(player.get_pos() + CPoint(0, 0)); //-10
+		level_up_button[2].set_pos(player.get_pos() + CPoint(0, 75)); // 70
+		level_up_button[3].set_pos(player.get_pos() + CPoint(0, 150)); // 150
 		event_background.show_skin();
 		for (int i = 0; i < 4; i++) {
 			if (level_up_choice[i]!=-1) {

@@ -209,3 +209,13 @@ Passive* Player::find_passive(int type)
 			return &i;
 	return nullptr;
 }
+
+vector<Weapon> Player::get_weapons()
+{
+	return _weapons;
+}
+
+vector<Passive> Player::get_passives()
+{
+	return _passives;
+}

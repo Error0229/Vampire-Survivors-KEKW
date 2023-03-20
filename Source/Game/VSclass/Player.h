@@ -21,6 +21,8 @@ public:
 	int passive_count();
 	Weapon* find_weapon(int);
 	Passive* find_passive(int);
+	vector<Weapon> get_weapons();
+	vector<Passive> get_passives();
 private:
 	VSObject _bleed_animation;
 	vector<Weapon> _weapons;
