@@ -35,6 +35,7 @@ public:
 	int get_kb();
 	int get_pierce();
 	static map <int, int> evolution_pair;
+	static void attack();
 protected:
 	Projectile _base_proj;
 	deque<Projectile> _proj_q;
