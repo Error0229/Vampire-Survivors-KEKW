@@ -10,6 +10,7 @@ public:
 	int get_level();
 	bool is_max_level();
 	int get_alt_effect();
+	int get_rarity();
 private:
 	int _level, _stacking;
 	int _type, _rarity,  _max_level;
@@ -19,7 +20,7 @@ private:
 	string _name;
 };
 enum passive_type {
-	POWER = 0, ARMOR, MAXHEALTH, REGEN, COOLDOWN,
+	POWER = 63, ARMOR, MAXHEALTH, REGEN, COOLDOWN,
 	AREA, SPEED, DURATION, AMOUNT, MOVESPEED, 
 	MAGNET, LUCK, GROWTH, GREED, REVIVAL, CURSE, 
 	SILVER, GOLD, pLEFT, pRIGHT, PANDORA

@@ -1,12 +1,7 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "../../Library/gameutil.h"
 #include "VSObject.h"
 #include "Pickup.h"
-
-enum PickupType {
-	XP,
-	CHEST
-};
 
 Pickup::Pickup()
 {
@@ -14,35 +9,31 @@ Pickup::Pickup()
 Pickup::~Pickup()
 {
 }
-void Pickup::load_xp()
-{
-	_type = XP;
-	_is_enable = false;
-	load_skin({ "Resources/pickup/GemBlue.bmp", "Resources/pickup/GemGreen.bmp", "Resources/pickup/GemRed.bmp" }, RGB(255, 255, 255));
-}
-void Pickup::load_xp(vector<Pickup>& vec, int size)
-{
-	Pickup tmp;
-	tmp.load_xp();
-	for (int i = 0; i < size; i++)
-		vec.push_back(tmp);
-}
-void Pickup::set_enable(bool enable)
-{
-	_is_enable = enable;
-}
 int Pickup::get_xp_value()
 {
 	return _xp_value;
 }
 void Pickup::spawn_xp(CPoint pos, int xp)
 {
+	_xp_value = xp;
+	spawn(pos);
+}
+void Pickup::spawn_chest(CPoint pos, bool can_evo)
+{
+	_can_evo = can_evo;
+	spawn(pos);
+}
+void Pickup::spawn(CPoint pos)
+{
 	_is_enable = true;
 	_position = pos;
-	_xp_value = xp;
-	set_speed(0);
+	_speed = 0;
 }
-
+void Pickup::despawn()
+{
+	_is_enable = false;
+	_speed = 0;
+}
 void Pickup::show_skin(double factor)
 {
 	if(!_is_enable)
@@ -65,3 +56,30 @@ bool Pickup::is_enable()
 {
 	return _is_enable;
 }
+
+void Pickup::load_template_pickup()
+{
+	for (int i = 0; i < 2; i++) {
+		template_pickup.push_back(Pickup());
+		switch (i){
+		case XP:
+			template_pickup[i].load_skin({"Resources/pickup/GemBlue.bmp", "Resources/pickup/GemGreen.bmp", "Resources/pickup/GemRed.bmp"}, RGB(255, 255, 255));
+			template_pickup[i]._type = XP;
+			break;
+		case CHEST:
+			template_pickup[i].load_skin({ "Resources/pickup/BoxOpen.bmp" }, RGB(255, 255, 255));
+			template_pickup[i]._type = CHEST;
+			break;
+		}
+		template_pickup[i]._xp_value = 0;
+		template_pickup[i]._can_evo = false;
+		template_pickup[i]._speed = 0;
+		template_pickup[i]._is_enable = false;
+	}
+}
+Pickup Pickup::get_template_pickup(int type)
+{
+	return template_pickup[type];
+}
+
+vector<Pickup> Pickup::template_pickup;

@@ -32,6 +32,9 @@ public:
 	static map<int, Weapon> _base_weapon; //name, stats
 	int get_damage();
 	int get_duration();
+	int get_rarity();
+	int get_type();
+	bool is_max_level();
 protected:
 	Projectile _base_proj;
 	deque<Projectile> _proj_q;

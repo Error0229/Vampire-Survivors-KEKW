@@ -149,7 +149,7 @@ Passive::Passive(int type) {
 		_level = 1;
 		_max_level = 5;
 		_stacking = Additive;
-		this->load_skin("Resources/Passive/Stone Mask.bmp");
+		this->load_skin("Resources/Passive/Mask.bmp");
 		break;
 	case REVIVAL:
 		_name = "Tiragisu";
@@ -255,4 +255,8 @@ int Passive::get_level()
 bool Passive::is_max_level()
 {
 	return (_level == _max_level);
+}
+int Passive::get_rarity()
+{
+	return _rarity;
 }

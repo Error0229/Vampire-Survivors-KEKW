@@ -16,7 +16,7 @@ VSObject::VSObject(vector<char*> filename, COLORREF color) :VSObject()
 }
 VSObject::~VSObject()
 {
-	VSObject::unshow_skin();
+	//VSObject::unshow_skin();
 }
 void VSObject::load_skin(char* filename, COLORREF color)
 {
@@ -42,6 +42,10 @@ void VSObject::set_default_direct(int dir)
 void VSObject::set_animation(int delay, bool _once, int cooldown)
 {
 	this->_skin.SetAnimation(delay, _once, cooldown);
+}
+void VSObject::set_selector(int selector)
+{
+	this->_skin.SelectShowBitmap(selector);
 }
 void VSObject::enable_animation()
 {

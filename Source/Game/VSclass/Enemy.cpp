@@ -101,7 +101,7 @@ void Enemy::spawn(CPoint pos, int move_animation_delay, int death_animation_dela
 	_hp = (_hp_scale) ? (_hp_max * player_lvl) : (_hp_max);
 }
 
-void Enemy::load_templete_enemies()
+void Enemy::load_template_enemies()
 {
 	ifstream file("source/game/VSclass/enemy_stats.csv");
 	string header, line;
@@ -122,7 +122,7 @@ void Enemy::load_templete_enemies()
 		getline(ss, res_d, ',');
 		getline(ss, xp_value, ',');
 		getline(ss, hp_scale, ',');
-		templete_enemies.push_back(load_enemy(stoi(number), (char*)file_name.c_str(), stoi(hp), stoi(power), stoi(mspeed), stod(kb), stoi(kb_max), stod(res_f), stoi(res_k), stoi(res_d), stod(xp_value), stoi(hp_scale)));
+		template_enemies.push_back(load_enemy(stoi(number), (char*)file_name.c_str(), stoi(hp), stoi(power), stoi(mspeed), stod(kb), stoi(kb_max), stod(res_f), stoi(res_k), stoi(res_d), stod(xp_value), stoi(hp_scale)));
 	}
 }
 
@@ -178,9 +178,9 @@ Enemy Enemy::load_enemy(int id, char* name, int health, int power, int mspeed, d
 	return enemy;
 }
 
-Enemy Enemy::get_templete_enemy(int id)
+Enemy Enemy::get_template_enemy(int id)
 {
-	return templete_enemies[id];
+	return template_enemies[id];
 }
 
-vector<Enemy> Enemy::templete_enemies;
+vector<Enemy> Enemy::template_enemies;

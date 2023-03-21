@@ -1,0 +1,85 @@
+number,id(enum),old id,filename,type
+0,MISSING,WHIP,Whip,weapon
+1,MISSING,Magic_Wand,WandHoly,weapon
+2,MISSING,Knife,Knife,weapon
+3,MISSING,Axe,Axe,weapon
+4,MISSING,Cross,Cross,weapon
+5,MISSING,King_Bible,HolyBook,weapon
+6,MISSING,Fire_Wand,WandFire,weapon
+7,MISSING,Garlic,Garlic,weapon
+8,MISSING,Santa_water,HolyWater,weapon
+9,MISSING,Runetracer,Diamond2,weapon
+10,MISSING,Lightning_Ring,LighningRing,weapon
+11,MISSING,Pentagram,Pentagram,weapon
+12,MISSING,Peacechone,Silf1,weapon
+13,MISSING,Ebony_Wings,Silf2,weapon
+14,MISSING,Phiera_Der_Tuphello,Guns,weapon
+15,MISSING,Eight_The_Sparrow,Guns2,weapon
+16,MISSING,Gatti_Amari,Cat,weapon
+17,MISSING,Song_of_Mana,Song,weapon
+18,MISSING,Shadow_Pinion,trapano,weapon
+19,MISSING,Clock_Lancet,Lancet,weapon
+20,MISSING,Laurel,Laurel,weapon
+21,MISSING,Vento_Sacro,Whip3,weapon
+22,MISSING,Bone,Bone,weapon
+23,MISSING,Cherry_Bomb,Cherry,weapon
+24,MISSING,Carrello,CartWheel,weapon
+25,MISSING,Celestial_Dusting,flower,weapon
+26,MISSING,La_Robba,larobba,weapon
+27,MISSING,Greastest_Jubilee,jubilee,weapon
+28,MISSING,Bracelet,bracelet1,weapon
+29,MISSING,Candybox,candybox,weapon
+30,MISSING,Victory_Sword,victory1,weapon
+31,MISSING,Flame_of_Misspell,flame1,weapon
+32,MISSING,Bloody_Tear,Whip2,evolution
+33,MISSING,Holy_Wand,WandHoly2,evolution
+34,MISSING,Thousand_Edge,Knife2,evolution
+35,MISSING,Death_Spiral,Scythe,evolution
+36,MISSING,Heaven_Sword,HeavenSword,evolution
+37,MISSING,Unholy_Vespers,UnholyBook,evolution
+38,MISSING,Hellfire,Hellfire,evolution
+39,MISSING,Soul_Easter,OrbOrange,evolution
+40,MISSING,La_Borra,Water2,evolution
+41,MISSING,NO_FUTURE,Carnage,evolution
+42,MISSING,Thunder_Loop,Thunderloop,evolution
+43,MISSING,Gorgeous_Moon,Pentagram2,evolution
+44,MISSING,Vicious_Hunger,cateye,evolution
+45,MISSING,Mannajja,Song2,evolution
+46,MISSING,Valkyrie_Turner,trapano2,evolution
+47,MISSING,Infinite_Corridor,portal,evolution
+48,MISSING,Crimson_Shroud,cape,evolution
+49,MISSING,Bi_Bracelet,bracelet2,evolution
+50,MISSING,Tri_Bracelet,bracelet3,evolution
+51,MISSING,Ashe_of_Muspell,flame3,evolution
+52,MISSING,Anima_of_Mortaccio,MISSING,evolution
+53,MISSING,Vandalier,Silf3,evolution
+54,MISSING,Phieraggi,Guns3,evolution
+55,MISSING,Fuwalafuwaloo,MISSING,evolution
+56,MISSING,Sole_Solution,MISSING,evolution
+57,MISSING,Super_Candybox_II_Turbo,candybox2,evolution
+58,MISSING,Cygnus,Silf1_counter,counter
+59,MISSING,Zhar_Ptytsia,Silf2_counter,counter
+60,MISSING,Red_Muscle,Guns_counter,counter
+61,MISSING,Twice_Upon_a_Time,Guns2_counter,counter
+62,MISSING,Flock_Destroyer,Cat_counter,counter
+63,POWER,POWER,Spinach,passive
+64,ARMOR,ARMOR,Armor,passive
+65,MAXHEALTH,MAXHEALTH,Hollow Heart,passive
+66,REGEN,REGEN,Pummarola,passive
+67,COOLDOWN,COOLDOWN,Empty Tome,passive
+68,AREA,AREA,Candelabrador,passive
+69,SPEED,SPEED,Bracer,passive
+70,DURATION,DURATION,Spellbinder,passive
+71,AMOUNT,AMOUNT,Duplicator,passive
+72,MOVESPEED,MOVESPEED,Wings,passive
+73,MAGNET,MAGNET,Attractorb,passive
+74,LUCK,LUCK,Clover,passive
+75,GROWTH,GROWTH,Crown,passive
+76,GREED,GREED,Mask,passive
+77,REVIVAL,REVIVAL,Tiragisu,passive
+78,CURSE,CURSE,Skull OManiac,passive
+79,SILVER,SILVER,Silver Ring,passive
+80,GOLD,GOLD,Gold Ring,passive
+81,pLEFT,pLEFT,Metaglio Left,passive
+82,pRIGHT,pRIGHT,Metaglio Right,passive
+83,PANDORA,PANDORA,Torronas Box,passive
