@@ -9,6 +9,8 @@ VSObject::VSObject()
 	_collision = CPoint(0, 0);
 	_is_mirror = 0;
 	_speed = 0;
+	_fx = 0;
+	_fy = 0;
 }
 VSObject::VSObject(vector<char*> filename, COLORREF color) :VSObject()
 {
@@ -26,10 +28,20 @@ void VSObject::load_skin(vector<char*> filename, COLORREF color)
 {
 	this->_skin.LoadBitmap(filename, color);
 }
+void VSObject::load_animation(vector<char*> filename, COLORREF color)
+{
+	this->_animations.push_back(game_framework::CMovingBitmap());
+	this->_animations.back().LoadBitmap(filename, color);
+}
 void VSObject::show_skin(double factor) 
 {
 	this->_skin.SetTopLeft(this->_position.x - (this->_skin.Width() >> 1) + player_dx, this->_position.y - (this->_skin.Height() >> 1) + player_dy);
 	this->_skin.ShowBitmap(factor, _is_mirror);
+}
+void VSObject::show_animation(double factor)
+{
+	this->_animations[this->_selector].SetTopLeft(this->_position.x - (this->_animations[this->_selector].Width() >> 1) + player_dx, this->_position.y - (this->_animations[this->_selector].Height() >> 1) + player_dy);
+	this->_animations[this->_selector].ShowBitmap(factor, _is_mirror);
 }
 void VSObject::unshow_skin()
 {
@@ -61,9 +73,20 @@ void VSObject::set_pos(int x, int y)
 	this->_position.x = x;
 	this->_position.y = y;
 }
+void VSObject::set_pos(double x, double y) {
+	this->_position.x = static_cast<int>(x);
+	this->_position.y = static_cast<int>(y);
+}
+void VSObject::set_speed(double speed) {
+	this->_speed = static_cast<int>(speed);
+}
 void VSObject::set_speed(int speed)
 {
 	this->_speed = speed;
+}
+void VSObject::select_show_animation(int index)
+{
+	this->_selector = index;
 }
 void VSObject::update_pos(CPoint target)
 {
@@ -87,8 +110,18 @@ void VSObject::update_pos()
 	this->_is_mirror = (_direct != _default_direct);
 	int dx = VSOM(this->_speed * ( this->_target.x - this->_position.x ) / dis);
 	int dy = VSOM(this->_speed * ( this->_target.y - this->_position.y ) / dis);
-	this->_position.x += dx + ( dx > 0 );
-	this->_position.y += dy + ( dy > 0 );
+	_fx += (_speed * (double)(this->_target.x - this->_position.x) / (double)dis / 100) - (double)dx;
+	_fy += (_speed * (double)(this->_target.y - this->_position.y) / (double)dis / 100) - (double)dy;
+	if (abs(_fx) > 1) {
+		dx += static_cast<int>(_fx);
+		_fx -= static_cast<int>(_fx);
+	}
+	if (abs(_fy) > 1) {
+		dy += static_cast<int>(_fy);
+		_fy -= static_cast<int>(_fy);
+	}
+	this->_position.x += dx ;
+	this->_position.y += dy ;
 }
 CPoint VSObject::get_pos()
 {
@@ -158,5 +191,5 @@ void VSObject::update_collide()
 	_collision = (0, 0);
 }
 
-int VSObject::player_dx = 400;
-int VSObject::player_dy = 300;
+int VSObject::player_dx = (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1);
+int VSObject::player_dy = (OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1);

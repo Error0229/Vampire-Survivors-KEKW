@@ -1,6 +1,11 @@
 #include "stdafx.h"
 #include "VSMath.h"
 #include <cstdint>
+#include "../config.h"
+#include "../../Library/gameutil.h"
+#include "VSMath.h"
+
+
 
 int square(int x) {
     return x * x;

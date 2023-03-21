@@ -47,7 +47,7 @@ namespace game_framework {
 			delete gameStateTable[i];
 	}
 
-	CGame *CGame::Instance()
+	CGame* CGame::Instance()
 	{
 		return &instance;
 	}
@@ -291,7 +291,7 @@ namespace game_framework {
 
 	HDC							CDDraw::hdc;
 	CDC							CDDraw::cdc;
-	CView						*CDDraw::pCView;
+	CView* CDDraw::pCView;
 	LPDIRECTDRAW2				CDDraw::lpDD;
 	LPDIRECTDRAWCLIPPER			CDDraw::lpClipperPrimary;
 	LPDIRECTDRAWCLIPPER			CDDraw::lpClipperBack;
@@ -400,8 +400,8 @@ namespace game_framework {
 		CRect TargetRect;
 		TargetRect.left = x;
 		TargetRect.top = y;
-		TargetRect.right = x + (int)((BitmapRect[SurfaceID].right - BitmapRect[SurfaceID].left)*factor);
-		TargetRect.bottom = y + (int)((BitmapRect[SurfaceID].bottom - BitmapRect[SurfaceID].top)*factor);
+		TargetRect.right = x + (int)((BitmapRect[SurfaceID].right - BitmapRect[SurfaceID].left) * factor);
+		TargetRect.bottom = y + (int)((BitmapRect[SurfaceID].bottom - BitmapRect[SurfaceID].top) * factor);
 
 
 		if (factor == 0) {
@@ -435,7 +435,7 @@ namespace game_framework {
 
 		int blt_flag = 0;
 		if (BitmapColorKey[SurfaceID] != CLR_INVALID)
-			blt_flag = DDBLT_WAIT | DDBLT_KEYSRC ;
+			blt_flag = DDBLT_WAIT | DDBLT_KEYSRC;
 		else
 			blt_flag = DDBLT_WAIT;
 		if (lpDDSBack->IsLost())
@@ -446,7 +446,7 @@ namespace game_framework {
 		DDBLTFX ddBltFx;
 		ZeroMemory(&ddBltFx, sizeof(DDBLTFX));
 		ddBltFx.dwSize = sizeof(DDBLTFX);
-		if (is_mirror) 
+		if (is_mirror)
 		{
 			blt_flag |= DDBLT_DDFX;
 			ddBltFx.dwDDFX = DDBLTFX_MIRRORLEFTRIGHT;
@@ -460,7 +460,6 @@ namespace game_framework {
 
 		CheckDDFail("Blt Bitmap to Back Failed");
 	}
-
 	void CDDraw::BltBitmapToBitmap(unsigned SourceID, unsigned TargetID, int x, int y)
 	{
 		GAME_ASSERT((SourceID < lpDDS.size()) && (TargetID < lpDDS.size()) && (SourceID != TargetID), "Internal Error: Incorrect SourceID in BltBitmapToBitmap");
