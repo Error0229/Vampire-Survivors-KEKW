@@ -253,13 +253,14 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="Resources\item_id.csv" />
     <None Include="RES\GAME.RC2" />
     <None Include="Source\Game\VSclass\weapon_stats.csv" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Game\VSclass\QuadTree.cpp" />
     <ClCompile Include="Source\Game\VSclass\Projectile.cpp" />
-    <ClCompile Include="Source\Game\VSclass\Button.cpp" />
+    <ClCompile Include="Source\Game\VSclass\UI.cpp" />
     <ClCompile Include="Source\Core\game.cpp" />
     <ClCompile Include="Source\Core\gameDoc.cpp" />
     <ClCompile Include="Source\Core\gameView.cpp" />
@@ -285,7 +286,7 @@
   <ItemGroup>
     <ClInclude Include="Source\Game\VSclass\QuadTree.h" />
     <ClInclude Include="Source\Game\VSclass\Projectile.h" />
-    <ClInclude Include="Source\Game\VSclass\Button.h" />
+    <ClInclude Include="Source\Game\VSclass\UI.h" />
     <ClInclude Include="Source\Core\Game.h" />
     <ClInclude Include="Source\Core\gameDoc.h" />
     <ClInclude Include="Source\Core\gameView.h" />

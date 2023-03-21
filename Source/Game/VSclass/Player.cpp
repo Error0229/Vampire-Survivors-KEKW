@@ -7,8 +7,13 @@
 using namespace game_framework;
 Player::Player()
 {
-	_magnet = 100;
 	obj_type = PLAYER;
+	_magnet = 100;
+	_luck = 100;
+	_speed = 200;
+	_exp = 0;
+	_max_exp = 5;
+	_level = 1;
 	//for some reason, load skin in constructor will cause the some error
 	//_bleed_animation.load_skin({ "resources/character/Blood1.bmp", "resources/character/Blood2.bmp", "resources/character/Blood3.bmp" });
 	//_bleed_animation.set_animation(50, false);
@@ -48,14 +53,11 @@ void Player::hurt(int damage) {
 void Player::acquire_weapon(Weapon& weapon) {
 	_weapons.push_back(weapon);
 }
-vector <Weapon>& Player::get_weapon_all() {
-	return _weapons;
-}
 void Player::acquire_passive(Passive& passive) {
-	update_passive(passive);
+	upgrade_passive(passive);
 	_passives.push_back(passive);
 }
-void Player::update_passive(Passive& p) {
+void Player::upgrade_passive(Passive& p) {
 	int effect = p.get_effect();
 	switch (p.get_type()) {
 	case POWER:
@@ -131,12 +133,11 @@ void Player::update_passive(Passive& p) {
 			_area += effect;
 		}
 		break;
-	}
-	
+	}	
 }
 void Player::level_up_passive(int index) {
 	_passives[index].level_up();
-	update_passive(_passives[index]);
+	upgrade_passive(_passives[index]);
 }
 
 void Player::update_proj_pos() {
@@ -149,14 +150,95 @@ void Player::show_proj_skin() {
 		w.show_proj();
 	}
 }
-void Player::pick_up_xp(int xp_value)
+bool Player::pick_up_xp(int xp_value)
 {
 	_exp += xp_value;
-	if (_exp >= _max_exp) {
-		//leveling up
+	return (_exp >= _max_exp);
+}
+bool Player::apply_level_up()
+{
+	VS_ASSERT(_exp >= _max_exp, "attemp to lvl up when xp < max_xp");
+	_exp -= _max_exp;
+
+	if (_level < 20)
+		_max_exp += 10;
+	else if (_level < 40)
+		_max_exp += 13;
+	else
+		_max_exp += 16;
+
+	if (_level == 20) {
+		_max_exp += 600;
+		_growth += 100;
 	}
+	else if (_level == 40) {
+		_max_exp += 2400;
+		_growth += 100;
+	}
+	else if (_level == 21 && _level == 41) {
+		_growth -= 100;
+	}
+	return (_exp >= _max_exp);
 }
 int Player::get_pickup_range()
 {
 	return _magnet;
+}
+int Player::get_level()
+{
+	return _level;
+}
+int Player::get_luck()
+{
+	return _luck;
+}
+int Player::weapon_count()
+{
+	return _weapons.size();
+}
+int Player::passive_count()
+{
+	return _passives.size();
+}
+
+vector<Weapon>& Player::get_weapons()
+{
+	return _weapons;
+}
+
+vector<Passive>& Player::get_passives()
+{
+	return _passives;
+}
+
+void Player::obtain_item(int type)
+{
+	bool is_own = false;
+	if (type < 32) {
+		//weapon
+		for (auto& i : _weapons) {
+			if (i.get_type() == type) {
+				i.upgrade();
+				is_own = true;
+			}
+		}
+		if (!is_own) {
+			acquire_weapon(Weapon::_base_weapon[type]);
+		}
+	}
+	else if (type < 63) {
+		//evo
+	}
+	else {
+		//passive
+		for (auto& i : _passives) {
+			if (i.get_type() == type) {
+				upgrade_passive(i);
+				is_own = true;
+			}
+		}
+		if (!is_own) {
+			acquire_passive(Passive(type));
+		}
+	}
 }

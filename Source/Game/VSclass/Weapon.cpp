@@ -147,6 +147,15 @@ int Weapon::get_damage() {
 int Weapon::get_duration() {
 	return _duration;
 }
+int Weapon::get_rarity() {
+	return _rarity;
+}
+int Weapon::get_type() {
+	return _type;
+}
+bool Weapon::is_max_level() {
+	return _level == _max_level;
+}
 int Weapon::get_pierce() {
 	return _pierce;
 }
@@ -154,21 +163,7 @@ int Weapon::get_kb() {
 	return _knock_back;
 }
 map <int, Weapon> Weapon::_base_weapon;
-//enum weapon_names {
-//	WHIP = 0, MAGIC_MISSILE, KNIFE, AXE, CROSS, HOLYBOOK,
-//	FIREBALL, GARLIC, HOLYWATER, DIAMOND, LIGHTNING,
-//	PENTAGRAM, SILF, SILF2, GUNS, GUNS2, GATTI, SONG,
-//	TRAPING, LANCET, LAUREL, VENTO, BONE, CHERRY,
-//	CART2, FLOWER, LAROBBA, JUBILEE, TRIASSO1, CANDYBOX,
-//	VICTORY, MISSPELL
-//};
-//enum evolution_weapon_names {
-//	VAMPIRICA = 32, HOLY_MISSLE, THOUSAND, SCYTHE,
-//	HEAVENSWORD, VESPERS, HELLFIRE, VORTEX, BORA,
-//	ROCHER, LOOP, SIRE, STIGRANGATTI, MANNAGGIA,
-//	TRAPANO2, MISSPELL2, CORRIDOR, SHROUD, TRIASSO2,
-//	TRIASSO3, GUNS3, SILF3, VENTO2, SOLES, CANDYBOX2
-//};
+
 map <int, int> Weapon::evolution_pair = { 
 	{WHIP, VAMPIRICA}, {MAGIC_MISSILE, HOLY_MISSLE},{KNIFE, THOUSAND},
 	{AXE, SCYTHE},{CROSS, HEAVENSWORD},{HOLYBOOK, VESPERS},

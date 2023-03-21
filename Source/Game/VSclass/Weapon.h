@@ -29,6 +29,9 @@ public:
 	static map<int, Weapon> _base_weapon; //name, stats
 	int get_damage();
 	int get_duration();
+	int get_rarity();
+	int get_type();
+	bool is_max_level();
 	int get_kb();
 	int get_pierce();
 	static map <int, int> evolution_pair;

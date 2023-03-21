@@ -47,9 +47,9 @@ public:
 	bool hurt(int damage); //this will return true if the enemy die from this damage, otherwise false
 	bool is_collide_with(VSObject&, double overlap_bound=1);
 	bool is_collide_with(Enemy&, double overlap_bound=0.5);
-	static void load_templete_enemies();
+	static void load_template_enemies();
 	static Enemy load_enemy(int id, char* name, int hp_max, int power, int mspeed, double kb, int kb_max, double res_f, bool res_k, bool res_d, double xp_value, bool hp_scale);
-	static Enemy get_templete_enemy(int id);
+	static Enemy get_template_enemy(int id);
 	friend class Projectile;
 private:
 	// stats
@@ -62,5 +62,5 @@ private:
 	int  _level;
 	bool _is_enable; //this name is not good
 	VSObject _death_animation;
-	static vector<Enemy> templete_enemies;
+	static vector<Enemy> template_enemies;
 };
