@@ -20,6 +20,7 @@ class Weapon : public VSObject {
 public:
 	Weapon();
 	Weapon(int, char*, vector<char*>, vector<int>);
+	Weapon(int, char*, vector<int>);
 	~Weapon();
 	void show_proj();
 	void update_proj(CPoint, int, int, int);
@@ -35,7 +36,8 @@ public:
 	int get_kb();
 	int get_pierce();
 	static map <int, int> evolution_pair;
-	static void attack();
+	void attack();
+	static deque<Weapon> all_weapon;
 protected:
 	Projectile _base_proj;
 	deque<Projectile> _proj_q;
