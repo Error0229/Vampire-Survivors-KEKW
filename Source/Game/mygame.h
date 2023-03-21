@@ -104,9 +104,12 @@ namespace game_framework {
 		vector<Pickup> xp;
 		QuadTree QT;
 		int _gamerun_status, _next_status;
+		
 		VSObject event_background;
 		Button level_up_button[4];
 		int level_up_choice[4];
+		Icon level_up_icon[4];
+		VSObject level_up_icon_frame[4];
 	};
 
 	/////////////////////////////////////////////////////////////////////////////

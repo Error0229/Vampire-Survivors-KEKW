@@ -40,6 +40,7 @@ public:
 	void unshow_skin();
 	void set_default_direct(int dir);
 	void set_animation(int delay, bool _once, int cooldown = 0);
+	void set_selector(int);
 	void enable_animation();
 	void set_pos(CPoint);
 	void set_pos(int, int);

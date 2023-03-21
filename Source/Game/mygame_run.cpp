@@ -70,6 +70,10 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	level_up_button[1].load_skin("resources/ui/event_button.bmp", BLACK);
 	level_up_button[2].load_skin("resources/ui/event_button.bmp", BLACK);
 	level_up_button[3].load_skin("resources/ui/event_button.bmp", BLACK);
+	level_up_icon_frame[0].load_skin("resources/ui/frameB.bmp"); // need to update the file
+	level_up_icon_frame[1].load_skin("resources/ui/frameB.bmp");
+	level_up_icon_frame[2].load_skin("resources/ui/frameB.bmp");
+	level_up_icon_frame[3].load_skin("resources/ui/frameB.bmp");
 	level_up_choice[0] = -1;
 	level_up_choice[1] = -1;
 	level_up_choice[2] = -1;
@@ -185,9 +189,6 @@ int CGameStateRun::draw_level_up(bool pull_from_inv)
 }
 int CGameStateRun::draw_open_chest(bool can_evo)
 {
-	// 0~20: passive
-	// 21~52: Weapon
-	// 53~83: evo
 	return -1; //WIP
 }
 
@@ -318,14 +319,24 @@ void CGameStateRun::OnShow()
 	
 	if (_gamerun_status == LEVEL_UP) {
 		event_background.set_pos(player.get_pos());
-		level_up_button[0].set_pos(player.get_pos() + CPoint(0, -75)); //-90
-		level_up_button[1].set_pos(player.get_pos() + CPoint(0, 0)); //-10
-		level_up_button[2].set_pos(player.get_pos() + CPoint(0, 75)); // 70
-		level_up_button[3].set_pos(player.get_pos() + CPoint(0, 150)); // 150
+		level_up_button[0].set_pos(player.get_pos() + CPoint(0, -75));
+		level_up_button[1].set_pos(player.get_pos() + CPoint(0, 0));
+		level_up_button[2].set_pos(player.get_pos() + CPoint(0, 75));
+		level_up_button[3].set_pos(player.get_pos() + CPoint(0, 150));
+		level_up_icon[0].set_pos(player.get_pos() + CPoint(-120, -90));
+		level_up_icon[1].set_pos(player.get_pos() + CPoint(-120, -15));
+		level_up_icon[2].set_pos(player.get_pos() + CPoint(-120, 60));
+		level_up_icon[3].set_pos(player.get_pos() + CPoint(-120, 135));
+		level_up_icon_frame[0].set_pos(player.get_pos() + CPoint(-120, -90));
+		level_up_icon_frame[1].set_pos(player.get_pos() + CPoint(-120, -15));
+		level_up_icon_frame[2].set_pos(player.get_pos() + CPoint(-120, 60));
+		level_up_icon_frame[3].set_pos(player.get_pos() + CPoint(-120, 135));
 		event_background.show_skin();
 		for (int i = 0; i < 4; i++) {
 			if (level_up_choice[i]!=-1) {
 				level_up_button[i].show_button();
+				level_up_icon_frame[i].show_skin();
+				level_up_icon[i].show_icon(level_up_choice[i]);
 			}
 		}
 	}
