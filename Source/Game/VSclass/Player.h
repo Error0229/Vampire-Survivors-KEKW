@@ -5,9 +5,7 @@ public:
 	~Player();
 	void update_pos(CPoint) override;
 	void show_skin(double factor = 1.0);
-	// void update_proj_pos();
-	// void show_proj_skin();
-	
+
 	//weapon & passive
 	void acquire_weapon(Weapon&);
 	void acquire_passive(Passive&);

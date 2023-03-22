@@ -17,20 +17,8 @@ Projectile::Projectile(vector<char*> filename, COLORREF color) {
 bool Projectile::operator < (const Projectile& rhs) const {
 	return this->_type < rhs._type;
 }
-void Projectile::set_player_origin_pos(CPoint pos) {
-	_origin_player_pos = pos;
-}
-void Projectile::collide_with_enemy(Enemy& e, int 💥, int 😄, int 😵) {
-	// 💥 = damage
-	// 😄 = duration
-	if (!is_overlapped((*this), e))
-		return;
-	if (😄 < 0)
-		😄 = 1;
-	e._is_stun = true;
-	e._stun_speed = -1.0 * e._speed * e._kb * 😄 * 😵;
-	e._last_time_got_hit = clock();
-	e.hurt(💥);
+void Projectile::set_offset(CPoint os) {
+	_offset = os;
 }
 void Projectile::collide_with_enemy(Enemy& 🥵) {
 	if (!is_overlapped((*this), 🥵))
@@ -41,7 +29,6 @@ void Projectile::collide_with_enemy(Enemy& 🥵) {
 	🥵.hurt(this->_damage);
 }
 void Projectile::create_projectile(Projectile proj, CPoint position, CPoint target_pos, int type, int delay, int damage, int speed, int duration, int pierce, int proj_interval, int hitbox_delay, int knock_back, int pool_limit, int chance, int criti_multi, int block_by_wall, bool is_mirror) {
-
 	proj._position = position;
 	proj._target = target_pos;
 	proj._delay = delay;
@@ -58,7 +45,8 @@ void Projectile::create_projectile(Projectile proj, CPoint position, CPoint targ
 	proj._block_by_wall = block_by_wall;
 	proj._type = type;
 	proj._is_mirror = is_mirror;
-	proj._d_dis = proj._position - proj._origin_player_pos ;
+	CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
+	proj._offset = proj._position - player_pos;
 	Projectile::all_proj.push_back(proj);
 }
 void Projectile::create_projectile(Projectile p) {
@@ -97,13 +85,10 @@ void Projectile::show() {
 	if (clock() % 60000) {
 		all_proj.shrink_to_fit(); // release memory
 	}
-	//for (Projectile& proj : Projectile::all_proj) {
-	//	proj.show_skin();
-	//}
 }
 void Projectile::WHIP_transition() {
 	CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
-	_position = player_pos + _d_dis;
+	_position = player_pos + _offset;
 }
 
 deque<Projectile> Projectile::all_proj = {};
