@@ -101,11 +101,11 @@ namespace game_framework {
 		Map map;
 		Player player;
 		vector<Enemy> enemy;
-		vector<Pickup> xp;
-		vector<Pickup> chest;
+		vector<Xp> xp;
+		vector<Chest> chest;
 		QuadTree QT;
 		int _gamerun_status, _next_status;
-		
+
 		VSObject event_background;
 		Button level_up_button[4];
 		int level_up_choice[4];

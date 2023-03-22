@@ -38,7 +38,6 @@ void CGameStateRun::OnBeginState()
 void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 {
 	Weapon::load_weapon_stats();
-	Pickup::load_template_pickup();
 	Enemy::load_template_enemies();
 
 	_gamerun_status = PLAYING;
@@ -59,8 +58,8 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 
 	for (int i = 0; i < 100; i++) {
 		enemy.push_back(Enemy::get_template_enemy(GHOST));
-		xp.push_back(Pickup::get_template_pickup(XP));
-		chest.push_back(Pickup::get_template_pickup(CHEST));
+		xp.push_back(Xp());
+		chest.push_back(Chest());
 	}
 	for ( int i = 0; i < (int)enemy.size(); i++ ) {
 		enemy[i].spawn(CPoint(-300 + 30 * i/10, -400 + 40 * i%10));
@@ -96,8 +95,8 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	case('A'):
 		for (int i = 0; i < (int)enemy.size();i++) {
 			if (enemy[i].hurt(1000000)) {
-				xp[i].spawn_xp(enemy[i].get_pos(), enemy[i].get_xp_value());
-				chest[i].spawn_chest(enemy[i].get_pos());
+				xp[i].spawn(enemy[i].get_pos(), enemy[i].get_xp_value());
+				chest[i].spawn(enemy[i].get_pos(), 1);
 			}
 		}
 		break;
@@ -160,7 +159,7 @@ void CGameStateRun::OnRButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動
 
 int CGameStateRun::draw_level_up(bool pull_from_inv)
 {
-	//0~31: weapon
+	// 0~31: weapon
 	//32~62: evo
 	//63~83: passive
 	if (pull_from_inv) {
@@ -216,7 +215,7 @@ int CGameStateRun::draw_level_up(bool pull_from_inv)
 }
 int CGameStateRun::draw_open_chest(bool can_evo)
 {
-	//0~31: weapon
+	// 0~31: weapon
 	//32~62: evo
 	//63~83: passive
 	vector<double> weights;
@@ -257,11 +256,14 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 {
 	update_mouse_pos();
 	vector <VSObject*> result;
-	//for level-up polling
-	double owned_chance, forth_chance;
-	vector<double> pull_owned, pull_forth;
+	
+	//polling
 	random_device rd;
 	mt19937 gen(rd());
+	
+	//level up
+	double owned_chance, forth_chance;
+	vector<double> pull_owned, pull_forth;
 	discrete_distribution<> dist_own, dist_forth;
 
 	//open chest

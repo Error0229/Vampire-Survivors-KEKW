@@ -2,36 +2,26 @@
 #include "../../Library/gameutil.h"
 #include "VSObject.h"
 #include "Pickup.h"
+#include "Enemy.h"
 
 Pickup::Pickup()
 {
+	_is_enable = false;
+	_speed = 0;
+	_weight = 0;
 }
 Pickup::~Pickup()
 {
 }
-int Pickup::get_xp_value()
+bool Pickup::is_enable()
 {
-	return _xp_value;
+	return _is_enable;
 }
-bool Pickup::get_can_evo()
+void Pickup::spawn(CPoint pos, int val)
 {
-	return _can_evo;
-}
-void Pickup::spawn_xp(CPoint pos, int xp)
-{
-	_xp_value = xp;
-	spawn(pos);
-}
-void Pickup::spawn_chest(CPoint pos, bool can_evo)
-{
-	_can_evo = can_evo;
-	spawn(pos);
-}
-void Pickup::spawn(CPoint pos)
-{
-	_is_enable = true;
 	_position = pos;
 	_speed = 0;
+	_is_enable = true;
 }
 void Pickup::despawn()
 {
@@ -40,50 +30,57 @@ void Pickup::despawn()
 }
 void Pickup::show_skin(double factor)
 {
-	if(!_is_enable)
+	if (!_is_enable)
 		return;
-	switch (_type)
-	{
-	case XP:
-		if (_xp_value < 100)
-			_skin.SelectShowBitmap(0);
-		else if (_xp_value < 200)
-			_skin.SelectShowBitmap(1);
-		else
-			_skin.SelectShowBitmap(2);
-		break;
-	}
 	VSObject::show_skin(factor);
 }
 
-bool Pickup::is_enable()
+Xp::Xp()
 {
-	return _is_enable;
+	load_skin({ "Resources/pickup/GemBlue.bmp", "Resources/pickup/GemGreen.bmp", "Resources/pickup/GemRed.bmp" }, RGB(255, 255, 255));
+	_type = XP;
+	_xp_value = 0;
+}
+Xp::~Xp()
+{
+}
+void Xp::spawn(CPoint pos, int val)
+{
+	// val: xp_value
+	_xp_value = val;
+	Pickup::spawn(pos, val);
+}
+int Xp::get_xp_value()
+{
+	return _xp_value;
+}
+void Xp::show_skin(double factor)
+{
+	if (_xp_value < 2)
+		set_selector(0);
+	else if (_xp_value < 9)
+		set_selector(1);
+	else
+		set_selector(2);
+	Pickup::show_skin(factor);
 }
 
-void Pickup::load_template_pickup()
+Chest::Chest()
 {
-	for (int i = 0; i < 2; i++) {
-		template_pickup.push_back(Pickup());
-		switch (i){
-		case XP:
-			template_pickup[i].load_skin({"Resources/pickup/GemBlue.bmp", "Resources/pickup/GemGreen.bmp", "Resources/pickup/GemRed.bmp"}, RGB(255, 255, 255));
-			template_pickup[i]._type = XP;
-			break;
-		case CHEST:
-			template_pickup[i].load_skin({ "Resources/pickup/BoxOpen.bmp" }, RGB(255, 255, 255));
-			template_pickup[i]._type = CHEST;
-			break;
-		}
-		template_pickup[i]._xp_value = 0;
-		template_pickup[i]._can_evo = false;
-		template_pickup[i]._speed = 0;
-		template_pickup[i]._is_enable = false;
-	}
+	load_skin({ "Resources/pickup/BoxOpen.bmp" }, RGB(255, 255, 255));
+	_type = CHEST;
+	_can_evo = false;
 }
-Pickup Pickup::get_template_pickup(int type)
+Chest::~Chest()
 {
-	return template_pickup[type];
 }
-
-vector<Pickup> Pickup::template_pickup;
+void Chest::spawn(CPoint pos, int val)
+{
+	//val: can_evo
+	_can_evo = val;
+	Pickup::spawn(pos, val);
+}
+bool Chest::get_can_evo()
+{
+	return _can_evo;
+}

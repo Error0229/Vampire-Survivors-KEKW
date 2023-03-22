@@ -26,6 +26,21 @@ enum VSObject_types {
 	WALL,
 	MAP
 };
+enum pickup_types {
+	XP,
+	COIN,
+	COIN_BAG,
+	Rich_Coin_Bag,
+	ROSARY,
+	NDUJA_FRITTA_TANTO,
+	OROLOGION,
+	VACUUM,
+	FLOOR_CHICKEN,
+	GILDED_CLOVER,
+	LITTLE_COLVER,
+	CHEST,
+	GOLDEN_EGG
+};
 #define BLACK (RGB(0,0,0))
 #define WHITE (RGB(255,255,255))
 class VSObject

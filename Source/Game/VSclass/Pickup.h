@@ -1,26 +1,36 @@
 #pragma once
-enum pickup_type {
-	XP,
-	CHEST
-};	
 class Pickup : public VSObject{
 public:
 	Pickup();
 	~Pickup();
-	void spawn_xp(CPoint, int);
-	int get_xp_value();
-	void spawn_chest(CPoint, bool can_evo=false);
-	bool get_can_evo();
-	void despawn();
-	void show_skin(double factor = 1.0);
 	bool is_enable();
+	virtual void spawn(CPoint, int);
+	void despawn();
+	virtual void show_skin(double factor = 1.0);
 	int obj_type = PICKUP;
-	static void load_template_pickup();
-	static Pickup get_template_pickup(int type);
-private:
-	void spawn(CPoint);
-	int _type, _level;
-	int _xp_value;
-	bool _is_enable, _can_evo;
+protected:
+	int _type, _weight;
+	bool _is_enable;
 	static vector<Pickup> template_pickup;
+};
+
+class Xp : public Pickup {
+public:
+	Xp();
+	~Xp();
+	void spawn(CPoint, int);
+	int get_xp_value();
+	void show_skin(double factor = 1.0);
+private:
+	int _xp_value;
+};
+
+class Chest : public Pickup {
+public:
+	Chest();
+	~Chest();
+	void spawn(CPoint, int);
+	bool get_can_evo();
+private:
+	bool _can_evo;
 };

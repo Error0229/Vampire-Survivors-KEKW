@@ -138,7 +138,6 @@ void Player::update_passive_effect(Passive& p) {
 void Player::level_up_passive(Passive& p) {
 	p.level_up();
 	update_passive_effect(p);
-	TRACE(_T("%d\n"), p.get_level());
 }
 
 void Player::update_proj_pos() {
