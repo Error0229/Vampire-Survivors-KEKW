@@ -39,6 +39,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 {
 	Weapon::load_weapon_stats();
 	Enemy::load_template_enemies();
+	Icon::load_filename();
 
 	_gamerun_status = PLAYING;
 	_next_status = PLAYING;
@@ -66,25 +67,21 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	}
 
 	event_background.load_skin("resources/ui/event_background.bmp", BLACK);
-	level_up_button[0].load_skin("resources/ui/event_button.bmp", BLACK);
-	level_up_button[1].load_skin("resources/ui/event_button.bmp", BLACK);
-	level_up_button[2].load_skin("resources/ui/event_button.bmp", BLACK);
-	level_up_button[3].load_skin("resources/ui/event_button.bmp", BLACK);
-	level_up_icon_frame[0].load_skin("resources/ui/frameB.bmp"); // need to update the file
-	level_up_icon_frame[1].load_skin("resources/ui/frameB.bmp");
-	level_up_icon_frame[2].load_skin("resources/ui/frameB.bmp");
-	level_up_icon_frame[3].load_skin("resources/ui/frameB.bmp");
-	level_up_choice[0] = -1;
-	level_up_choice[1] = -1;
-	level_up_choice[2] = -1;
-	level_up_choice[3] = -1;
-
-	chest_item[0] = -1;
-	chest_item[1] = -1;
-	chest_item[2] = -1;
-	chest_item[3] = -1;
-	chest_item[4] = -1;
-
+	event_background.set_base_pos(0, 0);
+	for (int i = 0; i < 4; i++) {
+		level_up_button[i].load_skin("resources/ui/event_button.bmp", BLACK);
+		level_up_icon_frame[i].load_skin("resources/ui/frameB.bmp");
+		level_up_button[i].set_base_pos(0, -75 + 75 * i);
+		level_up_icon_frame[i].set_base_pos(-120, -90 + 75*i);
+		level_up_icon[i].set_base_pos(-120, -90 + 75*i);
+		level_up_icon[i].load_icon();
+		level_up_choice[i] = -1;
+	}
+	for (int i = 0; i < 5; i++) {
+		chest_item_icon[i].set_base_pos(-200 + 100 * i, 0);
+		chest_item_icon[i].load_icon();
+		chest_item[i] = -1;
+	}
 }
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -113,23 +110,28 @@ void CGameStateRun::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
 {
+	update_mouse_pos();
 	switch (_gamerun_status) {
 	case(PLAYING):
 		break;
 	case(LEVEL_UP):
 		for (int i = 0; i < 4; i++) {
-			if (level_up_button[i].is_hover(point)) {
+			if (level_up_button[i].is_hover(mouse_pos)) {
 				player.obtain_item(level_up_choice[i]);
-				level_up_choice[0] = -1;
-				level_up_choice[1] = -1;
-				level_up_choice[2] = -1;
-				level_up_choice[3] = -1;
+				TRACE(_T("%d\n"), i);
+				//reset all choice/button
+				for (int j = 0; j < 4; j++) {
+					level_up_choice[j] = -1;
+					level_up_button[j].activate_hover = false;
+				}
+				//switch status
 				if (player.apply_level_up())
 					_next_status = LEVEL_UP;
 				else
 					_next_status = PLAYING;
 				break;
 			}
+			
 		}
 		break;
 	case(OPEN_CHEST):
@@ -182,6 +184,7 @@ int CGameStateRun::draw_level_up(bool pull_from_inv)
 		}
 	}
 	vector<double> weights(84, 0);
+	bool no_weight = true;
 	int player_items[84];
 	memset(player_items, 0, sizeof(player_items));
 	// store player's items, 0: not owned, 1: owned, 2: max level
@@ -198,6 +201,7 @@ int CGameStateRun::draw_level_up(bool pull_from_inv)
 			continue;
 		if ((pull_from_inv && player_items[i] == 1) || (!pull_from_inv && player_items[i] == 0)) {
 			weights[i] = Weapon::_base_weapon[i].get_rarity();
+			no_weight = false;
 		}
 	}
 	// calc passive weights
@@ -206,9 +210,12 @@ int CGameStateRun::draw_level_up(bool pull_from_inv)
 			continue;
 		if ((pull_from_inv && player_items[i] == 1) || (!pull_from_inv && player_items[i] == 0)) {
 			weights[i] = Passive(i).get_rarity();
+			no_weight = false;
 		}
 	}
-	return poll(weights);
+	if (no_weight && pull_from_inv)
+		return draw_level_up(false);
+	return poll(weights, true);
 }
 int CGameStateRun::draw_open_chest(bool can_evo)
 {
@@ -346,6 +353,15 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		weights[1] = 1 - (1 / (double)player.get_luck() * 100);
 		weights[0] = 1 - weights[1];
 		level_up_choice[3] = (poll(weights, true))? draw_level_up(false) : -1;
+
+		// set which choice can be click
+		for (int i = 0; i < 4; i++) {
+			if (level_up_choice[i] != -1)
+				level_up_button[i].activate_hover = true;
+			else
+				level_up_button[i].activate_hover = false;
+		}
+		
 		break;
 	case(OPEN_CHEST):
 		//--------------------------------------------------------
@@ -374,7 +390,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 				// -2 means pull empty
 				player.obtain_item(chest_item[i]);
 			}
-		}		
+		}
 		break;
 	}
 }
@@ -393,37 +409,19 @@ void CGameStateRun::OnShow()
 		i.show_skin();
 	
 	if (_gamerun_status == LEVEL_UP) {
-		event_background.set_pos(player.get_pos());
-		level_up_button[0].set_pos(player.get_pos() + CPoint(0, -75));
-		level_up_button[1].set_pos(player.get_pos() + CPoint(0, 0));
-		level_up_button[2].set_pos(player.get_pos() + CPoint(0, 75));
-		level_up_button[3].set_pos(player.get_pos() + CPoint(0, 150));
-		level_up_icon[0].set_pos(player.get_pos() + CPoint(-120, -90));
-		level_up_icon[1].set_pos(player.get_pos() + CPoint(-120, -15));
-		level_up_icon[2].set_pos(player.get_pos() + CPoint(-120, 60));
-		level_up_icon[3].set_pos(player.get_pos() + CPoint(-120, 135));
-		level_up_icon_frame[0].set_pos(player.get_pos() + CPoint(-120, -90));
-		level_up_icon_frame[1].set_pos(player.get_pos() + CPoint(-120, -15));
-		level_up_icon_frame[2].set_pos(player.get_pos() + CPoint(-120, 60));
-		level_up_icon_frame[3].set_pos(player.get_pos() + CPoint(-120, 135));
-		event_background.show_skin();
+		event_background.show();
 		for (int i = 0; i < 4; i++) {
 			if (level_up_choice[i]>-1) {
-				level_up_button[i].show_button();
-				level_up_icon_frame[i].show_skin();
-				level_up_icon[i].show_icon(level_up_choice[i]);
+				level_up_button[i].show();
+				level_up_icon_frame[i].show();
+				level_up_icon[i].show(level_up_choice[i]);
 			}
 		}
 	}
 	else if (_gamerun_status == OPEN_CHEST) {
-		chest_item_icon[0].set_pos(player.get_pos() + CPoint(-200, 0));
-		chest_item_icon[1].set_pos(player.get_pos() + CPoint(-100, 0));
-		chest_item_icon[2].set_pos(player.get_pos() + CPoint(0, 0));
-		chest_item_icon[3].set_pos(player.get_pos() + CPoint(100, 0));
-		chest_item_icon[4].set_pos(player.get_pos() + CPoint(200, 0));
 		for (int i = 0; i < 5; i++) {
 			if (chest_item[i] > -1) {
-				chest_item_icon[i].show_icon(chest_item[i]);
+				chest_item_icon[i].show(chest_item[i]);
 			}
 		}
 	}

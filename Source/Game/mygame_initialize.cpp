@@ -6,6 +6,7 @@
 #include "../Library/gameutil.h"
 #include "../Library/gamecore.h"
 #include "mygame.h"
+#include "config.h"
 
 using namespace game_framework;
 /////////////////////////////////////////////////////////////////////////////
@@ -30,9 +31,9 @@ void CGameStateInit::OnInit()
 	//
 	// 此OnInit動作會接到CGameStaterRun::OnInit()，所以進度還沒到100%
 	//
-	button_start = new Button();
+	button_start = new Ui();
 	button_start->load_skin({"resources/ui/button_start.bmp"});
-	button_start->set_pos(0,0);
+	button_start->activate_hover = true;
 	background = new VSObject({"resources/ui/background_1.bmp"});
 	background->set_pos(0,0);
 
@@ -50,7 +51,9 @@ void CGameStateInit::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void CGameStateInit::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	if (button_start->is_hover(point.x, point.y)) 
+
+	CPoint mouse_pos = point - CPoint((OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1), (OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1));
+	if (button_start->is_hover(mouse_pos)) 
 	{
 		delete button_start;
 		delete background;
@@ -63,5 +66,5 @@ void CGameStateInit::OnShow()
 	// show background
 	background->show_skin();
 	//button_start->show_button();
-	button_start->show_skin();
+	button_start->show(CPoint(0,0));
 }

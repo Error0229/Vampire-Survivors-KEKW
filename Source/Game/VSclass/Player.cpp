@@ -136,6 +136,7 @@ void Player::update_passive_effect(Passive& p) {
 	}	
 }
 void Player::level_up_passive(Passive& p) {
+	VS_ASSERT(!p.is_max_level(), "level up passive above max level.");
 	p.level_up();
 	update_passive_effect(p);
 }
