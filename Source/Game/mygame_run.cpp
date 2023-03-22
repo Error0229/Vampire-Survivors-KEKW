@@ -54,7 +54,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	player.acquire_passive(Passive(POWER));
 	map.load_map({ "resources/map/dummy1.bmp" });
 	map.set_pos(0, 0);
-	QT = QuadTree(-Player::player_dx, -Player::player_dy, 800, 600, 5, 10, 0);
+	QT = QuadTree(-Player::player_dx, -Player::player_dy, (OPEN_AS_FULLSCREEN ? RESOLUTION_X : SIZE_X), (OPEN_AS_FULLSCREEN ? RESOLUTION_Y : SIZE_Y), 6, 10, 0);
 	QT.clear();
 
 	for (int i = 0; i < 100; i++) {
@@ -291,7 +291,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 				QT.query(result, (VSObject*)(&proj));
 				for (VSObject* obj : result) {
 					if (obj->obj_type == ENEMY) {
-						proj.collide_with_enemy(*((Enemy*)obj), weapon.get_damage(), weapon.get_duration());
+						proj.collide_with_enemy(*((Enemy*)obj), weapon.get_damage(), weapon.get_duration(), weapon.get_kb());
 					}
 				}
 			}

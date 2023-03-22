@@ -8,6 +8,7 @@
 Enemy::Enemy()
 {
 	obj_type = ENEMY;
+	_last_time_got_hit = -1;
 }
 Enemy::~Enemy() 
 {
@@ -60,6 +61,19 @@ void Enemy::show_skin(double factor)
 			_death_animation.show_skin(factor);
 		}
 	}
+}
+void Enemy::update_pos(CPoint pos) {
+	if (_is_stun) {
+		this->_speed = (int)_stun_speed;
+		if (clock() - _last_time_got_hit > 240) { // set to 2x of wiki said (120ms) 
+			_is_stun = false;
+			_speed = _mspeed;
+		}
+	}
+	else {
+		this->_speed = _mspeed;
+	}
+	VSObject::update_pos(pos);
 }
 
 bool Enemy::hurt(int damage) 
@@ -174,7 +188,7 @@ Enemy Enemy::load_enemy(int id, char* name, int health, int power, int mspeed, d
 	enemy._is_mirror = false;
 	enemy._position = CPoint(0, 0);
 
-	enemy._speed = 200; //this will change later
+	enemy._speed = 50; //this will change later
 	return enemy;
 }
 

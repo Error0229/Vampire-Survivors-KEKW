@@ -156,4 +156,22 @@ int Weapon::get_type() {
 bool Weapon::is_max_level() {
 	return _level == _max_level;
 }
+int Weapon::get_pierce() {
+	return _pierce;
+}
+int Weapon::get_kb() {
+	return _knock_back;
+}
 map <int, Weapon> Weapon::_base_weapon;
+
+map <int, int> Weapon::evolution_pair = { 
+	{WHIP, VAMPIRICA}, {MAGIC_MISSILE, HOLY_MISSLE},{KNIFE, THOUSAND},
+	{AXE, SCYTHE},{CROSS, HEAVENSWORD},{HOLYBOOK, VESPERS},
+	{FIREBALL, HELLFIRE},{GARLIC, VORTEX},{HOLYWATER, BORA},
+	{DIAMOND, ROCHER},{LIGHTNING, LOOP},{PENTAGRAM, SIRE},
+	{SILF, SILF3},{SILF2, SILF3},{GUNS, GUNS3},{GUNS2, GUNS3},
+	{GATTI, STIGRANGATTI},{SONG, MANNAGGIA},{TRAPING, TRAPANO2},
+	{LANCET, CORRIDOR}, {LAUREL, SHROUD},{VENTO, VENTO2},
+	{CANDYBOX, CANDYBOX2}, {TRIASSO1, TRIASSO2}, {TRIASSO2, TRIASSO3},
+	{VICTORY, SOLES}
+};
