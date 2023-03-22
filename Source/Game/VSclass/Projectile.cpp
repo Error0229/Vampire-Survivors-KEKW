@@ -94,6 +94,9 @@ void Projectile::show() {
 		}
 		all_proj.pop_front();
 	}
+	if (clock() % 60000) {
+		all_proj.shrink_to_fit(); // release memory
+	}
 	//for (Projectile& proj : Projectile::all_proj) {
 	//	proj.show_skin();
 	//}
