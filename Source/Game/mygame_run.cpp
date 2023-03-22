@@ -118,7 +118,6 @@ void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的
 		for (int i = 0; i < 4; i++) {
 			if (level_up_button[i].is_hover(mouse_pos)) {
 				player.obtain_item(level_up_choice[i]);
-				TRACE(_T("%d\n"), i);
 				//reset all choice/button
 				for (int j = 0; j < 4; j++) {
 					level_up_choice[j] = -1;

@@ -19,11 +19,6 @@ protected:
 	CPoint _base_pos;
 };
 
-class Button : public Ui
-{
-
-};
-
 class Icon : public Ui
 {
 public:
