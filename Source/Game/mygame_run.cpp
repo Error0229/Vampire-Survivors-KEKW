@@ -208,10 +208,7 @@ int CGameStateRun::draw_level_up(bool pull_from_inv)
 			weights[i] = Passive(i).get_rarity();
 		}
 	}
-	random_device rd;
-	mt19937 gen(rd());
-	discrete_distribution<> dist(weights.begin(), weights.end());
-	return dist(gen);
+	return poll(weights);
 }
 int CGameStateRun::draw_open_chest(bool can_evo)
 {
@@ -236,10 +233,7 @@ int CGameStateRun::draw_open_chest(bool can_evo)
 			index_to_type.push_back(i.get_type());
 		}
 	}
-	random_device rd;
-	mt19937 gen(rd());
-	discrete_distribution<> dist(weights.begin(), weights.end());
-	return index_to_type[dist(gen)];
+	return index_to_type[poll(weights)];
 }
 
 void CGameStateRun::update_mouse_pos()
@@ -258,15 +252,10 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 	vector <VSObject*> result;
 	
 	//polling
-	random_device rd;
-	mt19937 gen(rd());
+	vector<double> weights(2, 0);
 	
-	//level up
-	double owned_chance, forth_chance;
-	vector<double> pull_owned, pull_forth;
-	discrete_distribution<> dist_own, dist_forth;
-
 	//open chest
+	int chest_item_count;
 	static bool can_evo=false;
 
 	_gamerun_status = _next_status;
@@ -345,21 +334,18 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			break;
 
 		// owned_chance
-		owned_chance = 1 - 0.3 * ((player.get_level() & 1) ? 1 : 2) / (double)player.get_luck() * 100;
-		pull_owned = {((1 - owned_chance > 0) ? 1 - owned_chance : 0), owned_chance };
-		dist_own = discrete_distribution<>(pull_owned.begin(), pull_owned.end());
-		
-		// 4th_chance
-		forth_chance = 1 - (1 / (double)player.get_luck() * 100);
-		pull_forth = { 1 - forth_chance , forth_chance };
-		dist_forth = discrete_distribution<>(pull_forth.begin(), pull_forth.end());
+		weights[1] = 1 + 0.3 * ((player.get_level() & 1) ? 1 : 2) / (double)player.get_luck() * 100;
+		weights[0] = 1 - weights[1];
 
 		// poll new level_up choices
-		level_up_choice[0] = draw_level_up(dist_own(gen));
-		level_up_choice[1] = draw_level_up(dist_own(gen));
+		level_up_choice[0] = draw_level_up(poll(weights, true));
+		level_up_choice[1] = draw_level_up(poll(weights, true));
 		level_up_choice[2] = draw_level_up(false);
-		level_up_choice[3] = dist_forth(gen)? draw_level_up(false):-1;
-		//TRACE(_T("0:%d\t1:%d\t2:%d\t3:%d\n"), level_up_choice[0], level_up_choice[1], level_up_choice[2], level_up_choice[3]);
+
+		// 4th_choice
+		weights[1] = 1 - (1 / (double)player.get_luck() * 100);
+		weights[0] = 1 - weights[1];
+		level_up_choice[3] = (poll(weights, true))? draw_level_up(false) : -1;
 		break;
 	case(OPEN_CHEST):
 		//--------------------------------------------------------
@@ -367,10 +353,27 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		//--------------------------------------------------------
 		if (chest_item[0] != -1)
 			break;
-		for (int i = 0; i < 5; i++) {
+		
+		// poll chest item count
+		weights[1] = 0.05 * (double)player.get_luck() / 100;
+		weights[0] = 1 - weights[1];
+		chest_item_count = 1;
+		if (poll(weights, true))
+			chest_item_count = 5;
+		else {
+			weights[1] = 0.2 * (double)player.get_luck() / 100;
+			weights[0] = 1 - weights[1];
+			if (poll(weights, true))
+				chest_item_count = 3;
+		}
+
+		// poll chest item
+		for (int i = 0; i < chest_item_count; i++) {
 			chest_item[i] = draw_open_chest(can_evo);
-			if (chest_item[i] > -1) // -2 means pull empty
+			if (chest_item[i] > -1) {
+				// -2 means pull empty
 				player.obtain_item(chest_item[i]);
+			}
 		}		
 		break;
 	}
