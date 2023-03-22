@@ -17,9 +17,7 @@ public:
 	int get_level();
 	int get_pickup_range();
 	int get_luck();
-	vector<Weapon>& get_weapons();
 	vector<Passive>& get_passives();
-	int weapon_count();
 	int passive_count();
 	
 	//things
@@ -29,7 +27,7 @@ public:
 	bool apply_level_up();
 private:
 	VSObject _bleed_animation;
-	vector<Weapon> _weapons;
+	// vector<Weapon> _weapons;
 	vector<Passive> _passives;
 	vector<int> stats;
 	int _might, _armor, _max_health, _recovery, _cooldown, _area, 

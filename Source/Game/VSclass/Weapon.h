@@ -24,6 +24,7 @@ public:
 	static void attack();
 	static void show();
 	static deque<Weapon> all_weapon;
+	static int weapon_count();
 protected:
 	Projectile _base_proj;
 	deque<Projectile> _proj_q;

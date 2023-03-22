@@ -216,6 +216,9 @@ int Weapon::get_pierce() {
 int Weapon::get_kb() {
 	return _knock_back;
 }
+int Weapon::weapon_count() {
+	return static_cast<int>  (Weapon::_base_weapon.size());
+}
 map <int, Weapon> Weapon::_base_weapon;
 
 map <int, int> Weapon::evolution_pair = { 

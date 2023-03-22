@@ -153,15 +153,15 @@ int CGameStateRun::draw_level_up(bool pull_from_inv)
 	//0~31: weapon
 	//32~62: evo
 	//63~83: passive
-	if (!pull_from_inv && player.weapon_count() >= 6 && player.passive_count() >= 6)
+	if (!pull_from_inv && Weapon::weapon_count() >= 6 && player.passive_count() >= 6)
 		return draw_level_up(true);
-	if (pull_from_inv && player.weapon_count() + player.passive_count() == 1)
+	if (pull_from_inv && Weapon::weapon_count() + player.passive_count() == 1)
 		return draw_level_up(false);
 	vector<double> weights(84, 0);
 	int player_items[84];
 	memset(player_items, 0, sizeof(player_items));
 	// store player's items, 0: not owned, 1: owned, 2: max level
-	for (auto i : player.get_weapons()) {
+	for (auto& i : Weapon::all_weapon) {
 		player_items[i.get_type()] = (i.is_max_level()) ? 2 : 1;
 	}
 	for (auto i : player.get_passives()) {

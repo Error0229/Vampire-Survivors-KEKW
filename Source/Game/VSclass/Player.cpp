@@ -182,19 +182,13 @@ int Player::get_luck()
 {
 	return _luck;
 }
-int Player::weapon_count()
-{
-	return _weapons.size();
-}
+
 int Player::passive_count()
 {
 	return _passives.size();
 }
 
-vector<Weapon>& Player::get_weapons()
-{
-	return _weapons;
-}
+
 
 vector<Passive>& Player::get_passives()
 {
@@ -206,7 +200,7 @@ void Player::obtain_item(int type)
 	bool is_own = false;
 	if (type < 32) {
 		//weapon
-		for (auto& i : _weapons) {
+		for (auto& i : Weapon::all_weapon) {
 			if (i.get_type() == type) {
 				i.upgrade();
 				is_own = true;
