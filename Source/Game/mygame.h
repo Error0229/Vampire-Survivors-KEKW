@@ -102,6 +102,7 @@ namespace game_framework {
 		Player player;
 		vector<Enemy> enemy;
 		vector<Pickup> xp;
+		vector<Pickup> chest;
 		QuadTree QT;
 		int _gamerun_status, _next_status;
 		
@@ -110,6 +111,9 @@ namespace game_framework {
 		int level_up_choice[4];
 		Icon level_up_icon[4];
 		VSObject level_up_icon_frame[4];
+
+		int chest_item[5];
+		Icon chest_item_icon[5];
 	};
 
 	/////////////////////////////////////////////////////////////////////////////

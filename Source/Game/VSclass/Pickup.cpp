@@ -13,6 +13,10 @@ int Pickup::get_xp_value()
 {
 	return _xp_value;
 }
+bool Pickup::get_can_evo()
+{
+	return _can_evo;
+}
 void Pickup::spawn_xp(CPoint pos, int xp)
 {
 	_xp_value = xp;

@@ -7,9 +7,10 @@ class Pickup : public VSObject{
 public:
 	Pickup();
 	~Pickup();
-	int get_xp_value();
 	void spawn_xp(CPoint, int);
+	int get_xp_value();
 	void spawn_chest(CPoint, bool can_evo=false);
+	bool get_can_evo();
 	void despawn();
 	void show_skin(double factor = 1.0);
 	bool is_enable();

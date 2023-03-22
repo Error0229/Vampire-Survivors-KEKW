@@ -11,8 +11,8 @@ public:
 	//weapon & passive
 	void acquire_weapon(Weapon&);
 	void acquire_passive(Passive&);
-	void upgrade_passive(Passive&);
-	void level_up_passive(int);
+	void update_passive_effect(Passive&);
+	void level_up_passive(Passive&);
 	void obtain_item(int);
 	
 	//getter
@@ -29,6 +29,8 @@ public:
 	void load_bleed();
 	bool pick_up_xp(int);
 	bool apply_level_up();
+	bool all_max();
+	bool full_inv();
 private:
 	VSObject _bleed_animation;
 	vector<Weapon> _weapons;
