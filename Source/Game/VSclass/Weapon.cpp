@@ -52,7 +52,7 @@ Weapon::Weapon(int type, char* skin, vector<char*> proj, vector<int> stats) {
 	_duration = stats[ 7 ], _pierce = stats[ 8 ], _cooldown = stats[ 9 ],
 	_proj_interval = stats[ 10 ], _hitbox_delay = stats[ 11 ], _knock_back = stats[ 12 ],
 	_pool_limit = stats[ 13 ], _chance = stats[ 14 ], _crit_multi = stats[ 15 ],
-	_block_by_wall = stats[ 16 ];
+	_block_by_wall = stats[ 16 ], _evolution_type = stats[17];
 
 	switch (_type) {
 	case WHIP:

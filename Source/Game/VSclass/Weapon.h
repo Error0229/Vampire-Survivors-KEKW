@@ -32,7 +32,7 @@ protected:
 	int _type, _level, _max_level, _damage, _speed, _rarity,   
 		_amount, _duration, _pierce, _cooldown, _proj_interval,
 		_hitbox_delay, _knock_back, _pool_limit, _chance, 
-		_crit_multi, _block_by_wall;
+		_crit_multi, _block_by_wall, _evolution_type;
 	double _area;
 	clock_t _last_time_attack = -1;
 	vector<string> _level_up_msg;
