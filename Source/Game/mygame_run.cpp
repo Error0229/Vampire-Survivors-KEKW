@@ -58,7 +58,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	QT.clear();
 
 	for (int i = 0; i < 100; i++) {
-		enemy.push_back(Enemy::get_template_enemy(GHOST));
+		enemy.push_back(Enemy::get_template_enemy(XLBAT));
 		xp.push_back(Pickup::get_template_pickup(XP));
 	}
 	for ( int i = 0; i < (int)enemy.size(); i++ ) {
@@ -217,26 +217,49 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		//--------------------------------------------------------
 		//playing status
 		//--------------------------------------------------------
+		//
+		Weapon::attack();
+		Projectile::update_position();
+		//
 		player.update_pos(mouse_pos);
-		player.update_proj_pos();
-		QT.set_range(-Player::player_dx, -Player::player_dy, 800, 600);
-		for (auto& weapon : player.get_weapons()) {
-			for (Projectile& proj : weapon.get_all_proj()) {
-				QT.insert((VSObject*)(&proj));
-			}
+		// player.update_proj_pos();
+		QT.set_range(-Player::player_dx, -Player::player_dy, (OPEN_AS_FULLSCREEN ? RESOLUTION_X : SIZE_X ), (OPEN_AS_FULLSCREEN ? RESOLUTION_Y  : SIZE_Y ));
+		// origin
+		//for (auto& weapon : player.get_weapons()) {
+		//	for (Projectile& proj : weapon.get_all_proj()) {
+		//		QT.insert((VSObject*)(&proj));
+		//	}
+		//}
+		
+		// new
+		for (Projectile& proj : Projectile::all_proj) {
+			QT.insert((VSObject*)(&proj));
 		}
+
 		for (Enemy& i_enemy : enemy) {
 			if (!i_enemy.is_dead() && i_enemy.is_enable())
 				QT.insert((VSObject*)(&i_enemy));
 		}
-		for (auto& weapon : player.get_weapons()) {
-			for (Projectile& proj : weapon.get_all_proj()) {
-				result = {};
-				QT.query(result, (VSObject*)(&proj));
-				for (VSObject* obj : result) {
-					if (obj->obj_type == ENEMY) {
-						proj.collide_with_enemy(*((Enemy*)obj), weapon.get_damage(), weapon.get_duration(), weapon.get_kb());
-					}
+		// origin
+		//for (auto& weapon : player.get_weapons()) {
+		//	for (Projectile& proj : weapon.get_all_proj()) {
+		//		result = {};
+		//		QT.query(result, (VSObject*)(&proj));
+		//		for (VSObject* obj : result) {
+		//			if (obj->obj_type == ENEMY) {
+		//				proj.collide_with_enemy(*((Enemy*)obj), weapon.get_damage(), weapon.get_duration(), weapon.get_kb());
+		//			}
+		//		}
+		//	}
+		//}
+
+		// new
+		for (Projectile& proj :Projectile::all_proj) {
+			result = {};
+			QT.query(result, (VSObject*)(&proj));
+			for (VSObject* obj : result) {
+				if (obj->obj_type == ENEMY) {
+					proj.collide_with_enemy(*((Enemy*)obj));
 				}
 			}
 		}
@@ -310,7 +333,8 @@ void CGameStateRun::OnShow()
 	map.map_padding(player.get_pos());
 	map.show_map();
 	player.show_skin();
-	player.show_proj_skin();
+	// player.show_proj_skin();
+	Weapon::show();
 	for (int i = 0; i < (int)enemy.size(); i++) {
 		enemy[i].show_skin();
 	}

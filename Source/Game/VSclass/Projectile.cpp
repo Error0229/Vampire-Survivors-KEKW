@@ -1,11 +1,13 @@
 ﻿#include "stdafx.h"
 #include "../../Library/gameutil.h"
+#include "../config.h"
 #include "VSObject.h"
 #include "Projectile.h"
 #include "Enemy.h"
 
 Projectile::Projectile() {
 	obj_type = PROJECTILE;
+	_is_over = false;
 };
 Projectile::~Projectile() {};
 Projectile::Projectile(vector<char*> filename, COLORREF color) {
@@ -30,6 +32,14 @@ void Projectile::collide_with_enemy(Enemy& e, int 💥, int 😄, int 😵) {
 	e._last_time_got_hit = clock();
 	e.hurt(💥);
 }
+void Projectile::collide_with_enemy(Enemy& 🥵) {
+	if (!is_overlapped((*this), 🥵))
+		return;
+	🥵._is_stun = true;
+	🥵._stun_speed = -1.0 * 🥵._speed * 🥵._kb * (this->_duration <= 0 ? 1 : this->_duration) * this->_knock_back;
+	🥵._last_time_got_hit = clock();
+	🥵.hurt(this->_damage);
+}
 void Projectile::create_projectile(Projectile proj, CPoint position, CPoint target_pos, int type, int delay, int damage, int speed, int duration, int pierce, int proj_interval, int hitbox_delay, int knock_back, int pool_limit, int chance, int criti_multi, int block_by_wall, bool is_mirror) {
 
 	proj._position = position;
@@ -48,10 +58,11 @@ void Projectile::create_projectile(Projectile proj, CPoint position, CPoint targ
 	proj._block_by_wall = block_by_wall;
 	proj._type = type;
 	proj._is_mirror = is_mirror;
-	Projectile::_all_proj.push_back(proj);
+	proj._d_dis = proj._position - proj._origin_player_pos ;
+	Projectile::all_proj.push_back(proj);
 }
 void Projectile::create_projectile(Projectile p) {
-	Projectile::_all_proj.push_back(p);
+	Projectile::all_proj.push_back(p);
 }
 void Projectile::set_delay(int delay) {
 	_delay = delay;
@@ -59,8 +70,8 @@ void Projectile::set_delay(int delay) {
 void Projectile::set_create_time(clock_t time) {
 	_create_time = time; 
 }
-void Projectile::update_projectile_position() {
-	for (Projectile& proj: Projectile::_all_proj) {
+void Projectile::update_position() {
+	for (Projectile& proj: Projectile::all_proj) {
 		switch (proj._type) {
 		case(WHIP): 
 			proj.WHIP_transition();
@@ -69,9 +80,27 @@ void Projectile::update_projectile_position() {
 		}
 	}
 }
+void Projectile::show_skin(double factor) {
+	VSObject::show_skin(factor);
+	if(this->_skin.IsAnimationDone())
+		this->_is_over = true;
+}
+void Projectile::show() {
+	int deq_size = static_cast<int> (all_proj.size());
+	for (int i = 0; i < deq_size; i++) {
+		all_proj.front().show_skin();
+		if (!all_proj.front()._is_over) {
+			all_proj.emplace_back(all_proj.front());
+		}
+		all_proj.pop_front();
+	}
+	//for (Projectile& proj : Projectile::all_proj) {
+	//	proj.show_skin();
+	//}
+}
 void Projectile::WHIP_transition() {
-	CPoint player_pos = { -VSObject::player_dx, -VSObject::player_dy };
-	_position = player_pos + (_position - _origin_player_pos);
+	CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
+	_position = player_pos + _d_dis;
 }
 
-deque<Projectile> Projectile::_all_proj = {};
+deque<Projectile> Projectile::all_proj = {};

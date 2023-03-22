@@ -71,32 +71,36 @@ Weapon::Weapon(int type, char* skin, vector<char*> proj, vector<int> stats) {
 		break;
 	}
 }
-void Weapon::update_proj(CPoint player_pos, int player_direction, int player_w, int player_h) {
-	for (Projectile &proj : _proj_q ) {
-		switch (this->_type){
-		case WHIP:
-			for ( int i = 0; i < this->_amount; i++ ) {
-				proj.set_is_mirror( ( player_direction != proj.get_direct() ));
-				if (( player_direction == RIGHT  && !(i&1) ) || ( player_direction == LEFT && ( i & 1 ) ) ) {
-					proj.set_pos({ player_pos.x + (proj.get_width() >> 1) - (player_w >> 1) , player_pos.y - ( ( i * player_h ) >> 2 )});
-				}
-				else {
-					proj.set_pos({ player_pos.x - ( proj.get_width() >> 1 ) + ( player_w >> 1 ) , player_pos.y - ( ( i * player_h ) >> 2 ) });
-				}
-			}
-			break;
-		}
-	}
-}
+//void Weapon::update_proj(CPoint player_pos, int player_direction, int player_w, int player_h) {
+//	for (Projectile &proj : _proj_q ) {
+//		switch (this->_type){
+//		case WHIP:
+//			for ( int i = 0; i < this->_amount; i++ ) {
+//				proj.set_is_mirror( ( player_direction != proj.get_direct() ));
+//				if (( player_direction == RIGHT  && !(i&1) ) || ( player_direction == LEFT && ( i & 1 ) ) ) {
+//					proj.set_pos({ player_pos.x + (proj.get_width() >> 1) - (player_w >> 1) , player_pos.y - ( ( i * player_h ) >> 2 )});
+//				}
+//				else {
+//					proj.set_pos({ player_pos.x - ( proj.get_width() >> 1 ) + ( player_w >> 1 ) , player_pos.y - ( ( i * player_h ) >> 2 ) });
+//				}
+//			}
+//			break;
+//		}
+//	}
+//}
 void Weapon::attack() {
 	CPoint mouse_pos;
 	GetCursorPos(&mouse_pos);
 	HWND targetWindow = FindWindow(NULL, GAME_TITLE);
 	ScreenToClient(targetWindow, &mouse_pos);
-	CPoint player_pos = { -VSObject::player_dx, -VSObject::player_dy };
-	mouse_pos += player_pos; // transfer into game position
-
+	CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
+	mouse_pos += CPoint{- VSObject::player_dx, - VSObject::player_dy}; // transfer into game position
+	// create projectile
 	for (Weapon& w : all_weapon) {
+		if (clock() - w._last_time_attack < w._cooldown) {
+			continue;
+		}
+		w._last_time_attack = clock();
 		switch (w._type) {
 		case (WHIP):
 			for (int i = 0; i < w._amount; i++) {
@@ -106,25 +110,25 @@ void Weapon::attack() {
 				if ( mouse_pos.x > player_pos.x) {
 					if (i ^ 1) {
 						Projectile::create_projectile(proj, { player_pos.x + (proj.get_width() >> 1) - (16) , player_pos.y - (i * 16) }, 
-							mouse_pos, i * 400, _type, _damage, _speed, _duration, _pierce, _proj_interval, _hitbox_delay, 
-							_knock_back, _pool_limit, _chance, _crit_multi, _block_by_wall, RIGHT != proj.get_direct());
+							mouse_pos, i * 400, w._type, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay, 
+							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, RIGHT != proj.get_direct());
 					}
 					else {
 						Projectile::create_projectile(proj, { player_pos.x - (proj.get_width() >> 1) + (16) , player_pos.y - ((i - 1) * 16) },
-							mouse_pos, 200 + (i - 1) * 400, _type, _damage, _speed, _duration, _pierce, _proj_interval, _hitbox_delay,
-							_knock_back, _pool_limit, _chance, _crit_multi, _block_by_wall, LEFT != proj.get_direct());
+							mouse_pos, 200 + (i - 1) * 400, w._type, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, LEFT != proj.get_direct());
 					}
 				}
 				else {
 					if (i ^ 1) {
 						Projectile::create_projectile(proj, { player_pos.x - (proj.get_width() >> 1) + (16) , player_pos.y - (i * 16) },
-							mouse_pos, i * 400, _type, _damage, _speed, _duration, _pierce, _proj_interval, _hitbox_delay,
-							_knock_back, _pool_limit, _chance, _crit_multi, _block_by_wall, RIGHT != proj.get_direct());
+							mouse_pos, i * 400, w._type, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, RIGHT != proj.get_direct());
 					}
 					else {
 						Projectile::create_projectile(proj, { player_pos.x + (proj.get_width() >> 1) - (16) , player_pos.y - ((i - 1) * 16) },
-							mouse_pos, 200 + (i - 1) * 400, _type, _damage, _speed, _duration, _pierce, _proj_interval, _hitbox_delay,
-							_knock_back, _pool_limit, _chance, _crit_multi, _block_by_wall, LEFT != proj.get_direct());
+							mouse_pos, 200 + (i - 1) * 400, w._type, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, LEFT != proj.get_direct());
 					}
 				}
 			}
@@ -132,12 +136,16 @@ void Weapon::attack() {
 
 		}
 	}
+	// 
 }
-void Weapon::show_proj() {
-	for (Projectile& proj : _proj_q ) {
-		proj.show_skin();
-	}
+void Weapon::show() {
+	Projectile::show();
 }
+//void Weapon::show_proj() {
+//	for (Projectile& proj : _proj_q ) {
+//		proj.show_skin();
+//	}
+//}
 deque<Projectile>& Weapon::get_all_proj() {
 	return _proj_q;
 }
@@ -197,30 +205,35 @@ void Weapon::load_weapon_stats() {
 		while ( getline(ss, token, ',') ) {
 			stats.push_back(stoi(token));
 		}
-		Weapon w = Weapon(type, const_cast<char*>(skin_file.c_str()), proj_vec, stats);
+		// origin
+		// Weapon w = Weapon(type, const_cast<char*>(skin_file.c_str()), proj_vec, stats);
+		//for ( int i = 0; i < w._amount; i++ ) {
+		//	Projectile p(proj_vec, BLACK);
+		//	switch ( w._type ) {
+		//	case WHIP:
+		//		p.set_pos(0, 0);
+		//		p.set_default_direct(RIGHT);
+		//		p.set_animation(w._proj_interval << 1, false, w._cooldown);
+		//		p.enable_animation();
+		//		break;
+
+		//	}
+		//	w._proj_q.emplace_back(p);
+		//}
+		// Weapon::_base_weapon[type] = w;
+		
+		// new 
 		Weapon w_new = Weapon(type, const_cast<char*>(skin_file.c_str()), stats);
 		Projectile p_new(proj_vec, BLACK);
 		switch (type) {
 		case WHIP:
 			p_new.set_default_direct(RIGHT);
-			p_new.set_animation(w._proj_interval << 1, false, w_new._cooldown);
+			p_new.set_animation(w_new._proj_interval << 1, true, 0);
+			p_new.enable_animation();
 			break;
 		}
 		w_new._base_proj = p_new;
-		for ( int i = 0; i < w._amount; i++ ) {
-			Projectile p(proj_vec, BLACK);
-			switch ( w._type ) {
-			case WHIP:
-				p.set_pos(0, 0);
-				p.set_default_direct(RIGHT);
-				p.set_animation(w._proj_interval << 1, false, w._cooldown);
-				p.enable_animation();
-				break;
-
-			}
-			w._proj_q.emplace_back(p);
-		}
-		Weapon::_base_weapon[ type ] = w;
+		Weapon::_base_weapon[ type ] = w_new;
 	}
 }
 int Weapon::get_damage() {
