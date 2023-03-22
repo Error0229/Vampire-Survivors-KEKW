@@ -17,6 +17,7 @@ public:
 	void show_skin(double factor = 1.0) override;
 	void set_offset(CPoint);
 	void WHIP_transition();
+	void VAMPIRICA_transition();
 	void collide_with_enemy(Enemy&);
 	// int _type, _level, _max_level, _damage, _speed, _rarity,  _amount, _duration, _pierce, _cooldown, _proj_interval, _hitbox_delay, _knock_back, _pool_limit, _chance, _crit_multi, _block_by_wall;
 	static void create_projectile(Projectile proj, CPoint position, CPoint target_pos, int delay, int type, int damage,int speed, int duration, int pierce, int proj_interval, int hitbox_delay, int knock_back, int pool_limit, int chance, int criti_multi, int block_by_wall, bool is_mirror);

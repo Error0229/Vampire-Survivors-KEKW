@@ -64,7 +64,9 @@ void Projectile::update_position() {
 		case(WHIP): 
 			proj.WHIP_transition();
 			break;
-			
+		case (VAMPIRICA):
+			proj.VAMPIRICA_transition();
+			break;
 		}
 	}
 }
@@ -76,7 +78,8 @@ void Projectile::show_skin(double factor) {
 void Projectile::show() {
 	int deq_size = static_cast<int> (all_proj.size());
 	for (int i = 0; i < deq_size; i++) {
-		all_proj.front().show_skin();
+		if (clock() - all_proj.front()._create_time >= all_proj.front()._delay)
+			all_proj.front().show_skin();
 		if (!all_proj.front()._is_over) {
 			all_proj.emplace_back(all_proj.front());
 		}
@@ -90,5 +93,8 @@ void Projectile::WHIP_transition() {
 	CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
 	_position = player_pos + _offset;
 }
-
+void Projectile::VAMPIRICA_transition() {
+	CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
+	_position = player_pos + _offset;
+}
 deque<Projectile> Projectile::all_proj = {};

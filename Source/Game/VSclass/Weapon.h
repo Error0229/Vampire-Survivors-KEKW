@@ -4,7 +4,6 @@
 class Weapon : public VSObject {
 public:
 	Weapon();
-	Weapon(int, char*, vector<char*>, vector<int>);
 	Weapon(int, char*, vector<int>);
 	~Weapon();
 	// void show_proj();
@@ -18,6 +17,7 @@ public:
 	int get_rarity();
 	int get_type();
 	bool is_max_level();
+	bool is_evo_weapon();
 	int get_kb();
 	int get_pierce();
 	static map <int, int> evolution_pair;
@@ -33,7 +33,7 @@ protected:
 	int _type, _level, _max_level, _damage, _speed, _rarity,   
 		_amount, _duration, _pierce, _cooldown, _proj_interval,
 		_hitbox_delay, _knock_back, _pool_limit, _chance, 
-		_crit_multi, _block_by_wall, _evolution_type;
+		_crit_multi, _block_by_wall, _evolution_type, _evolution_require;
 	double _area;
 	clock_t _last_time_attack = -1;
 	vector<string> _level_up_msg;
