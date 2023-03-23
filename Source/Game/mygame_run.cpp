@@ -50,14 +50,15 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	player.set_default_direct(RIGHT);
 	player.set_animation(150, false);
 	player.load_bleed();
-	player.acquire_weapon(Weapon::_base_weapon[0]);
+	player.acquire_weapon(Weapon::_base_weapon[MAGIC_MISSILE]);
 	player.acquire_passive(Passive(POWER));
 	map.load_map({ "resources/map/dummy1.bmp" });
 	map.set_pos(0, 0);
-	QT = QuadTree(-Player::player_dx, -Player::player_dy, (OPEN_AS_FULLSCREEN ? RESOLUTION_X : SIZE_X), (OPEN_AS_FULLSCREEN ? RESOLUTION_Y : SIZE_Y), 6, 10, 0);
-	QT.clear();
+	// QT = QuadTree(-Player::player_dx, -Player::player_dy, (OPEN_AS_FULLSCREEN ? RESOLUTION_X : SIZE_X), (OPEN_AS_FULLSCREEN ? RESOLUTION_Y : SIZE_Y), 6, 10, 0);
+	QuadTree::VSPlain.clear();
+	// QT.clear();
 
-	for (int i = 0; i < 100; i++) {
+	for (int i = 0; i < 1; i++) {
 		enemy.push_back(Enemy::get_template_enemy(XLBAT));
 		xp.push_back(Pickup::get_template_pickup(XP));
 	}
@@ -88,7 +89,7 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	switch (nChar) {
 	case('A'):
 		player.level_up_passive(0);
-		Weapon::evolution(WHIP);
+		// Weapon::evolution(WHIP);
 		for (int i = 0; i < (int)enemy.size();i++) {
 			if (enemy[i].hurt(1000000)) {
 				xp[i].spawn_xp(enemy[i].get_pos(), enemy[i].get_xp_value());
@@ -206,44 +207,57 @@ void CGameStateRun::update_mouse_pos()
 void CGameStateRun::OnMove()							// 移動遊戲元素
 {
 	update_mouse_pos();
-	vector <VSObject*> result;
+	vector <VSObject*> result = {};
+	vector <VSObject*> plain_result = {};
 	//for level-up polling
 	double owned_chance, forth_chance;
 	vector<double> pull_owned, pull_forth;
 	random_device rd;
 	mt19937 gen(rd());
 	discrete_distribution<> dist_own, dist_forth;
+	int offset = 300;
 	switch (_gamerun_status) {
 	case(PLAYING):
 		//--------------------------------------------------------
 		//playing status
 		//--------------------------------------------------------
+		player.update_pos(mouse_pos);
+		// QT.set_range(-Player::player_dx, -Player::player_dy, (OPEN_AS_FULLSCREEN ? RESOLUTION_X : SIZE_X ), (OPEN_AS_FULLSCREEN ? RESOLUTION_Y  : SIZE_Y ));
+		QuadTree::VSPlain.set_range(-Player::player_dx - offset, -Player::player_dy - offset, (OPEN_AS_FULLSCREEN ? RESOLUTION_X : SIZE_X) + offset, (OPEN_AS_FULLSCREEN ? RESOLUTION_Y : SIZE_Y) + offset);
+		for (Enemy& i_enemy : enemy) {
+			if (!i_enemy.is_dead() && i_enemy.is_enable()) {
+				// QT.insert((VSObject*)(&i_enemy));
+				QuadTree::VSPlain.insert((VSObject*)(&i_enemy));
+			}
+		}
 		Weapon::attack();
 		Projectile::update_position();
-		player.update_pos(mouse_pos);
-		QT.set_range(-Player::player_dx, -Player::player_dy, (OPEN_AS_FULLSCREEN ? RESOLUTION_X : SIZE_X ), (OPEN_AS_FULLSCREEN ? RESOLUTION_Y  : SIZE_Y ));
+		// why we need this ?
+		//for (Projectile& proj : Projectile::all_proj) {
+		//	QT.insert((VSObject*)(&proj));
+		//	// QuadTree::VSPlain.insert((VSObject*)(&proj));
+		//}
 
 		for (Projectile& proj : Projectile::all_proj) {
-			QT.insert((VSObject*)(&proj));
-		}
-
-		for (Enemy& i_enemy : enemy) {
-			if (!i_enemy.is_dead() && i_enemy.is_enable())
-				QT.insert((VSObject*)(&i_enemy));
-		}
-		for (Projectile& proj :Projectile::all_proj) {
-			result = {};
-			QT.query(result, (VSObject*)(&proj));
-			for (VSObject* obj : result) {
-				if (obj->obj_type == ENEMY) {
-					proj.collide_with_enemy(*((Enemy*)obj));
-				}
+			// old
+			//result = {};
+			//QT.query(result, (VSObject*)(&proj));
+			//for (VSObject* obj : result) {
+			//	if (obj->obj_type == ENEMY) {
+			//		proj.collide_with_enemy(*((Enemy*)obj));
+			//	}
+			//}
+			//new
+			plain_result.clear();
+			QuadTree::VSPlain.query_by_type(plain_result, (VSObject*)(&proj), ENEMY);
+			for (VSObject* obj : plain_result) {
+				proj.collide_with_enemy(*((Enemy*)obj));
 			}
 		}
 		for (int i = 0; i < (int)enemy.size(); i++) {
 			enemy[i].update_pos(player.get_pos());
 			result = {};
-			QT.query(result, (VSObject*)(&enemy[i]));
+			QuadTree::VSPlain.query_by_type(result, (VSObject*)(&enemy[i]), ENEMY);
 			for (VSObject* obj : result) {
 				enemy[i].append_collide(*((Enemy*)obj), 0.75, 0.5);
 			}
@@ -258,7 +272,8 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 				//}
 			}
 		}
-		QT.clear();
+		QuadTree::VSPlain.clear();
+		// QT.clear();
 		// suck xp
 		for (auto& i : xp) {
 			if (i.is_enable() && VSObject::distance(player, i) < player.get_pickup_range()) {

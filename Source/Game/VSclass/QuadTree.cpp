@@ -113,21 +113,47 @@ void QuadTree::query(vector<VSObject*>& result, VSObject* q)
         }
     }
 }
-void QuadTree::query_nearest_point(CPoint& result, VSObject* obj, int min_distance){
-    if (this->children[0] != NULL) {
-        for (int i = 0; i < 4; i++) {
-            int dis = VSObject::distance(obj->get_pos(), CPoint{ this->children[i]->_x, this->children[i]->_y });
-            if (dis > min_distance) {
-                continue;
-            }
-            else {
-                min_distance = dis;
-                this->query_nearest_point(result, obj, min_distance);
+void QuadTree::query_by_type(vector<VSObject*>& result, VSObject* q, int type)
+{
+    int index = this->get_quadrant(q);
+    // cout << "range: x:" << this->_x << '~' << this->_x + this->w << " y:" << this->_y << '~' << this->_y + this->h << endl;
+    // cout << "index: " << index << '\n';
+    if (index != -1 && this->children[0] != NULL) {
+        this->children[index]->query(result, q);
+    }
+    else {
+        if (this->children[0] != NULL) {
+            for (int i = 0; i < 4; i++) {
+                if (is_overlapped_pure(this->children[i]->_x, this->children[i]->_y, this->children[i]->w, this->children[i]->h, q->_position.x, q->_position.y, q->get_width(), q->get_height())) {
+                    this->children[i]->query(result, q);
+                }
             }
         }
     }
+    for (VSObject* obj : objects) {
+        if (obj->obj_type != type)
+            continue;
+        if (is_overlapped(*(obj), *q)) {
+            result.push_back(obj);
+        }
+    }
 }
-
+void QuadTree::query_nearest_enemy_pos(CPoint& result, VSObject* q, int& min_distance) {
+    if (this->children[0] != NULL) {
+        for (int i = 0; i < 4; i++) {
+            this->children[i]->query_nearest_enemy_pos(result, q, min_distance);
+        }
+    }
+    for (VSObject* obj : objects) {
+        if (obj->obj_type != ENEMY)
+            continue;
+        int dis = VSObject::distance(obj->get_pos(), q->get_pos());
+        if (dis < min_distance) {
+            min_distance = dis;
+            result = obj->get_pos();
+        }
+    }
+}
 void QuadTree::clear()
 {
     this->objects.clear();
@@ -139,3 +165,4 @@ void QuadTree::clear()
         }
     }
 }
+QuadTree QuadTree::VSPlain = QuadTree(-VSObject::player_dx, -VSObject::player_dy, (OPEN_AS_FULLSCREEN ? RESOLUTION_X : SIZE_X), (OPEN_AS_FULLSCREEN ? RESOLUTION_Y : SIZE_Y), 6, 10, 0);

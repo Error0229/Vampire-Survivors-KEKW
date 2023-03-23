@@ -54,6 +54,7 @@ public:
 private:
 	// stats
 	clock_t _last_time_got_hit;
+	vector <clock_t> _last_time_got_hit_by_projectile;
 	int _alt_speed;
 	int _id, _hp, _hp_max, _power, _mspeed, _kb_max;
 	double _kb, _res_f, _xp_value;

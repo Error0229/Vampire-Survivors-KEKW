@@ -113,7 +113,7 @@ namespace game_framework {
 		int animationCount = -1;
 		clock_t last_time = -1;
 		bool isAnimation = false;
-		bool isAnimationDone = true;
+		bool isAnimationDone = false;
 		bool once = false;
 		vector<unsigned> SurfaceID;
 		bool     isBitmapLoaded = false;	// whether a bitmap has been loaded

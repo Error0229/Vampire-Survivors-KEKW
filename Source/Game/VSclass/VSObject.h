@@ -62,12 +62,15 @@ public:
 	void set_pos(CPoint);
 	void set_pos(int, int);
 	void set_pos(double, double);
+	void set_target_vec(CPoint);
+	void set_target_vec(int, int);
 	void set_speed(int);
 	void set_speed(double);
 	void select_show_animation(int);
 	CPoint get_pos();
 	virtual void update_pos(CPoint);
 	virtual void update_pos();
+	virtual void update_pos_by_vec(CPoint vec = {0,0});
 	void set_is_mirror(bool);
 	bool is_animation_done();
 	int get_direct();
@@ -90,6 +93,7 @@ protected:
 	CPoint _position;
 	CPoint _target;
 	CPoint _collision;
+	CPoint _target_vec = {0,0};
 	bool _is_mirror = 0;
 	int _direct, _default_direct=LEFT;
 	int _speed=0;

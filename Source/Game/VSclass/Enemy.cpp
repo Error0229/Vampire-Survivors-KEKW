@@ -8,6 +8,7 @@
 Enemy::Enemy()
 {
 	obj_type = ENEMY;
+	_last_time_got_hit_by_projectile.resize(100);
 	_last_time_got_hit = -1;
 }
 Enemy::~Enemy() 

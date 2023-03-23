@@ -102,7 +102,7 @@ namespace game_framework {
 		Player player;
 		vector<Enemy> enemy;
 		vector<Pickup> xp;
-		QuadTree QT;
+		// QuadTree QT;
 		int _gamerun_status, _next_status;
 		
 		VSObject event_background;

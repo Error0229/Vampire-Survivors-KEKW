@@ -17,5 +17,7 @@ public:
     void insert(VSObject* object);
     void clear();
     void query(vector<VSObject*>& return_objects, VSObject* object);
-    void query_nearest_point(CPoint& result, VSObject* object, int min_distance);
+    void query_by_type(vector<VSObject*>& return_objects, VSObject* object, int obj_type);
+    void query_nearest_enemy_pos(CPoint& result, VSObject* object, int& min_distance);
+    static QuadTree VSPlain;
 };

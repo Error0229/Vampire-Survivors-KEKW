@@ -77,6 +77,12 @@ void VSObject::set_pos(double x, double y) {
 	this->_position.x = static_cast<int>(x);
 	this->_position.y = static_cast<int>(y);
 }
+void VSObject::set_target_vec(CPoint v) {
+	_target_vec = v;
+}
+void VSObject::set_target_vec(int dx, int dy) {
+	_target_vec = CPoint{dx, dy};
+}
 void VSObject::set_speed(double speed) {
 	this->_speed = static_cast<int>(speed);
 }
@@ -122,6 +128,32 @@ void VSObject::update_pos()
 	}
 	this->_position.x += dx ;
 	this->_position.y += dy ;
+}
+void VSObject::update_pos_by_vec(CPoint vec) {
+	if (_target_vec == CPoint{ 0,0 })
+		return;
+	if (vec != CPoint{ 0,0 })
+		_target_vec = vec;
+	this->_direct = (this->_target.x > this->_position.x) ? RIGHT : LEFT;
+	this->_is_mirror = (_direct != _default_direct);
+	double dis = static_cast<double>(square(_target_vec.x) + square(_target_vec.y));
+	double vx = (_target_vec.x > 0 ? 1.0 : -1.0) *_speed * square(_target_vec.x) / dis;
+	double vy = (_target_vec.y > 0 ? 1.0 : -1.0) *_speed * square(_target_vec.y) / dis;
+	int dx = static_cast<int> (vx);
+	int dy = static_cast<int> (vy);
+	_fx += vx - (double)dx;
+	_fy += vy - (double)dy;
+	if (abs(_fx) > 1) {
+		dx += static_cast<int>(_fx);
+		_fx -= static_cast<int>(_fx);
+	}
+	if (abs(_fy) > 1) {
+		dy += static_cast<int>(_fy);
+		_fy -= static_cast<int>(_fy);
+	}
+	this->_position.x += dx;
+	this->_position.y += dy;
+
 }
 CPoint VSObject::get_pos()
 {

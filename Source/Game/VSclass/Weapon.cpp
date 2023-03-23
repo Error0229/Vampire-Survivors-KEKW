@@ -2,6 +2,7 @@
 #include "../../Library/gameutil.h"
 #include "../config.h"
 #include "VSObject.h"
+#include "QuadTree.h"
 #include "Projectile.h"
 #include "Weapon.h"
 #include <fstream>
@@ -20,7 +21,7 @@ Weapon::Weapon(int type, char* skin, vector<int> stats) {
 	this->load_skin(skin);
 	this->_type = type;
 	_level = stats[0], _max_level = stats[1], _damage = stats[2],
-		_speed = stats[3], _area = (double)(stats[4])/100.0, _rarity = stats[5], _amount = stats[6],
+		_speed = stats[3] * 10, _area = (double)(stats[4])/100.0, _rarity = stats[5], _amount = stats[6],
 		_duration = stats[7], _pierce = stats[8], _cooldown = stats[9],
 		_proj_interval = stats[10], _hitbox_delay = stats[11], _knock_back = stats[12],
 		_pool_limit = stats[13], _chance = stats[14], _crit_multi = stats[15],
@@ -105,6 +106,19 @@ void Weapon::attack() {
 			}
 			break;
 
+		case MAGIC_MISSILE:
+			for (int i = 0; i < w._amount; i++) {
+				Projectile proj = w._base_proj;
+				proj.set_pos(player_pos);
+				proj.set_create_time(clock());
+				CPoint target = player_pos;
+				int min_dis = 1000000000;
+				QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(&proj), min_dis);
+				proj.set_target_vec((target != player_pos ? target - player_pos : CPoint(420,69)));
+				Projectile::create_projectile(proj, player_pos, (target), w._type, i * w._proj_interval, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+					w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, (target.x > player_pos.x ? RIGHT:LEFT) == proj.get_direct());
+			}
+			break;
 		case (VAMPIRICA):
 			for (int i = 0; i < w._amount; i++) {
 				Projectile proj = w._base_proj;
@@ -233,16 +247,20 @@ void Weapon::load_weapon_stats() {
 		switch (type) {
 		case WHIP:
 			p.set_default_direct(RIGHT);
-			p.set_animation(w._proj_interval, true, 0);
+			p.set_animation(300, true, 0);
+			p.set_life_cycle(300);
 			p.enable_animation();
 			break;
 		case MAGIC_MISSILE:
 			p.set_default_direct(RIGHT);
+			p.set_life_cycle(-1);
+			break;
 		case VAMPIRICA:
 			p.set_default_direct(RIGHT);
-			p.set_animation(w._proj_interval, true, 0);
+			p.set_animation(300, true, 0);
+			p.set_life_cycle(300);
 			p.enable_animation();
-			break;
+			break; 
 		}
 		w._base_proj = p;
 		Weapon::_base_weapon[ type ] = w;
