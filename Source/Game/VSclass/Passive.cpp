@@ -234,7 +234,7 @@ void Passive::level_up()
 	if (is_max_level()) {
 		VS_ASSERT(false, "The level already max don\'t keep upgrading :(");
 	}
-	_level += 1;
+	_level++;
 }
 int Passive::get_type()
 {
@@ -254,7 +254,7 @@ int Passive::get_level()
 }
 bool Passive::is_max_level()
 {
-	return (_level == _max_level);
+	return (_level >= _max_level);
 }
 int Passive::get_rarity()
 {
