@@ -279,7 +279,7 @@ int Weapon::get_type() {
 	return _type;
 }
 bool Weapon::is_max_level() {
-	return _level == _max_level;
+	return _level >= _max_level;
 }
 int Weapon::get_pierce() {
 	return _pierce;

@@ -69,7 +69,7 @@ namespace game_framework {
 		CMovingBitmap logo;								// csieªºlogo
 		CMovingBitmap text;
 		CMovingBitmap portrait;
-		Button* button_start;
+		Ui* button_start;
 		VSObject* background;
 	};
 
@@ -101,15 +101,21 @@ namespace game_framework {
 		Map map;
 		Player player;
 		vector<Enemy> enemy;
-		vector<Pickup> xp;
+		vector<Xp> xp;
+		vector<Chest> chest;
 		// QuadTree QT;
 		int _gamerun_status, _next_status;
-		
-		VSObject event_background;
-		Button level_up_button[4];
+
+		Ui event_background;
+		Ui level_up_button[4];
 		int level_up_choice[4];
 		Icon level_up_icon[4];
-		VSObject level_up_icon_frame[4];
+		Ui level_up_icon_frame[4];
+
+		int chest_item[5];
+		Icon chest_item_icon[5];
+		Ui chest_animation;
+		Ui chest_item_frame[5];
 	};
 
 	/////////////////////////////////////////////////////////////////////////////

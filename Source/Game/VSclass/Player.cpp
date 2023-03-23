@@ -54,10 +54,10 @@ void Player::acquire_weapon(Weapon& weapon) {
 	Weapon::all_weapon.push_back(weapon);
 }
 void Player::acquire_passive(Passive& passive) {
-	upgrade_passive(passive);
+	update_passive_effect(passive);
 	_passives.push_back(passive);
 }
-void Player::upgrade_passive(Passive& p) {
+void Player::update_passive_effect(Passive& p) {
 	int effect = p.get_effect();
 	switch (p.get_type()) {
 	case POWER:
@@ -135,9 +135,10 @@ void Player::upgrade_passive(Passive& p) {
 		break;
 	}	
 }
-void Player::level_up_passive(int index) {
-	_passives[index].level_up();
-	upgrade_passive(_passives[index]);
+void Player::level_up_passive(Passive& p) {
+	VS_ASSERT(!p.is_max_level(), "level up passive above max level.");
+	p.level_up();
+	update_passive_effect(p);
 }
 
 bool Player::pick_up_xp(int xp_value)
@@ -204,6 +205,7 @@ void Player::obtain_item(int type)
 			if (i.get_type() == type) {
 				i.upgrade();
 				is_own = true;
+				break;
 			}
 		}
 		if (!is_own) {
@@ -217,12 +219,30 @@ void Player::obtain_item(int type)
 		//passive
 		for (auto& i : _passives) {
 			if (i.get_type() == type) {
-				upgrade_passive(i);
+				level_up_passive(i);
 				is_own = true;
+				break;
 			}
 		}
 		if (!is_own) {
 			acquire_passive(Passive(type));
 		}
 	}
+}
+
+bool Player::all_max()
+{
+	for (auto& i : Weapon::all_weapon) {
+		if (!i.is_max_level())
+			return false;
+	}
+	for (auto& i : _passives) {
+		if (!i.is_max_level())
+			return false;
+	}
+	return true;
+}
+bool Player::full_inv()
+{
+	return Weapon::weapon_count() >= 6 && _passives.size() >= 6;
 }
