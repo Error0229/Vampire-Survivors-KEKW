@@ -20,6 +20,7 @@ public:
 	bool is_evo_weapon();
 	int get_kb();
 	int get_pierce();
+	static void evolution(int type);
 	static map <int, int> evolution_pair;
 	static void attack();
 	static void show();

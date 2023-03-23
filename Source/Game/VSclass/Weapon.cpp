@@ -69,7 +69,7 @@ void Weapon::attack() {
 					if (i ^ 1) {
 						Projectile::create_projectile(proj, { player_pos.x + (proj.get_width() >> 1) - (16) , player_pos.y - (i * 16) }, 
 							mouse_pos, w._type, i * 400, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay, 
-							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, RIGHT != proj.get_direct());
+							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, LEFT != proj.get_direct());
 					}
 					else {
 						Projectile::create_projectile(proj, { player_pos.x - (proj.get_width() >> 1) + (16) , player_pos.y - ((i - 1) * 16) },
@@ -81,7 +81,7 @@ void Weapon::attack() {
 					if (i ^ 1) {
 						Projectile::create_projectile(proj, { player_pos.x - (proj.get_width() >> 1) + (16) , player_pos.y - (i * 16) },
 							mouse_pos, w._type, i * 400, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
-							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, LEFT != proj.get_direct());
+							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, RIGHT != proj.get_direct());
 					}
 					else {
 						Projectile::create_projectile(proj, { player_pos.x + (proj.get_width() >> 1) - (16) , player_pos.y - ((i - 1) * 16) },
@@ -193,12 +193,12 @@ void Weapon::load_weapon_stats() {
 		switch (type) {
 		case WHIP:
 			p.set_default_direct(RIGHT);
-			p.set_animation(w._proj_interval << 1, true, 0);
+			p.set_animation(w._proj_interval, true, 0);
 			p.enable_animation();
 			break;
 		case VAMPIRICA:
 			p.set_default_direct(RIGHT);
-			p.set_animation(w._proj_interval << 1, true, 0);
+			p.set_animation(w._proj_interval, true, 0);
 			p.enable_animation();
 			break;
 		}
@@ -232,6 +232,16 @@ int Weapon::weapon_count() {
 }
 bool Weapon::is_evo_weapon() {
 	return this->_type >= 32;
+}
+void Weapon::evolution(int type) {
+	VS_ASSERT(Weapon::evolution_pair.find(type) != Weapon::evolution_pair.end(), "This weapon can't not be evolve");
+	for (auto& w : all_weapon) {
+		if (w._type == type) {
+			w = Weapon::_base_weapon[Weapon::evolution_pair[type]];
+			return;
+		}
+	}
+	VS_ASSERT(false, "You don't own this weapon for evolution ><");
 }
 map <int, Weapon> Weapon::_base_weapon;
 

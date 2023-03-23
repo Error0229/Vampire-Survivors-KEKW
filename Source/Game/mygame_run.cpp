@@ -50,7 +50,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	player.set_default_direct(RIGHT);
 	player.set_animation(150, false);
 	player.load_bleed();
-	player.acquire_weapon(Weapon::_base_weapon[32]);
+	player.acquire_weapon(Weapon::_base_weapon[0]);
 	player.acquire_passive(Passive(POWER));
 	map.load_map({ "resources/map/dummy1.bmp" });
 	map.set_pos(0, 0);
@@ -88,6 +88,7 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	switch (nChar) {
 	case('A'):
 		player.level_up_passive(0);
+		Weapon::evolution(WHIP);
 		for (int i = 0; i < (int)enemy.size();i++) {
 			if (enemy[i].hurt(1000000)) {
 				xp[i].spawn_xp(enemy[i].get_pos(), enemy[i].get_xp_value());
