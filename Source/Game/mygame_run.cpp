@@ -77,9 +77,15 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 		level_up_icon[i].load_icon();
 		level_up_choice[i] = -1;
 	}
+	chest_animation.load_skin({"resources/ui/TreasureIdle_01_big.bmp", "resources/ui/TreasureIdle_02_big.bmp" , "resources/ui/TreasureIdle_03_big.bmp" , "resources/ui/TreasureIdle_04_big.bmp" , "resources/ui/TreasureIdle_05_big.bmp" , "resources/ui/TreasureIdle_06_big.bmp" ,"resources/ui/TreasureIdle_07_big.bmp" ,"resources/ui/TreasureIdle_08_big.bmp", "resources/ui/TreasureOpen_01_big.bmp", "resources/ui/TreasureOpen_02_big.bmp" , "resources/ui/TreasureOpen_03_big.bmp" , "resources/ui/TreasureOpen_04_big.bmp" , "resources/ui/TreasureOpen_05_big.bmp" , "resources/ui/TreasureOpen_06_big.bmp" , "resources/ui/TreasureOpen_07_big.bmp" , "resources/ui/TreasureOpen_08_big.bmp" }, BLACK);
+	chest_animation.set_animation(50, true);
+	chest_animation.set_base_pos(5, 75);
+	vector<CPoint> chest_item_pos = { CPoint(0,-50), CPoint(-80,-110), CPoint(80,-110), CPoint(-100,-10), CPoint(100,-10) };
 	for (int i = 0; i < 5; i++) {
-		chest_item_icon[i].set_base_pos(-200 + 100 * i, 0);
 		chest_item_icon[i].load_icon();
+		chest_item_icon[i].set_base_pos(chest_item_pos[i]);
+		chest_item_frame[i].load_skin("resources/ui/sun.bmp", RGB(1, 11, 111));
+		chest_item_frame[i].set_base_pos(chest_item_pos[i]);
 		chest_item[i] = -1;
 	}
 }
@@ -368,7 +374,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		//--------------------------------------------------------
 		if (chest_item[0] != -1)
 			break;
-		
+		chest_animation.enable_animation();
 		// poll chest item count
 		weights[1] = 0.05 * (double)player.get_luck() / 100;
 		weights[0] = 1 - weights[1];
@@ -381,7 +387,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			if (poll(weights, true))
 				chest_item_count = 3;
 		}
-
+		chest_item_count = 5;
 		// poll chest item
 		for (int i = 0; i < chest_item_count; i++) {
 			chest_item[i] = draw_open_chest(can_evo);
@@ -418,8 +424,11 @@ void CGameStateRun::OnShow()
 		}
 	}
 	else if (_gamerun_status == OPEN_CHEST) {
+		event_background.show();
+		chest_animation.show();
 		for (int i = 0; i < 5; i++) {
 			if (chest_item[i] > -1) {
+				chest_item_frame[i].show();
 				chest_item_icon[i].show(chest_item[i]);
 			}
 		}

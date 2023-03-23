@@ -11,8 +11,8 @@ public:
 	void set_base_pos(CPoint);
 	void set_base_pos(int, int);
 	CPoint get_base_pos();
-	virtual void show();				// show on "fixed" pos on the screen
-	virtual void show(CPoint);			// show on real pos on the map
+	virtual void show(double factor=1.0);				// show on "fixed" pos on the screen
+	virtual void show(CPoint, double factor=1.0);			// show on real pos on the map
 	
 	bool activate_hover;
 protected:
@@ -27,10 +27,10 @@ public:
 	Icon(CPoint);
 	~Icon();
 	void load_icon();
-	void show();			// DONT USE
-	void show(CPoint);		// DONT USE
-	void show(int);
-	void show(CPoint, int);
+	void show(double factor = 1.0);				// DONT USE
+	void show(CPoint, double factor = 1.0);		// DONT USE
+	void show(int, double factor = 1.0);
+	void show(CPoint, int, double factor = 1.0);
 	static void load_filename();
 	static vector<string> icon_filename;
 private:

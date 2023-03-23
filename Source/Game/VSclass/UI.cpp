@@ -48,16 +48,16 @@ CPoint Ui::get_base_pos()
 {
 	return _base_pos;
 }
-void Ui::show()
+void Ui::show(double factor)
 {
 	CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
 	_position = _base_pos + player_pos;
-	VSObject::show_skin();
+	VSObject::show_skin(factor);
 }
-void Ui::show(CPoint pos)
+void Ui::show(CPoint pos, double factor)
 {
 	_position = pos;
-	VSObject::show_skin();
+	VSObject::show_skin(factor);
 }
 
 Icon::Icon(CPoint base_pos) :Ui(base_pos)
@@ -78,23 +78,23 @@ void Icon::load_icon()
 	for (int i = 0; i < (int)icon_filename.size(); i++)
 		load_skin((char*)icon_filename[i].c_str(), (i < 63) ? BLACK : WHITE);
 }
-void Icon::show()
+void Icon::show(double factor)
 {
 	VS_ASSERT(false, "please use show_icon with item_id");
 }
-void Icon::show(CPoint pos)
+void Icon::show(CPoint pos, double factor)
 {
 	VS_ASSERT(false, "please use show_icon with item_id");
 }
-void Icon::show(int item_id)
+void Icon::show(int item_id, double factor)
 {
 	set_selector(item_id);
-	Ui::show();
+	Ui::show(factor);
 }
-void Icon::show(CPoint pos, int item_id)
+void Icon::show(CPoint pos, int item_id, double factor)
 {
 	set_selector(item_id);
-	Ui::show(pos);
+	Ui::show(pos, factor);
 }
 void Icon::load_filename()
 {
