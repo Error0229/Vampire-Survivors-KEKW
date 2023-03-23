@@ -113,6 +113,20 @@ void QuadTree::query(vector<VSObject*>& result, VSObject* q)
         }
     }
 }
+void QuadTree::query_nearest_point(CPoint& result, VSObject* obj, int min_distance){
+    if (this->children[0] != NULL) {
+        for (int i = 0; i < 4; i++) {
+            int dis = VSObject::distance(obj->get_pos(), CPoint{ this->children[i]->_x, this->children[i]->_y });
+            if (dis > min_distance) {
+                continue;
+            }
+            else {
+                min_distance = dis;
+                this->query_nearest_point(result, obj, min_distance);
+            }
+        }
+    }
+}
 
 void QuadTree::clear()
 {

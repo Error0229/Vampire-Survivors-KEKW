@@ -41,6 +41,19 @@ Weapon::Weapon(int type, char* skin, vector<int> stats) {
 			"Base damage up by 5."
 		};
 		break;
+	case HOLY_MISSLE:
+		_level_up_msg = {
+			"",
+			"Fires at the nearest enemy.",
+			"Fire 1 more projectile.",
+			"Cooldown reduced by 0.2 seconds",
+			"Fire 1 more projectile.",
+			"Base damage up by 10.",
+			"Fire 1 more projectile.",
+			"Passes through 1 more enemy.",
+			"Base damage up by 10.",
+		};
+		break;
 	case VAMPIRICA:
 		_level_up_msg = { "" };
 		break;
@@ -163,7 +176,34 @@ void Weapon::upgrade()
 			break;
 		}
 		break;
+	case HOLY_MISSLE:
+		switch (_level) {
+		case 2:
+			_amount += 1;
+			break;
+		case 3:
+			_cooldown -= 200;
+			break;
+		case 4:
+			_amount += 1;
+			break;
+		case 5:
+			_damage += 10;
+			break;
+		case 6:
+			_amount += 1;
+			break;
+		case 7:
+			_pierce += 1;
+			break;
+		case 8:
+			_damage += 10;
+			break;
+		}
+
 	}
+
+	
 }
 void Weapon::load_weapon_stats() {
 	ifstream file("source/game/VSclass/weapon_stats.csv");
@@ -196,6 +236,8 @@ void Weapon::load_weapon_stats() {
 			p.set_animation(w._proj_interval, true, 0);
 			p.enable_animation();
 			break;
+		case MAGIC_MISSILE:
+			p.set_default_direct(RIGHT);
 		case VAMPIRICA:
 			p.set_default_direct(RIGHT);
 			p.set_animation(w._proj_interval, true, 0);

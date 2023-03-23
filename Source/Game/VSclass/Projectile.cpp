@@ -72,7 +72,7 @@ void Projectile::update_position() {
 }
 void Projectile::show_skin(double factor) {
 	VSObject::show_skin(factor);
-	if(this->_skin.IsAnimationDone())
+	if(this->_skin.IsAnimationDone() || clock() - this->_create_time - this->_delay >= this->_proj_interval)
 		this->_is_over = true;
 }
 void Projectile::show() {

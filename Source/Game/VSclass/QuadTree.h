@@ -17,4 +17,5 @@ public:
     void insert(VSObject* object);
     void clear();
     void query(vector<VSObject*>& return_objects, VSObject* object);
+    void query_nearest_point(CPoint& result, VSObject* object, int min_distance);
 };

@@ -261,7 +261,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		QT.clear();
 		// suck xp
 		for (auto& i : xp) {
-			if (i.is_enable() && distance(player, i) < player.get_pickup_range()) {
+			if (i.is_enable() && VSObject::distance(player, i) < player.get_pickup_range()) {
 				i.set_speed(1000);
 				i.update_pos(player.get_pos());
 				if (is_overlapped(player, i)) {

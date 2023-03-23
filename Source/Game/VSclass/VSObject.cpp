@@ -93,11 +93,11 @@ void VSObject::update_pos(CPoint target)
 	this->_target = target;
 	this->update_pos();
 }
-int distance(VSObject& obj1, VSObject& obj2)
+int VSObject::distance(VSObject& obj1, VSObject& obj2)
 {
 	return fast_sqrt(square(obj1._position.x - obj2._position.x) + square(obj1._position.y - obj2._position.y));
 }
-int distance(CPoint& p1, CPoint& p2)
+int VSObject::distance(CPoint& p1, CPoint& p2)
 {
 	return fast_sqrt(square(p1.x - p2.x) + square(p1.y - p2.y));
 }

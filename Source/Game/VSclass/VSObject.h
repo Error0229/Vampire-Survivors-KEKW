@@ -79,8 +79,8 @@ public:
 	static int player_dx;
 	static int player_dy; // every time player move should update these
 	friend bool is_overlapped(VSObject&, VSObject&, double overlap_bound=1);
-	friend int distance(VSObject&, VSObject&);
-	friend int distance(CPoint&, CPoint&);
+	static int distance(VSObject&, VSObject&);
+	static int distance(CPoint&, CPoint&);
 	friend class QuadTree; 
 	int obj_type = VSOBJECT;
 protected:
