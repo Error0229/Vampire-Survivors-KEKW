@@ -68,24 +68,24 @@ void Weapon::attack() {
 				if ( mouse_pos.x > player_pos.x) {
 					if (i ^ 1) {
 						Projectile::create_projectile(proj, { player_pos.x + (proj.get_width() >> 1) - (16) , player_pos.y - (i * 16) }, 
-							mouse_pos, i * 400, w._type, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay, 
+							mouse_pos, w._type, i * 400, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay, 
 							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, RIGHT != proj.get_direct());
 					}
 					else {
 						Projectile::create_projectile(proj, { player_pos.x - (proj.get_width() >> 1) + (16) , player_pos.y - ((i - 1) * 16) },
-							mouse_pos, 200 + (i - 1) * 400, w._type, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+							mouse_pos, w._type, 200 + (i - 1) * 400, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
 							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, RIGHT != proj.get_direct());
 					}
 				}
 				else {
 					if (i ^ 1) {
 						Projectile::create_projectile(proj, { player_pos.x - (proj.get_width() >> 1) + (16) , player_pos.y - (i * 16) },
-							mouse_pos, i * 400, w._type, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+							mouse_pos, w._type, i * 400, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
 							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, LEFT != proj.get_direct());
 					}
 					else {
 						Projectile::create_projectile(proj, { player_pos.x + (proj.get_width() >> 1) - (16) , player_pos.y - ((i - 1) * 16) },
-							mouse_pos, 200 + (i - 1) * 400, w._type, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+							mouse_pos, w._type, 200 + (i - 1) * 400, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
 							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, LEFT != proj.get_direct());
 					}
 				}
@@ -99,24 +99,24 @@ void Weapon::attack() {
 				if (mouse_pos.x > player_pos.x) {
 					if (i ^ 1) {
 						Projectile::create_projectile(proj, { player_pos.x + (proj.get_width() >> 1) - (16) , player_pos.y - (i * 16) },
-							mouse_pos, i * 400, w._type, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+							mouse_pos, w._type, i * 400, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
 							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, LEFT != proj.get_direct());
 					}
 					else {
 						Projectile::create_projectile(proj, { player_pos.x - (proj.get_width() >> 1) + (16) , player_pos.y - ((i - 1) * 16) },
-							mouse_pos, 400 + (i - 1) * 400, w._type, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+							mouse_pos, w._type, 200 + (i - 1) * 400, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
 							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, RIGHT != proj.get_direct());
 					}
 				}
 				else {
 					if (i ^ 1) {
 						Projectile::create_projectile(proj, { player_pos.x - (proj.get_width() >> 1) + (16) , player_pos.y - (i * 16) },
-							mouse_pos, i * 400, w._type, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+							mouse_pos, w._type, i * 400, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
 							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, RIGHT != proj.get_direct());
 					}
 					else {
 						Projectile::create_projectile(proj, { player_pos.x + (proj.get_width() >> 1) - (16) , player_pos.y - ((i - 1) * 16) },
-							mouse_pos, 400 + (i - 1) * 400, w._type, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+							mouse_pos, w._type, 200 + (i - 1) * 400, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
 							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, LEFT != proj.get_direct());
 					}
 				}

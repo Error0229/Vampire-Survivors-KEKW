@@ -118,6 +118,9 @@ namespace game_framework {
 	void CMovingBitmap::ShowBitmap()
 	{
 		GAME_ASSERT(isBitmapLoaded, "A bitmap must be loaded before ShowBitmap() is called !!!");
+		if (last_time == -1) {
+			last_time = clock();
+		}
 		CDDraw::BltBitmapToBack(SurfaceID[ selector ], location.left, location.top);
 		clock_t now = clock();
 		if ( animation_cooldown != 0 && ( ( now - last_animation_done ) > animation_cooldown ) && ( isAnimation == false ) ) {
@@ -150,6 +153,9 @@ namespace game_framework {
 	void CMovingBitmap::ShowBitmap(double factor)
 	{
 		GAME_ASSERT(isBitmapLoaded, "A bitmap must be loaded before ShowBitmap() is called !!!");
+		if (last_time == -1) {
+			last_time = clock();
+		}
 		CDDraw::BltBitmapToBack(SurfaceID[ selector ], location.left, location.top, factor);
 		clock_t now = clock();
 		if ( animation_cooldown != 0 && ( ( now - last_animation_done ) > animation_cooldown ) && ( isAnimation == false ) ) {
@@ -182,6 +188,9 @@ namespace game_framework {
 	{
 		GAME_ASSERT(isBitmapLoaded, "A bitmap must be loaded before ShowBitmap() is called !!!");
 		CDDraw::BltBitmapToBack(SurfaceID[ selector ], location.left, location.top, factor, is_mirror);
+		if (last_time == -1) {
+			last_time = clock();
+		}
 		clock_t now = clock();
 		if ( animation_cooldown != 0 && ((now - last_animation_done) > animation_cooldown)  && (isAnimation == false )) {
 			isAnimation = true;
