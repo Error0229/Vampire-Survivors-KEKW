@@ -55,7 +55,7 @@ void Player::acquire_weapon(Weapon& weapon) {
 }
 void Player::acquire_passive(Passive& passive) {
 	update_passive_effect(passive);
-	_passives.push_back(passive);
+	Passive::all_passive.push_back(passive);
 }
 void Player::update_passive_effect(Passive& p) {
 	int effect = p.get_effect();
@@ -186,14 +186,7 @@ int Player::get_luck()
 
 int Player::passive_count()
 {
-	return _passives.size();
-}
-
-
-
-vector<Passive>& Player::get_passives()
-{
-	return _passives;
+	return Passive::all_passive.size();
 }
 
 void Player::obtain_item(int type)
@@ -217,7 +210,7 @@ void Player::obtain_item(int type)
 	}
 	else {
 		//passive
-		for (auto& i : _passives) {
+		for (auto& i : Passive::all_passive) {
 			if (i.get_type() == type) {
 				level_up_passive(i);
 				is_own = true;
@@ -236,7 +229,7 @@ bool Player::all_max()
 		if (!i.is_max_level())
 			return false;
 	}
-	for (auto& i : _passives) {
+	for (auto& i : Passive::all_passive) {
 		if (!i.is_max_level())
 			return false;
 	}
@@ -244,5 +237,5 @@ bool Player::all_max()
 }
 bool Player::full_inv()
 {
-	return Weapon::weapon_count() >= 6 && _passives.size() >= 6;
+	return Weapon::weapon_count() >= 6 && Passive::all_passive.size() >= 6;
 }

@@ -198,7 +198,7 @@ int CGameStateRun::draw_level_up(bool pull_from_inv)
 	for (auto& i : Weapon::all_weapon) {
 		player_items[i.get_type()] = (i.is_max_level()) ? 2 : 1;
 	}
-	for (auto i : player.get_passives()) {
+	for (auto i : Passive::all_passive) {
 		player_items[i.get_type()] = (i.is_max_level()) ? 2 : 1;
 	}
 	// calc weapon weights
@@ -235,7 +235,7 @@ int CGameStateRun::draw_open_chest(bool can_evo)
 		TRACE("open chest: all max.\n");
 		return -2;
 	}
-	for (auto& i : player.get_passives()) {
+	for (auto& i : Passive::all_passive) {
 		if (!i.is_max_level()) {
 			weights.push_back(i.get_rarity());
 			index_to_type.push_back(i.get_type());

@@ -11,6 +11,7 @@ public:
 	bool is_max_level();
 	int get_alt_effect();
 	int get_rarity();
+	static deque<Passive> all_passive;
 private:
 	int _level, _stacking;
 	int _type, _rarity,  _max_level;
