@@ -16,12 +16,14 @@ public:
 	int get_duration();
 	int get_rarity();
 	int get_type();
+	int get_evo_passive();
 	bool is_max_level();
 	bool is_evo_weapon();
 	int get_kb();
 	int get_pierce();
 	static void evolution(int type);
 	static map <int, int> evolution_pair;
+	static map <int, int> evolution_pair_reverse;
 	static void attack();
 	static void show();
 	static deque<Weapon> all_weapon;

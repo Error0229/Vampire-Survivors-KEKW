@@ -287,6 +287,9 @@ int Weapon::get_pierce() {
 int Weapon::get_kb() {
 	return _knock_back;
 }
+int Weapon::get_evo_passive() {
+	return _evolution_require;
+}
 int Weapon::weapon_count() {
 	return static_cast<int>  (Weapon::_base_weapon.size());
 }
@@ -316,4 +319,17 @@ map <int, int> Weapon::evolution_pair = {
 	{CANDYBOX, CANDYBOX2}, {TRIASSO1, TRIASSO2}, {TRIASSO2, TRIASSO3},
 	{VICTORY, SOLES}
 };
+// make a reverse map of evolution_pair
+map <int, int> Weapon::evolution_pair_reverse = {
+	{VAMPIRICA, WHIP}, {HOLY_MISSLE, MAGIC_MISSILE},{THOUSAND, KNIFE},
+	{SCYTHE, AXE},{HEAVENSWORD, CROSS},{VESPERS, HOLYBOOK},
+	{HELLFIRE, FIREBALL},{VORTEX, GARLIC},{BORA, HOLYWATER},
+	{ROCHER, DIAMOND},{LOOP, LIGHTNING},{SIRE, PENTAGRAM},
+	{SILF3, SILF*100 + SILF2}, {GUNS3, GUNS*100 + GUNS2},
+	{STIGRANGATTI, GATTI},{MANNAGGIA, SONG},{TRAPANO2, TRAPING},
+	{CORRIDOR, LANCET}, {SHROUD, LAUREL},{VENTO2, VENTO},
+	{CANDYBOX2, CANDYBOX}, {TRIASSO2, TRIASSO1}, {TRIASSO3, TRIASSO2},
+	{SOLES, VICTORY}
+};
+
 deque<Weapon> Weapon::all_weapon = {};

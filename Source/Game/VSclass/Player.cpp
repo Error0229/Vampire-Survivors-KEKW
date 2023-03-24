@@ -203,8 +203,11 @@ void Player::obtain_item(int type)
 		//weapon
 		for (auto& i : Weapon::all_weapon) {
 			if (i.get_type() == type) {
-				i.upgrade();
 				is_own = true;
+				if (i.is_max_level())
+					Weapon::evolution(i.get_type());
+				else
+					i.upgrade();
 				break;
 			}
 		}
@@ -213,9 +216,9 @@ void Player::obtain_item(int type)
 		}
 	}
 	else if (type < 63) {
-		//evo
+		VS_ASSERT(false, "obtain evolution in wroing way.");
 	}
-	else {
+	else{
 		//passive
 		for (auto& i : _passives) {
 			if (i.get_type() == type) {
