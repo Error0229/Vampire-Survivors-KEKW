@@ -28,7 +28,7 @@ void Player::update_pos(CPoint target) {
 	VSObject::player_dy -= _position.y - pos.y ;
 }
 void Player::load_bleed() {
-	_bleed_animation.load_skin({ "resources/character/Blood1.bmp", "resources/character/Blood2.bmp", "resources/character/Blood3.bmp" }, RGB(0,0,0));
+	_bleed_animation.load_skin({ "resources/character/Blood1.bmp", "resources/character/Blood2.bmp", "resources/character/Blood3.bmp" });
 	_bleed_animation.enable_animation();
 }
 void Player::show_skin(double factor) {

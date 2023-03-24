@@ -67,10 +67,10 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 		enemy[i].spawn(CPoint(-300 + 30 * i/10, -400 + 40 * i%10));
 	}
 
-	event_background.load_skin("resources/ui/event_background.bmp", BLACK);
+	event_background.load_skin("resources/ui/event_background.bmp");
 	event_background.set_base_pos(0, 0);
 	for (int i = 0; i < 4; i++) {
-		level_up_button[i].load_skin("resources/ui/event_button.bmp", BLACK);
+		level_up_button[i].load_skin("resources/ui/event_button.bmp");
 		level_up_icon_frame[i].load_skin("resources/ui/frameB.bmp");
 		level_up_button[i].set_base_pos(0, -75 + 75 * i);
 		level_up_icon_frame[i].set_base_pos(-120, -90 + 75*i);
@@ -78,14 +78,14 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 		level_up_icon[i].load_icon();
 		level_up_choice[i] = -1;
 	}
-	chest_animation.load_skin({"resources/ui/TreasureIdle_01_big.bmp", "resources/ui/TreasureIdle_02_big.bmp" , "resources/ui/TreasureIdle_03_big.bmp" , "resources/ui/TreasureIdle_04_big.bmp" , "resources/ui/TreasureIdle_05_big.bmp" , "resources/ui/TreasureIdle_06_big.bmp" ,"resources/ui/TreasureIdle_07_big.bmp" ,"resources/ui/TreasureIdle_08_big.bmp", "resources/ui/TreasureOpen_01_big.bmp", "resources/ui/TreasureOpen_02_big.bmp" , "resources/ui/TreasureOpen_03_big.bmp" , "resources/ui/TreasureOpen_04_big.bmp" , "resources/ui/TreasureOpen_05_big.bmp" , "resources/ui/TreasureOpen_06_big.bmp" , "resources/ui/TreasureOpen_07_big.bmp" , "resources/ui/TreasureOpen_08_big.bmp" }, BLACK);
+	chest_animation.load_skin({"resources/ui/TreasureIdle_01_big.bmp", "resources/ui/TreasureIdle_02_big.bmp" , "resources/ui/TreasureIdle_03_big.bmp" , "resources/ui/TreasureIdle_04_big.bmp" , "resources/ui/TreasureIdle_05_big.bmp" , "resources/ui/TreasureIdle_06_big.bmp" ,"resources/ui/TreasureIdle_07_big.bmp" ,"resources/ui/TreasureIdle_08_big.bmp", "resources/ui/TreasureOpen_01_big.bmp", "resources/ui/TreasureOpen_02_big.bmp" , "resources/ui/TreasureOpen_03_big.bmp" , "resources/ui/TreasureOpen_04_big.bmp" , "resources/ui/TreasureOpen_05_big.bmp" , "resources/ui/TreasureOpen_06_big.bmp" , "resources/ui/TreasureOpen_07_big.bmp" , "resources/ui/TreasureOpen_08_big.bmp" });
 	chest_animation.set_animation(100, true);
 	chest_animation.set_base_pos(5, 75);
 	vector<CPoint> chest_item_pos = { CPoint(0,-50), CPoint(-80,-110), CPoint(80,-110), CPoint(-100,-10), CPoint(100,-10) };
 	for (int i = 0; i < 5; i++) {
 		chest_item_icon[i].load_icon();
 		chest_item_icon[i].set_base_pos(chest_item_pos[i]);
-		chest_item_frame[i].load_skin("resources/ui/sun.bmp", RGB(1, 11, 111));
+		chest_item_frame[i].load_skin("resources/ui/PrizeBG.bmp");
 		chest_item_frame[i].set_base_pos(chest_item_pos[i]);
 		chest_item[i] = -1;
 	}

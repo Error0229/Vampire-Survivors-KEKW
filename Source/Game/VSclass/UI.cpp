@@ -76,7 +76,7 @@ void Icon::load_icon()
 {
 	VS_ASSERT(icon_filename.size()!=0, "please icon filename before loading icon");
 	for (int i = 0; i < (int)icon_filename.size(); i++)
-		load_skin((char*)icon_filename[i].c_str(), (i < 63) ? BLACK : WHITE);
+		load_skin((char*)icon_filename[i].c_str());
 }
 void Icon::show(double factor)
 {
