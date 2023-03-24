@@ -1,6 +1,8 @@
 ﻿#include "stdafx.h"
 #include "../../Library/gameutil.h"
+#include "../config.h"
 #include "VSObject.h"
+#include "QuadTree.h"
 #include "Projectile.h"
 #include "Weapon.h"
 #include <fstream>
@@ -15,23 +17,22 @@ Weapon::Weapon()
 Weapon::~Weapon()
 {
 }
-Weapon::Weapon(int type, char* skin, vector<char*> proj, vector<int> stats) {
+Weapon::Weapon(int type, char* skin, vector<int> stats) {
 	this->load_skin(skin);
-	this->_base_proj = Projectile(proj, BLACK);
 	this->_type = type;
-	_level = stats[ 0 ], _max_level = stats[ 1 ], _damage = stats[ 2 ],
-	_speed = stats[ 3 ], _area = (double)stats[ 4 ], _rarity = stats[ 5 ], _amount = stats[ 6 ],
-	_duration = stats[ 7 ], _pierce = stats[ 8 ], _cooldown = stats[ 9 ],
-	_proj_interval = stats[ 10 ], _hitbox_delay = stats[ 11 ], _knock_back = stats[ 12 ],
-	_pool_limit = stats[ 13 ], _chance = stats[ 14 ], _crit_multi = stats[ 15 ],
-	_block_by_wall = stats[ 16 ];
+	_level = stats[0], _max_level = stats[1], _damage = stats[2],
+		_speed = stats[3] * 10, _area = (double)(stats[4])/100.0, _rarity = stats[5], _amount = stats[6],
+		_duration = stats[7], _pierce = stats[8], _cooldown = stats[9],
+		_proj_interval = stats[10], _hitbox_delay = stats[11], _knock_back = stats[12],
+		_pool_limit = stats[13], _chance = stats[14], _crit_multi = stats[15],
+		_block_by_wall = stats[16], _evolution_type = stats[17], _evolution_require = stats[18];
 
 	switch (_type) {
 	case WHIP:
-		_level_up_msg = { 
+		_level_up_msg = {
 			"",
-			"Attacks horizontally, passes through enemies." , 
-			"Fires 1 more projectile.", 
+			"Attacks horizontally, passes through enemies." ,
+			"Fires 1 more projectile.",
 			"Base damage up by 5."
 			"Base damage up by 5. Base area up by 10%."
 			"Base damage up by 5."
@@ -41,35 +42,125 @@ Weapon::Weapon(int type, char* skin, vector<char*> proj, vector<int> stats) {
 			"Base damage up by 5."
 		};
 		break;
+	case HOLY_MISSLE:
+		_level_up_msg = {
+			"",
+			"Fires at the nearest enemy.",
+			"Fire 1 more projectile.",
+			"Cooldown reduced by 0.2 seconds",
+			"Fire 1 more projectile.",
+			"Base damage up by 10.",
+			"Fire 1 more projectile.",
+			"Passes through 1 more enemy.",
+			"Base damage up by 10.",
+		};
+		break;
+	case VAMPIRICA:
+		_level_up_msg = { "" };
+		break;
 	}
 }
-void Weapon::update_proj(CPoint player_pos, int player_direction, int player_w, int player_h) {
-	for (Projectile &proj : _proj_q ) {
-		switch (this->_type){
-		case WHIP:
-			for ( int i = 0; i < this->_amount; i++ ) {
-				proj.set_is_mirror( ( player_direction != proj.get_direct() ));
-				if (( player_direction == RIGHT  && !(i&1) ) || ( player_direction == LEFT && ( i & 1 ) ) ) {
-					proj.set_pos({ player_pos.x + (proj.get_width() >> 1) - (player_w >> 1) , player_pos.y - ( ( i * player_h ) >> 2 )});
+
+void Weapon::attack() {
+	CPoint mouse_pos;
+	GetCursorPos(&mouse_pos);
+	HWND targetWindow = FindWindow(NULL, GAME_TITLE);
+	ScreenToClient(targetWindow, &mouse_pos);
+	CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
+	mouse_pos += CPoint{- VSObject::player_dx, - VSObject::player_dy}; // transfer into game position
+	// create projectile
+	for (Weapon& w : all_weapon) {
+		if (clock() - w._last_time_attack < w._cooldown) {
+			continue;
+		}
+		w._last_time_attack = clock();
+		switch (w._type) {
+		case (WHIP):
+			for (int i = 0; i < w._amount; i++) {
+				Projectile proj = w._base_proj;
+				proj.set_create_time(clock());
+				if ( mouse_pos.x > player_pos.x) {
+					if (i ^ 1) {
+						Projectile::create_projectile(proj, { player_pos.x + (proj.get_width() >> 1) - (16) , player_pos.y - (i * 16) }, 
+							mouse_pos, w._type, i * 400, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay, 
+							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, LEFT != proj.get_direct());
+					}
+					else {
+						Projectile::create_projectile(proj, { player_pos.x - (proj.get_width() >> 1) + (16) , player_pos.y - ((i - 1) * 16) },
+							mouse_pos, w._type, 200 + (i - 1) * 400, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, RIGHT != proj.get_direct());
+					}
 				}
 				else {
-					proj.set_pos({ player_pos.x - ( proj.get_width() >> 1 ) + ( player_w >> 1 ) , player_pos.y - ( ( i * player_h ) >> 2 ) });
+					if (i ^ 1) {
+						Projectile::create_projectile(proj, { player_pos.x - (proj.get_width() >> 1) + (16) , player_pos.y - (i * 16) },
+							mouse_pos, w._type, i * 400, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, RIGHT != proj.get_direct());
+					}
+					else {
+						Projectile::create_projectile(proj, { player_pos.x + (proj.get_width() >> 1) - (16) , player_pos.y - ((i - 1) * 16) },
+							mouse_pos, w._type, 200 + (i - 1) * 400, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, LEFT != proj.get_direct());
+					}
+				}
+			}
+			break;
+
+		case MAGIC_MISSILE:
+			for (int i = 0; i < w._amount; i++) {
+				Projectile proj = w._base_proj;
+				proj.set_pos(player_pos);
+				proj.set_create_time(clock());
+				CPoint target = player_pos;
+				int min_dis = 1000000000;
+				QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(&proj), min_dis);
+				proj.set_target_vec((target != player_pos ? target - player_pos : CPoint(420,69)));
+				Projectile::create_projectile(proj, player_pos, (target), w._type, i * w._proj_interval, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+					w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, (target.x > player_pos.x ? RIGHT:LEFT) == proj.get_direct());
+			}
+			break;
+		case (VAMPIRICA):
+			for (int i = 0; i < w._amount; i++) {
+				Projectile proj = w._base_proj;
+				proj.set_create_time(clock());
+				if (mouse_pos.x > player_pos.x) {
+					if (i ^ 1) {
+						Projectile::create_projectile(proj, { player_pos.x + (proj.get_width() >> 1) - (16) , player_pos.y - (i * 16) },
+							mouse_pos, w._type, i * 400, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, LEFT != proj.get_direct());
+					}
+					else {
+						Projectile::create_projectile(proj, { player_pos.x - (proj.get_width() >> 1) + (16) , player_pos.y - ((i - 1) * 16) },
+							mouse_pos, w._type, 200 + (i - 1) * 400, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, RIGHT != proj.get_direct());
+					}
+				}
+				else {
+					if (i ^ 1) {
+						Projectile::create_projectile(proj, { player_pos.x - (proj.get_width() >> 1) + (16) , player_pos.y - (i * 16) },
+							mouse_pos, w._type, i * 400, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, RIGHT != proj.get_direct());
+					}
+					else {
+						Projectile::create_projectile(proj, { player_pos.x + (proj.get_width() >> 1) - (16) , player_pos.y - ((i - 1) * 16) },
+							mouse_pos, w._type, 200 + (i - 1) * 400, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, LEFT != proj.get_direct());
+					}
 				}
 			}
 			break;
 		}
 	}
 }
-void Weapon::show_proj() {
-	for (Projectile& proj : _proj_q ) {
-		proj.show_skin();
-	}
+void Weapon::show() {
+	Projectile::show();
 }
 deque<Projectile>& Weapon::get_all_proj() {
 	return _proj_q;
 }
 void Weapon::upgrade()
 {
+	VS_ASSERT(!this->is_evo_weapon(), "this weapon is evolution weapon, cannot be upgrade");
 	_level++;
 	switch (_type) {
 	case WHIP:
@@ -99,7 +190,34 @@ void Weapon::upgrade()
 			break;
 		}
 		break;
+	case HOLY_MISSLE:
+		switch (_level) {
+		case 2:
+			_amount += 1;
+			break;
+		case 3:
+			_cooldown -= 200;
+			break;
+		case 4:
+			_amount += 1;
+			break;
+		case 5:
+			_damage += 10;
+			break;
+		case 6:
+			_amount += 1;
+			break;
+		case 7:
+			_pierce += 1;
+			break;
+		case 8:
+			_damage += 10;
+			break;
+		}
+
 	}
+
+	
 }
 void Weapon::load_weapon_stats() {
 	ifstream file("source/game/VSclass/weapon_stats.csv");
@@ -124,20 +242,27 @@ void Weapon::load_weapon_stats() {
 		while ( getline(ss, token, ',') ) {
 			stats.push_back(stoi(token));
 		}
-		Weapon w = Weapon(type, const_cast<char*>(skin_file.c_str()), proj_vec, stats);
-		for ( int i = 0; i < w._amount; i++ ) {
-			Projectile p(proj_vec, BLACK);
-			switch ( w._type ) {
-			case WHIP:
-				p.set_pos(0, 0);
-				p.set_default_direct(RIGHT);
-				p.set_animation(w._proj_interval << 1, false, w._cooldown);
-				p.enable_animation();
-				break;
-
-			}
-			w._proj_q.emplace_back(p);
+		Weapon w = Weapon(type, const_cast<char*>(skin_file.c_str()), stats);
+		Projectile p(proj_vec, BLACK);
+		switch (type) {
+		case WHIP:
+			p.set_default_direct(RIGHT);
+			p.set_animation(300, true, 0);
+			p.set_life_cycle(300);
+			p.enable_animation();
+			break;
+		case MAGIC_MISSILE:
+			p.set_default_direct(RIGHT);
+			p.set_life_cycle(-1);
+			break;
+		case VAMPIRICA:
+			p.set_default_direct(RIGHT);
+			p.set_animation(300, true, 0);
+			p.set_life_cycle(300);
+			p.enable_animation();
+			break; 
 		}
+		w._base_proj = p;
 		Weapon::_base_weapon[ type ] = w;
 	}
 }
@@ -162,6 +287,22 @@ int Weapon::get_pierce() {
 int Weapon::get_kb() {
 	return _knock_back;
 }
+int Weapon::weapon_count() {
+	return static_cast<int>  (Weapon::_base_weapon.size());
+}
+bool Weapon::is_evo_weapon() {
+	return this->_type >= 32;
+}
+void Weapon::evolution(int type) {
+	VS_ASSERT(Weapon::evolution_pair.find(type) != Weapon::evolution_pair.end(), "This weapon can't not be evolve");
+	for (auto& w : all_weapon) {
+		if (w._type == type) {
+			w = Weapon::_base_weapon[Weapon::evolution_pair[type]];
+			return;
+		}
+	}
+	VS_ASSERT(false, "You don't own this weapon for evolution ><");
+}
 map <int, Weapon> Weapon::_base_weapon;
 
 map <int, int> Weapon::evolution_pair = { 
@@ -175,3 +316,4 @@ map <int, int> Weapon::evolution_pair = {
 	{CANDYBOX, CANDYBOX2}, {TRIASSO1, TRIASSO2}, {TRIASSO2, TRIASSO3},
 	{VICTORY, SOLES}
 };
+deque<Weapon> Weapon::all_weapon = {};

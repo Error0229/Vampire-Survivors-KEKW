@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "../../Library/gameutil.h"
 #include "VSObject.h"
+#include "QuadTree.h"
 #include "Pickup.h"
 #include "Enemy.h"
 

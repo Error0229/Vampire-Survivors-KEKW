@@ -5,9 +5,7 @@ public:
 	~Player();
 	void update_pos(CPoint) override;
 	void show_skin(double factor = 1.0);
-	void update_proj_pos();
-	void show_proj_skin();
-	
+
 	//weapon & passive
 	void acquire_weapon(Weapon&);
 	void acquire_passive(Passive&);
@@ -19,9 +17,7 @@ public:
 	int get_level();
 	int get_pickup_range();
 	int get_luck();
-	vector<Weapon>& get_weapons();
 	vector<Passive>& get_passives();
-	int weapon_count();
 	int passive_count();
 	
 	//things
@@ -33,7 +29,7 @@ public:
 	bool full_inv();
 private:
 	VSObject _bleed_animation;
-	vector<Weapon> _weapons;
+	// vector<Weapon> _weapons;
 	vector<Passive> _passives;
 	vector<int> stats;
 	int _might, _armor, _max_health, _recovery, _cooldown, _area, 

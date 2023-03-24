@@ -26,6 +26,21 @@ enum VSObject_types {
 	WALL,
 	MAP
 };
+enum weapon_names {
+	WHIP = 0, MAGIC_MISSILE, KNIFE, AXE, CROSS, HOLYBOOK,
+	FIREBALL, GARLIC, HOLYWATER, DIAMOND, LIGHTNING,
+	PENTAGRAM, SILF, SILF2, GUNS, GUNS2, GATTI, SONG,
+	TRAPING, LANCET, LAUREL, VENTO, BONE, CHERRY,
+	CART2, FLOWER, LAROBBA, JUBILEE, TRIASSO1, CANDYBOX,
+	VICTORY, MISSPELL
+};
+enum evolution_weapon_names {
+	VAMPIRICA = 32, HOLY_MISSLE, THOUSAND, SCYTHE,
+	HEAVENSWORD, VESPERS, HELLFIRE, VORTEX, BORA,
+	ROCHER, LOOP, SIRE, STIGRANGATTI, MANNAGGIA,
+	TRAPANO2, MISSPELL2, CORRIDOR, SHROUD, TRIASSO2,
+	TRIASSO3, GUNS3, SILF3, VENTO2, SOLES, CANDYBOX2
+};
 enum pickup_types {
 	XP,
 	COIN,
@@ -62,12 +77,15 @@ public:
 	void set_pos(CPoint);
 	void set_pos(int, int);
 	void set_pos(double, double);
+	void set_target_vec(CPoint);
+	void set_target_vec(int, int);
 	void set_speed(int);
 	void set_speed(double);
 	void select_show_animation(int);
 	CPoint get_pos();
 	virtual void update_pos(CPoint);
 	virtual void update_pos();
+	virtual void update_pos_by_vec(CPoint vec = {0,0});
 	void set_is_mirror(bool);
 	bool is_animation_done();
 	int get_direct();
@@ -79,8 +97,8 @@ public:
 	static int player_dx;
 	static int player_dy; // every time player move should update these
 	friend bool is_overlapped(VSObject&, VSObject&, double overlap_bound=1);
-	friend int distance(VSObject&, VSObject&);
-	friend int distance(CPoint&, CPoint&);
+	static int distance(VSObject&, VSObject&);
+	static int distance(CPoint&, CPoint&);
 	friend class QuadTree; 
 	int obj_type = VSOBJECT;
 protected:
@@ -90,6 +108,7 @@ protected:
 	CPoint _position;
 	CPoint _target;
 	CPoint _collision;
+	CPoint _target_vec = {0,0};
 	bool _is_mirror = 0;
 	int _direct, _default_direct=LEFT;
 	int _speed=0;

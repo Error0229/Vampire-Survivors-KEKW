@@ -51,7 +51,7 @@ void Player::hurt(int damage) {
 	}
 }
 void Player::acquire_weapon(Weapon& weapon) {
-	_weapons.push_back(weapon);
+	Weapon::all_weapon.push_back(weapon);
 }
 void Player::acquire_passive(Passive& passive) {
 	update_passive_effect(passive);
@@ -141,16 +141,6 @@ void Player::level_up_passive(Passive& p) {
 	update_passive_effect(p);
 }
 
-void Player::update_proj_pos() {
-	for ( auto& w : _weapons ) {
-		w.update_proj(_position, _direct, this->get_width(), this->get_width());
-	}
-}
-void Player::show_proj_skin() {
-	for ( auto& w : _weapons ) {
-		w.show_proj();
-	}
-}
 bool Player::pick_up_xp(int xp_value)
 {
 	_exp += xp_value;
@@ -193,19 +183,13 @@ int Player::get_luck()
 {
 	return _luck;
 }
-int Player::weapon_count()
-{
-	return _weapons.size();
-}
+
 int Player::passive_count()
 {
 	return _passives.size();
 }
 
-vector<Weapon>& Player::get_weapons()
-{
-	return _weapons;
-}
+
 
 vector<Passive>& Player::get_passives()
 {
@@ -217,7 +201,7 @@ void Player::obtain_item(int type)
 	bool is_own = false;
 	if (type < 32) {
 		//weapon
-		for (auto& i : _weapons) {
+		for (auto& i : Weapon::all_weapon) {
 			if (i.get_type() == type) {
 				i.upgrade();
 				is_own = true;
@@ -248,7 +232,7 @@ void Player::obtain_item(int type)
 
 bool Player::all_max()
 {
-	for (auto& i : _weapons) {
+	for (auto& i : Weapon::all_weapon) {
 		if (!i.is_max_level())
 			return false;
 	}
@@ -260,5 +244,5 @@ bool Player::all_max()
 }
 bool Player::full_inv()
 {
-	return _weapons.size() >= 6 && _passives.size() >= 6;
+	return Weapon::weapon_count() >= 6 && _passives.size() >= 6;
 }
