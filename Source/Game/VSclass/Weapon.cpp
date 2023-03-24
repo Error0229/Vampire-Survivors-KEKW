@@ -20,10 +20,10 @@ Weapon::~Weapon()
 Weapon::Weapon(int type, char* skin, vector<int> stats) {
 	this->load_skin(skin);
 	this->_type = type;
-	_level = stats[0], _max_level = stats[1], _damage = stats[2],
+	_level = stats[0], _max_level = stats[1], _damage = (double)stats[2] / 100.0,
 		_speed = stats[3] * 10, _area = (double)(stats[4])/100.0, _rarity = stats[5], _amount = stats[6],
 		_duration = stats[7], _pierce = stats[8], _cooldown = stats[9],
-		_proj_interval = stats[10], _hitbox_delay = stats[11], _knock_back = stats[12],
+		_proj_interval = stats[10], _hitbox_delay = stats[11], _knock_back = stats[12] / 100.0,
 		_pool_limit = stats[13], _chance = stats[14], _crit_multi = stats[15],
 		_block_by_wall = stats[16], _evolution_type = stats[17], _evolution_require = stats[18];
 
@@ -118,7 +118,7 @@ void Weapon::attack() {
 				CPoint target = player_pos;
 				int min_dis = 1000000000;
 				QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(&proj), min_dis);
-				proj.set_target_vec((target != player_pos ? target - player_pos : CPoint(420,69)));
+				proj.set_target_vec((target != player_pos ? target - player_pos : (mouse_pos.x > player_pos.x ? (1000, 1000) : (-1000, 1000))));
 				Projectile::create_projectile(proj, player_pos, (target), w._type, i * w._proj_interval, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
 					w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, (target.x > player_pos.x ? RIGHT:LEFT) == proj.get_direct());
 			}
@@ -160,7 +160,7 @@ void Weapon::attack() {
 			CPoint target = player_pos;
 			int min_dis = 1000000000;
 			QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(&proj), min_dis);
-			proj.set_target_vec((target != player_pos ? target - player_pos : CPoint(420, 69)));
+			proj.set_target_vec((target != player_pos ? target - player_pos : (mouse_pos.x > player_pos.x ? (100,10) : (-100,10))));
 			for (int i = 0; i < w._amount; i++) {
 				Projectile::create_projectile(proj, player_pos, (target), w._type, i * w._proj_interval, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
 					w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, (target.x > player_pos.x ? RIGHT : LEFT) == proj.get_direct());
@@ -287,7 +287,7 @@ void Weapon::load_weapon_stats() {
 		Weapon::_base_weapon[ type ] = w;
 	}
 }
-int Weapon::get_damage() {
+double Weapon::get_damage() {
 	return _damage;
 }
 int Weapon::get_duration() {
@@ -305,7 +305,7 @@ bool Weapon::is_max_level() {
 int Weapon::get_pierce() {
 	return _pierce;
 }
-int Weapon::get_kb() {
+double Weapon::get_kb() {
 	return _knock_back;
 }
 int Weapon::weapon_count() {

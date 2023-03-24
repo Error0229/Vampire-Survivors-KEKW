@@ -32,9 +32,9 @@ void Projectile::collide_with_enemy(Enemy& 🥵) {
 	this->_pierce -= 1;
 	if (this->_pierce < 0)
 		this->_is_over = true;
-	🥵.hurt(this->_damage);
+	🥵.hurt(static_cast<int>(this->_damage));
 }
-void Projectile::create_projectile(Projectile proj, CPoint position, CPoint target_pos, int type, int delay, int damage, int speed, int duration, int pierce, int proj_interval, int hitbox_delay, int knock_back, int pool_limit, int chance, int criti_multi, int block_by_wall, bool is_mirror) {
+void Projectile::create_projectile(Projectile proj, CPoint position, CPoint target_pos, int type, int delay, double damage, int speed, int duration, int pierce, int proj_interval, int hitbox_delay, double knock_back, int pool_limit, int chance, int criti_multi, int block_by_wall, bool is_mirror) {
 	proj._position = position;
 	proj._target = target_pos;
 	proj._delay = delay;
@@ -138,7 +138,7 @@ void Projectile::HOLY_MISSILE_transition() {
 		this->set_pos(player_pos);
 		CPoint target = (player_pos);
 		QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(this), min_dis);
-		this->set_target_vec((target != player_pos ? target - player_pos : CPoint(420, 69)));
+		this->set_target_vec((target != player_pos ? target - player_pos : _target_vec));
 		this->update_pos_by_vec();
 	}
 	else {
