@@ -151,7 +151,7 @@ Enemy Enemy::load_enemy(int id, char* name, int health, int power, int mspeed, d
 		struct stat buffer;
 		if (stat(tmp, &buffer) == 0) {
 			//the file exist
-			enemy.load_skin(tmp, RGB(255, 255, 255));
+			enemy.load_skin(tmp);
 		}
 		else {
 			//the file doesnt exist
@@ -165,7 +165,7 @@ Enemy Enemy::load_enemy(int id, char* name, int health, int power, int mspeed, d
 		struct stat buffer;
 		if (stat(tmp, &buffer) == 0) {
 			//the file exist
-			enemy._death_animation.load_skin(tmp, RGB(255, 255, 255));
+			enemy._death_animation.load_skin(tmp);
 		}
 		else {
 			//the file doesnt exist

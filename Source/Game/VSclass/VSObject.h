@@ -62,11 +62,11 @@ class VSObject
 {
 public:
 	VSObject();
-	VSObject(vector<char*> filename, COLORREF color = WHITE);
+	VSObject(vector<char*> filename, COLORREF color = RGB(1, 11, 111));
 	virtual ~VSObject();
-	void load_skin(vector<char*> filename, COLORREF color= RGB(255,255,255));
-	void load_skin(char* filename, COLORREF color = RGB(255, 255, 255));
-	void load_animation(vector<char*> filename, COLORREF color = RGB(255, 255, 255));
+	void load_skin(vector<char*> filename, COLORREF color= RGB(1, 11, 111));
+	void load_skin(char* filename, COLORREF color = RGB(1, 11, 111));
+	void load_animation(vector<char*> filename, COLORREF color = RGB(1, 11, 111));
 	virtual void show_skin(double factor = 1.0);
 	virtual void show_animation(double factor = 1.0);
 	void unshow_skin();

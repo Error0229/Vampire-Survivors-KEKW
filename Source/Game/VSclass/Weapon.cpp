@@ -243,7 +243,7 @@ void Weapon::load_weapon_stats() {
 			stats.push_back(stoi(token));
 		}
 		Weapon w = Weapon(type, const_cast<char*>(skin_file.c_str()), stats);
-		Projectile p(proj_vec, BLACK);
+		Projectile p(proj_vec);
 		switch (type) {
 		case WHIP:
 			p.set_default_direct(RIGHT);

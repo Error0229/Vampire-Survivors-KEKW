@@ -14,7 +14,7 @@ VSObject::VSObject()
 }
 VSObject::VSObject(vector<char*> filename, COLORREF color) :VSObject()
 {
-	this->load_skin(filename);
+	this->load_skin(filename, color);
 }
 VSObject::~VSObject()
 {
