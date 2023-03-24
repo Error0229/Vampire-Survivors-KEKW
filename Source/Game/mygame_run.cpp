@@ -50,7 +50,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	player.set_default_direct(RIGHT);
 	player.set_animation(150, false);
 	player.load_bleed();
-	player.acquire_weapon(Weapon::_base_weapon[MAGIC_MISSILE]);
+	player.acquire_weapon(Weapon::_base_weapon[HOLY_MISSILE]);
 	player.acquire_passive(Passive(POWER));
 	map.load_map({ "resources/map/dummy1.bmp" });
 	map.set_pos(0, 0);
@@ -419,7 +419,6 @@ void CGameStateRun::OnShow()
 	map.map_padding(player.get_pos());
 	map.show_map();
 	player.show_skin();
-	// player.show_proj_skin();
 	Weapon::show();
 	for (int i = 0; i < (int)enemy.size(); i++) {
 		enemy[i].show_skin();

@@ -80,6 +80,9 @@ void Projectile::update_position() {
 		case (VAMPIRICA):
 			proj.VAMPIRICA_transition();
 			break;
+		case (HOLY_MISSILE):
+			proj.HOLY_MISSILE_transition();
+			break;
 		}
 	}
 }
@@ -111,12 +114,14 @@ void Projectile::WHIP_transition() {
 }
 void Projectile::MAGIC_MISSILE_transition() {
 	VS_ASSERT(true, "are we here?");
-	if (!_is_start && clock() - _create_time - _delay < 100) {
-		CPoint target(0,0);
+	if (!_is_start && clock() - _create_time - _delay < _proj_interval) {
+		CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
 		int min_dis = 1000000000;
+		this->set_pos(player_pos);
+		CPoint target = player_pos;
 		QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(this), min_dis);
-		this->set_target_vec(target - _position);
-		this->update_pos_by_vec(target);
+		this->set_target_vec((target != player_pos ? target - player_pos : CPoint(420, 69)));
+		this->update_pos_by_vec();
 	}
 	else {
 		this->update_pos_by_vec();
@@ -125,5 +130,19 @@ void Projectile::MAGIC_MISSILE_transition() {
 void Projectile::VAMPIRICA_transition() {
 	CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
 	_position = player_pos + _offset;
+}
+void Projectile::HOLY_MISSILE_transition() {
+	if (!_is_start && clock() - _create_time - _delay < this->_proj_interval) {
+		CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
+		int min_dis = 1000000000;
+		this->set_pos(player_pos);
+		CPoint target = (player_pos);
+		QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(this), min_dis);
+		this->set_target_vec((target != player_pos ? target - player_pos : CPoint(420, 69)));
+		this->update_pos_by_vec();
+	}
+	else {
+		this->update_pos_by_vec();
+	}
 }
 deque<Projectile> Projectile::all_proj = {};
