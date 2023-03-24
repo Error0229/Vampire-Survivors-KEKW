@@ -50,7 +50,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	player.set_default_direct(RIGHT);
 	player.set_animation(150, false);
 	player.load_bleed();
-	player.acquire_weapon(Weapon::_base_weapon[MAGIC_MISSILE]);
+	player.acquire_weapon(Weapon::_base_weapon[HOLY_MISSILE]);
 	player.acquire_passive(Passive(POWER));
 	map.load_map({ "resources/map/dummy1.bmp" });
 	map.set_pos(0, 0);
@@ -205,7 +205,7 @@ int CGameStateRun::draw_level_up(bool pull_from_inv)
 				player_items[base_weapon / 100] = 2;
 		}
 	}
-	for (auto i : player.get_passives()) {
+	for (auto i : Passive::all_passive) {
 		player_items[i.get_type()] = (i.is_max_level()) ? 2 : 1;
 	}
 	// calc weapon weights
@@ -252,7 +252,7 @@ int CGameStateRun::draw_open_chest(bool can_evo)
 		TRACE("open chest: all max and cant evo.\n");
 		return -2;
 	}
-	for (auto& i : player.get_passives()) {
+	for (auto& i : Passive::all_passive) {
 		if (!i.is_max_level()) {
 			weights.push_back(i.get_rarity());
 			index_to_type.push_back(i.get_type());
@@ -435,7 +435,6 @@ void CGameStateRun::OnShow()
 	map.map_padding(player.get_pos());
 	map.show_map();
 	player.show_skin();
-	// player.show_proj_skin();
 	Weapon::show();
 	for (int i = 0; i < (int)enemy.size(); i++) {
 		enemy[i].show_skin();
