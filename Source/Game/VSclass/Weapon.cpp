@@ -5,6 +5,7 @@
 #include "QuadTree.h"
 #include "Projectile.h"
 #include "Weapon.h"
+#include "Passive.h"
 #include <fstream>
 #include <sstream>
 using namespace game_framework;
@@ -317,6 +318,16 @@ int Weapon::weapon_count() {
 bool Weapon::is_evo_weapon() {
 	return this->_type >= 32;
 }
+bool Weapon::can_evo() {
+	if (_level < _max_level || _type >= 32)
+		return false;
+	for (auto& i : Passive::all_passive) {
+		if (i.get_type() == _evolution_require) {
+			return true;
+		}
+	}
+	return false;
+}
 void Weapon::evolution(int type) {
 	VS_ASSERT(Weapon::evolution_pair.find(type) != Weapon::evolution_pair.end(), "This weapon can't not be evolve");
 	for (auto& w : all_weapon) {
@@ -342,7 +353,7 @@ map <int, int> Weapon::evolution_pair = {
 };
 // make a reverse map of evolution_pair
 map <int, int> Weapon::evolution_pair_reverse = {
-	{VAMPIRICA, WHIP}, {HOLY_MISSLE, MAGIC_MISSILE},{THOUSAND, KNIFE},
+	{VAMPIRICA, WHIP}, {HOLY_MISSILE, MAGIC_MISSILE},{THOUSAND, KNIFE},
 	{SCYTHE, AXE},{HEAVENSWORD, CROSS},{VESPERS, HOLYBOOK},
 	{HELLFIRE, FIREBALL},{VORTEX, GARLIC},{BORA, HOLYWATER},
 	{ROCHER, DIAMOND},{LOOP, LIGHTNING},{SIRE, PENTAGRAM},

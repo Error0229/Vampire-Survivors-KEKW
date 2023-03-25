@@ -231,7 +231,7 @@ int CGameStateRun::draw_level_up(bool pull_from_inv)
 		return draw_level_up(false);
 	return poll(weights, true);
 }
-int CGameStateRun::draw_open_chest(bool can_evo)
+int CGameStateRun::draw_open_chest(bool pull_evo)
 {
 	// 0~31: weapon
 	//32~62: evo
@@ -239,16 +239,14 @@ int CGameStateRun::draw_open_chest(bool can_evo)
 	vector<double> weights;
 	vector<int> index_to_type;
 	
-	bool all_max = true;
+	bool all_max = true, can_evo = false;
 	for (auto& i : Weapon::all_weapon) {
-		if (i.is_max_level()) {
-			69;
-		}
-		else {
+		if (i.can_evo())
+			can_evo = true;
+		if (!i.is_max_level())
 			all_max = false;
-		}
 	}
-	if (player.all_max() && !can_evo) {
+	if (all_max && !(pull_evo && can_evo)) {
 		TRACE("open chest: all max and cant evo.\n");
 		return -2;
 	}
@@ -259,7 +257,7 @@ int CGameStateRun::draw_open_chest(bool can_evo)
 		}
 	}
 	for (auto& i : Weapon::all_weapon) {
-		if (!i.is_max_level()) {
+		if (!i.is_max_level() || i.can_evo()) {
 			weights.push_back(i.get_rarity());
 			index_to_type.push_back(i.get_type());
 		}

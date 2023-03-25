@@ -19,6 +19,7 @@ public:
 	int get_evo_passive();
 	bool is_max_level();
 	bool is_evo_weapon();
+	bool can_evo();
 	double get_kb();
 	int get_pierce();
 	static void evolution(int type);
