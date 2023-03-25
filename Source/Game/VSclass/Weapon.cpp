@@ -54,6 +54,18 @@ Weapon::Weapon(int type, char* skin, vector<int> stats) {
 			"Passes through 1 more enemy.",
 			"Base damage up by 10.",
 		};
+	case KNIFE:
+		_level_up_msg = {
+			"", 
+			"Fires quickly in the faced direction.", 
+			"Fires 1 more projectile.", 
+			"Fires 1 more projectile. Base damage up by 5.",
+			"Fires 1 more projectile.", 
+			"Passes through 1 more enemy.", 
+			"Fires 1 more projectile.",
+			"Fires 1 more projectile. Base damage up by 5.", 
+			"Passes through 1 more enemy."
+		};
 		break;
 	case VAMPIRICA:
 		_level_up_msg = { "", "Can deal critical damage and absorb HP."};
@@ -83,28 +95,28 @@ void Weapon::attack() {
 			for (int i = 0; i < w._amount; i++) {
 				Projectile proj = w._base_proj;
 				proj.set_create_time(clock());
-				if ( mouse_pos.x > player_pos.x) {
+				if (mouse_pos.x > player_pos.x) {
 					if (i ^ 1) {
-						Projectile::create_projectile(proj, { player_pos.x + (proj.get_width() >> 1) - (16) , player_pos.y - (i * 16) }, 
-							mouse_pos, w._type, i * 400, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay, 
-							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, LEFT != proj.get_direct());
+						Projectile::create_projectile(proj, { player_pos.x + (proj.get_width() >> 1) - (16) , player_pos.y - (i * 16) },
+							mouse_pos, w._type, i * 2 * w._proj_interval, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, RIGHT != proj.get_direct());
 					}
 					else {
 						Projectile::create_projectile(proj, { player_pos.x - (proj.get_width() >> 1) + (16) , player_pos.y - ((i - 1) * 16) },
-							mouse_pos, w._type, 200 + (i - 1) * 400, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
-							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, RIGHT != proj.get_direct());
+							mouse_pos, w._type, w._proj_interval + (i - 1) * 2 * w._proj_interval, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, LEFT != proj.get_direct());
 					}
 				}
 				else {
 					if (i ^ 1) {
 						Projectile::create_projectile(proj, { player_pos.x - (proj.get_width() >> 1) + (16) , player_pos.y - (i * 16) },
-							mouse_pos, w._type, i * 400, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
-							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, RIGHT != proj.get_direct());
+							mouse_pos, w._type, i * 2 * w._proj_interval, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, LEFT != proj.get_direct());
 					}
 					else {
 						Projectile::create_projectile(proj, { player_pos.x + (proj.get_width() >> 1) - (16) , player_pos.y - ((i - 1) * 16) },
-							mouse_pos, w._type, 200 + (i - 1) * 400, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
-							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, LEFT != proj.get_direct());
+							mouse_pos, w._type, w._proj_interval + (i - 1) * 2 * w._proj_interval, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, RIGHT != proj.get_direct());
 					}
 				}
 			}
@@ -123,6 +135,19 @@ void Weapon::attack() {
 					w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, (target.x > player_pos.x ? RIGHT:LEFT) == proj.get_direct());
 			}
 			break;
+		case KNIFE:
+			for (int i = 0; i < 10; i++) {
+				Projectile proj = w._base_proj;
+				proj.set_create_time(clock());
+				proj.set_target_vec(mouse_pos - player_pos);
+				int x_factor = (mouse_pos.x > player_pos.x ? 1 : -1);
+				int y_factor = (mouse_pos.y > player_pos.y ? 1 : -1);
+				Projectile::create_projectile(proj, { player_pos.x + x_factor * (2 * i % 4 + i % 2)   , player_pos.y + y_factor * (2 * i % 4 + i % 2)  },
+							mouse_pos, w._type, i * w._proj_interval, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, (mouse_pos.x > player_pos.x ? RIGHT : LEFT) != proj.get_direct());
+
+			}
+			break;
 		case (VAMPIRICA):
 			for (int i = 0; i < w._amount; i++) {
 				Projectile proj = w._base_proj;
@@ -130,25 +155,25 @@ void Weapon::attack() {
 				if (mouse_pos.x > player_pos.x) {
 					if (i ^ 1) {
 						Projectile::create_projectile(proj, { player_pos.x + (proj.get_width() >> 1) - (16) , player_pos.y - (i * 16) },
-							mouse_pos, w._type, i * 400, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
-							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, LEFT != proj.get_direct());
+							mouse_pos, w._type, i * 2 * w._proj_interval, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, RIGHT != proj.get_direct());
 					}
 					else {
 						Projectile::create_projectile(proj, { player_pos.x - (proj.get_width() >> 1) + (16) , player_pos.y - ((i - 1) * 16) },
-							mouse_pos, w._type, 200 + (i - 1) * 400, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
-							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, RIGHT != proj.get_direct());
+							mouse_pos, w._type, w._proj_interval + (i - 1) * 2 * w._proj_interval, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, LEFT != proj.get_direct());
 					}
 				}
 				else {
 					if (i ^ 1) {
 						Projectile::create_projectile(proj, { player_pos.x - (proj.get_width() >> 1) + (16) , player_pos.y - (i * 16) },
-							mouse_pos, w._type, i * 400, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
-							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, RIGHT != proj.get_direct());
+							mouse_pos, w._type, i * 2 * w._proj_interval, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, LEFT != proj.get_direct());
 					}
 					else {
 						Projectile::create_projectile(proj, { player_pos.x + (proj.get_width() >> 1) - (16) , player_pos.y - ((i - 1) * 16) },
-							mouse_pos, w._type, 200 + (i - 1) * 400, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
-							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, LEFT != proj.get_direct());
+							mouse_pos, w._type, w._proj_interval + (i - 1) * 2 * w._proj_interval, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, RIGHT != proj.get_direct());
 					}
 				}
 			}
@@ -231,6 +256,33 @@ void Weapon::upgrade()
 			_damage += 10;
 			break;
 		}
+	case KNIFE:
+		switch (_level) {
+		case 2:
+			_amount += 1;
+			break;
+		case 3:
+			_amount += 1;
+			_damage += 5;
+			break;
+		case 4:
+			_amount += 1;
+			break;
+		case 5:
+			_pierce += 1;
+			break;
+		case 6:
+			_amount += 5;
+			break;
+		case 7:
+			_amount += 1;
+			_damage += 5;
+		case 8:
+			_pierce += 1;
+			break;
+
+		}
+		break;
 
 	}
 
@@ -269,6 +321,10 @@ void Weapon::load_weapon_stats() {
 			p.enable_animation();
 			break;
 		case MAGIC_MISSILE:
+			p.set_default_direct(RIGHT);
+			p.set_life_cycle(-1);
+			break;
+		case KNIFE:
 			p.set_default_direct(RIGHT);
 			p.set_life_cycle(-1);
 			break;
