@@ -246,7 +246,7 @@ int CGameStateRun::draw_open_chest(bool pull_evo)
 		if (!i.is_max_level())
 			all_max = false;
 	}
-	if (all_max && !(pull_evo && can_evo)) {
+	if (all_max && (!can_evo || !pull_evo)) {
 		TRACE("open chest: all max and cant evo.\n");
 		return -2;
 	}
@@ -257,9 +257,13 @@ int CGameStateRun::draw_open_chest(bool pull_evo)
 		}
 	}
 	for (auto& i : Weapon::all_weapon) {
-		if (!i.is_max_level() || i.can_evo()) {
+		if (!i.is_max_level()) {
 			weights.push_back(i.get_rarity());
 			index_to_type.push_back(i.get_type());
+		}
+		else if (i.can_evo()) {
+			weights.push_back(i.get_rarity());
+			index_to_type.push_back(Weapon::evolution_pair.find(i.get_type())->second);
 		}
 	}
 	return index_to_type[poll(weights)];

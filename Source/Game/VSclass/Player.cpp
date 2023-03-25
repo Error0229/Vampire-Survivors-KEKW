@@ -209,7 +209,7 @@ void Player::obtain_item(int type)
 		}
 	}
 	else if (type < 63) {
-		VS_ASSERT(false, "obtain evolution in wroing way.");
+		Weapon::evolution(type);
 	}
 	else{
 		//passive

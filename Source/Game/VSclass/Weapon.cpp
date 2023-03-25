@@ -329,10 +329,10 @@ bool Weapon::can_evo() {
 	return false;
 }
 void Weapon::evolution(int type) {
-	VS_ASSERT(Weapon::evolution_pair.find(type) != Weapon::evolution_pair.end(), "This weapon can't not be evolve");
 	for (auto& w : all_weapon) {
-		if (w._type == type) {
-			w = Weapon::_base_weapon[Weapon::evolution_pair[type]];
+		if (w._type == Weapon::evolution_pair_reverse.find(type)->second) {
+			VS_ASSERT(w.can_evo(), "This weapon can't not be evolve");
+			w = Weapon::_base_weapon[type];
 			return;
 		}
 	}
