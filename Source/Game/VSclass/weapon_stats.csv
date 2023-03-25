@@ -1,4 +1,6 @@
 skin,base_proj,name, type, level, max_level, damage, speed, area, rarity, amount, duration, pierce, cooldown, proj_interval, hitbox_delay, knock_back, pool_limit, chance, crit_multi, block_by_wall,evolution_type,evolution_require
-Resources\weapon\Whip.bmp,Resources\projectile\slash.bmp Resources\projectile\empty.bmp,Whip,0,1,8,10,-1,100,100,1,-1,0,1350,100,0,1,30,20,200,0,32,65
-Resources\weapon\WandHoly.bmp,Resources\projectile\ProjectileHoly2.bmp Resources\projectile\empty.bmp,Magic Wand,1,1,8,10,1,100,100,1,-1,0,1200,100,0,1,60,0,0,1,33,67
-Resources\weapon\Whip2.bmp,Resources\projectile\red_slash.bmp Resources\projectile\empty.bmp,Bloody Tear,32,1,1,40,1,130,-1,2,-1,0,1350,100,0,1,30,20,200,0,-1,65
+Resources\weapon\Whip.bmp,Resources\projectile\slash.bmp Resources\projectile\empty.bmp,Whip,0,1,8,1000,-1,100,100,1,-1,0,1350,100,0,100,30,20,200,0,32,65
+Resources\weapon\WandHoly.bmp,Resources\projectile\ProjectileHoly1.bmp Resources\projectile\empty.bmp,Magic Wand,1,1,8,1000,1,100,100,1,-1,0,1200,100,0,100,60,0,0,1,33,67
+Resources\weapon\Knife.bmp,Resources\projectile\ProjectileKnife3.bmp Resources\projectile\empty.bmp,Knife,2,1,8,650,1,100,100,1,-1,0,1000,100,0,50,70,30,200,1,34,69
+Resources\weapon\Whip2.bmp,Resources\projectile\red_slash.bmp Resources\projectile\empty.bmp,Bloody Tear,32,1,1,4000,1,130,-1,2,-1,0,1350,100,0,100,30,20,200,0,-1,65
+Resources\weapon\WandHoly2.bmp,Resources\projectile\ProjectileHoly2.bmp Resources\projectile\empty.bmp,Holy Wand,33,1,1,3000,2,100,-1,4,-1,2,500,100,0,100,60,0,0,1,-1,67

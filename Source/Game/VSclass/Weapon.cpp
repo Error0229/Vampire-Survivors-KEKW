@@ -5,6 +5,7 @@
 #include "QuadTree.h"
 #include "Projectile.h"
 #include "Weapon.h"
+#include "Passive.h"
 #include <fstream>
 #include <sstream>
 using namespace game_framework;
@@ -20,10 +21,10 @@ Weapon::~Weapon()
 Weapon::Weapon(int type, char* skin, vector<int> stats) {
 	this->load_skin(skin);
 	this->_type = type;
-	_level = stats[0], _max_level = stats[1], _damage = stats[2],
+	_level = stats[0], _max_level = stats[1], _damage = (double)stats[2] / 100.0,
 		_speed = stats[3] * 10, _area = (double)(stats[4])/100.0, _rarity = stats[5], _amount = stats[6],
 		_duration = stats[7], _pierce = stats[8], _cooldown = stats[9],
-		_proj_interval = stats[10], _hitbox_delay = stats[11], _knock_back = stats[12],
+		_proj_interval = stats[10], _hitbox_delay = stats[11], _knock_back = stats[12] / 100.0,
 		_pool_limit = stats[13], _chance = stats[14], _crit_multi = stats[15],
 		_block_by_wall = stats[16], _evolution_type = stats[17], _evolution_require = stats[18];
 
@@ -42,7 +43,7 @@ Weapon::Weapon(int type, char* skin, vector<int> stats) {
 			"Base damage up by 5."
 		};
 		break;
-	case HOLY_MISSLE:
+	case MAGIC_MISSILE:
 		_level_up_msg = {
 			"",
 			"Fires at the nearest enemy.",
@@ -56,8 +57,12 @@ Weapon::Weapon(int type, char* skin, vector<int> stats) {
 		};
 		break;
 	case VAMPIRICA:
-		_level_up_msg = { "" };
+		_level_up_msg = { "", "Can deal critical damage and absorb HP."};
 		break;
+	case HOLY_MISSILE:
+		_level_up_msg = { "", "Fires with no delay."};
+		break;
+
 	}
 }
 
@@ -114,7 +119,7 @@ void Weapon::attack() {
 				CPoint target = player_pos;
 				int min_dis = 1000000000;
 				QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(&proj), min_dis);
-				proj.set_target_vec((target != player_pos ? target - player_pos : CPoint(420,69)));
+				proj.set_target_vec((target != player_pos ? target - player_pos : (mouse_pos.x > player_pos.x ? (1000, 1000) : (-1000, 1000))));
 				Projectile::create_projectile(proj, player_pos, (target), w._type, i * w._proj_interval, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
 					w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, (target.x > player_pos.x ? RIGHT:LEFT) == proj.get_direct());
 			}
@@ -147,6 +152,19 @@ void Weapon::attack() {
 							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, LEFT != proj.get_direct());
 					}
 				}
+			}
+			break;
+		case HOLY_MISSILE:
+			Projectile proj = w._base_proj;
+			proj.set_pos(player_pos);
+			proj.set_create_time(clock());
+			CPoint target = player_pos;
+			int min_dis = 1000000000;
+			QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(&proj), min_dis);
+			proj.set_target_vec((target != player_pos ? target - player_pos : (mouse_pos.x > player_pos.x ? (100,10) : (-100,10))));
+			for (int i = 0; i < w._amount; i++) {
+				Projectile::create_projectile(proj, player_pos, (target), w._type, i * w._proj_interval, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+					w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, (target.x > player_pos.x ? RIGHT : LEFT) == proj.get_direct());
 			}
 			break;
 		}
@@ -190,7 +208,7 @@ void Weapon::upgrade()
 			break;
 		}
 		break;
-	case HOLY_MISSLE:
+	case HOLY_MISSILE:
 		switch (_level) {
 		case 2:
 			_amount += 1;
@@ -261,12 +279,16 @@ void Weapon::load_weapon_stats() {
 			p.set_life_cycle(300);
 			p.enable_animation();
 			break; 
+		case HOLY_MISSILE:
+			p.set_default_direct(RIGHT);
+			p.set_life_cycle(-1);
+			break;
 		}
 		w._base_proj = p;
 		Weapon::_base_weapon[ type ] = w;
 	}
 }
-int Weapon::get_damage() {
+double Weapon::get_damage() {
 	return _damage;
 }
 int Weapon::get_duration() {
@@ -284,8 +306,11 @@ bool Weapon::is_max_level() {
 int Weapon::get_pierce() {
 	return _pierce;
 }
-int Weapon::get_kb() {
+double Weapon::get_kb() {
 	return _knock_back;
+}
+int Weapon::get_evo_passive() {
+	return _evolution_require;
 }
 int Weapon::weapon_count() {
 	return static_cast<int>  (Weapon::_base_weapon.size());
@@ -293,11 +318,21 @@ int Weapon::weapon_count() {
 bool Weapon::is_evo_weapon() {
 	return this->_type >= 32;
 }
+bool Weapon::can_evo() {
+	if (_level < _max_level || _type >= 32)
+		return false;
+	for (auto& i : Passive::all_passive) {
+		if (i.get_type() == _evolution_require) {
+			return true;
+		}
+	}
+	return false;
+}
 void Weapon::evolution(int type) {
-	VS_ASSERT(Weapon::evolution_pair.find(type) != Weapon::evolution_pair.end(), "This weapon can't not be evolve");
 	for (auto& w : all_weapon) {
-		if (w._type == type) {
-			w = Weapon::_base_weapon[Weapon::evolution_pair[type]];
+		if (w._type == Weapon::evolution_pair_reverse.find(type)->second) {
+			VS_ASSERT(w.can_evo(), "This weapon can't not be evolve");
+			w = Weapon::_base_weapon[type];
 			return;
 		}
 	}
@@ -306,7 +341,7 @@ void Weapon::evolution(int type) {
 map <int, Weapon> Weapon::_base_weapon;
 
 map <int, int> Weapon::evolution_pair = { 
-	{WHIP, VAMPIRICA}, {MAGIC_MISSILE, HOLY_MISSLE},{KNIFE, THOUSAND},
+	{WHIP, VAMPIRICA}, {MAGIC_MISSILE, HOLY_MISSILE},{KNIFE, THOUSAND},
 	{AXE, SCYTHE},{CROSS, HEAVENSWORD},{HOLYBOOK, VESPERS},
 	{FIREBALL, HELLFIRE},{GARLIC, VORTEX},{HOLYWATER, BORA},
 	{DIAMOND, ROCHER},{LIGHTNING, LOOP},{PENTAGRAM, SIRE},
@@ -316,4 +351,17 @@ map <int, int> Weapon::evolution_pair = {
 	{CANDYBOX, CANDYBOX2}, {TRIASSO1, TRIASSO2}, {TRIASSO2, TRIASSO3},
 	{VICTORY, SOLES}
 };
+// make a reverse map of evolution_pair
+map <int, int> Weapon::evolution_pair_reverse = {
+	{VAMPIRICA, WHIP}, {HOLY_MISSILE, MAGIC_MISSILE},{THOUSAND, KNIFE},
+	{SCYTHE, AXE},{HEAVENSWORD, CROSS},{VESPERS, HOLYBOOK},
+	{HELLFIRE, FIREBALL},{VORTEX, GARLIC},{BORA, HOLYWATER},
+	{ROCHER, DIAMOND},{LOOP, LIGHTNING},{SIRE, PENTAGRAM},
+	{SILF3, SILF*100 + SILF2}, {GUNS3, GUNS*100 + GUNS2},
+	{STIGRANGATTI, GATTI},{MANNAGGIA, SONG},{TRAPANO2, TRAPING},
+	{CORRIDOR, LANCET}, {SHROUD, LAUREL},{VENTO2, VENTO},
+	{CANDYBOX2, CANDYBOX}, {TRIASSO2, TRIASSO1}, {TRIASSO3, TRIASSO2},
+	{SOLES, VICTORY}
+};
+
 deque<Weapon> Weapon::all_weapon = {};
