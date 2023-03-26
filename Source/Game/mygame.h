@@ -118,6 +118,8 @@ namespace game_framework {
 		Ui chest_item_frame[5];
 
 		Ui xp_bar_frame;
+		Ui xp_bar_cover;
+		Ui xp_bar;
 	};
 
 	/////////////////////////////////////////////////////////////////////////////

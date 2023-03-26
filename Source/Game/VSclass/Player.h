@@ -18,6 +18,7 @@ public:
 	int get_pickup_range();
 	int get_luck();
 	int passive_count();
+	double get_exp_percent();
 	
 	//things
 	void hurt(int damage);

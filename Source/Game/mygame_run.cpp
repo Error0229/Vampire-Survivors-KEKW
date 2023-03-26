@@ -90,8 +90,12 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 		chest_item[i] = -1;
 	}
 
-	xp_bar_frame.load_skin("resources/ui/xp_bar_frame_785.bmp");
+	xp_bar_frame.load_skin("resources/ui/xp_bar_frame.bmp");
 	xp_bar_frame.set_base_pos(-8, -300 + (xp_bar_frame.get_height() >> 1));
+	xp_bar_cover.load_skin("resources/ui/xp_bar_cover.bmp");
+	xp_bar_cover.set_base_pos(-8, -300 + (xp_bar_frame.get_height() >> 1));
+	xp_bar.load_skin("resources/ui/xp_bar.bmp");
+	xp_bar.set_base_pos(-8, -300 + (xp_bar.get_height() >> 1));
 }
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -449,6 +453,9 @@ void CGameStateRun::OnShow()
 	for(auto& i: chest)
 		i.show_skin();
 	
+	xp_bar_cover.show();
+	xp_bar.set_base_pos(-8 - (int)(xp_bar.get_width() * (1.0 - player.get_exp_percent())), -300 + (xp_bar.get_height() >> 1));
+	xp_bar.show();
 	xp_bar_frame.show();
 
 	if (_gamerun_status == LEVEL_UP) {

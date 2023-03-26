@@ -183,6 +183,10 @@ int Player::get_luck()
 {
 	return _luck;
 }
+double Player::get_exp_percent()
+{
+	return (_exp < _max_exp) ? ((double)_exp / _max_exp):(1);
+}
 
 int Player::passive_count()
 {
