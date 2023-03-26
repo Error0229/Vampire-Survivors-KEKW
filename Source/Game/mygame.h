@@ -116,6 +116,8 @@ namespace game_framework {
 		Icon chest_item_icon[5];
 		Ui chest_animation;
 		Ui chest_item_frame[5];
+
+		Ui xp_bar_frame;
 	};
 
 	/////////////////////////////////////////////////////////////////////////////
