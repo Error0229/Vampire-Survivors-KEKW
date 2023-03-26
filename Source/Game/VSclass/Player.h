@@ -18,12 +18,12 @@ public:
 	int get_pickup_range();
 	int get_luck();
 	int passive_count();
-	double get_exp_percent();
+	int get_exp_percent();
 	
 	//things
 	void hurt(int damage);
 	void load_bleed();
-	bool pick_up_xp(int);
+	void pick_up_xp(int);
 	bool apply_level_up();
 	bool all_max();
 	bool full_inv();

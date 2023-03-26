@@ -101,7 +101,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	// A kill all enemies
-	// B pick up 100 xp, but will not check level up
+	// B pick up 10 xp
 	switch (nChar) {
 	case('A'):
 		// Weapon::evolution(WHIP);
@@ -113,7 +113,7 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		}
 		break;
 	case('B'):
-		player.pick_up_xp(100);
+		player.pick_up_xp(10);
 		break;
 	}
 }
@@ -366,8 +366,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 				i.update_pos(player.get_pos());
 				if (is_overlapped(player, i)) {
 					i.despawn();
-					if (player.pick_up_xp(i.get_xp_value()))
-						_next_status = LEVEL_UP;
+					player.pick_up_xp(i.get_xp_value());
 				}
 			}
 		}
@@ -378,6 +377,10 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 				_next_status = OPEN_CHEST;
 			}
 		}
+
+		if(player.get_exp_percent()==100)
+			_next_status = LEVEL_UP;
+
 		break;
 	case(LEVEL_UP):
 		//--------------------------------------------------------
@@ -454,7 +457,7 @@ void CGameStateRun::OnShow()
 		i.show_skin();
 	
 	xp_bar_cover.show();
-	xp_bar.set_base_pos(-8 - (int)(xp_bar.get_width() * (1.0 - player.get_exp_percent())), -300 + (xp_bar.get_height() >> 1));
+	xp_bar.set_base_pos(-8 - (xp_bar.get_width() * (100 - player.get_exp_percent()) / 100), -300 + (xp_bar.get_height() >> 1));
 	xp_bar.show();
 	xp_bar_frame.show();
 

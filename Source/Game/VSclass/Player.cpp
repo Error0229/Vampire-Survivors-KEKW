@@ -141,10 +141,9 @@ void Player::level_up_passive(Passive& p) {
 	update_passive_effect(p);
 }
 
-bool Player::pick_up_xp(int xp_value)
+void Player::pick_up_xp(int xp_value)
 {
 	_exp += xp_value;
-	return (_exp >= _max_exp);
 }
 bool Player::apply_level_up()
 {
@@ -183,9 +182,9 @@ int Player::get_luck()
 {
 	return _luck;
 }
-double Player::get_exp_percent()
+int Player::get_exp_percent()
 {
-	return (_exp < _max_exp) ? ((double)_exp / _max_exp):(1);
+	return (_exp < _max_exp) ? (_exp * 100 / _max_exp):(100);
 }
 
 int Player::passive_count()
