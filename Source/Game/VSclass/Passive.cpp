@@ -260,4 +260,9 @@ int Passive::get_rarity()
 {
 	return _rarity;
 }
+int Passive::passive_count()
+{
+	return all_passive.size();
+}
+
 deque<Passive> Passive::all_passive;

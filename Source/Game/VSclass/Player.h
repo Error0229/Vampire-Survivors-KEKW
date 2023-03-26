@@ -17,7 +17,6 @@ public:
 	int get_level();
 	int get_pickup_range();
 	int get_luck();
-	int passive_count();
 	int get_exp_percent();
 	
 	//things

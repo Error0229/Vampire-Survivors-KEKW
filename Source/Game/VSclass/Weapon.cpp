@@ -313,7 +313,7 @@ int Weapon::get_evo_passive() {
 	return _evolution_require;
 }
 int Weapon::weapon_count() {
-	return static_cast<int>  (Weapon::_base_weapon.size());
+	return static_cast<int>  (Weapon::all_weapon.size());
 }
 bool Weapon::is_evo_weapon() {
 	return this->_type >= 32;

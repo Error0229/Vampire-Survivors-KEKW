@@ -81,7 +81,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	chest_animation.load_skin({"resources/ui/TreasureIdle_01_big.bmp", "resources/ui/TreasureIdle_02_big.bmp" , "resources/ui/TreasureIdle_03_big.bmp" , "resources/ui/TreasureIdle_04_big.bmp" , "resources/ui/TreasureIdle_05_big.bmp" , "resources/ui/TreasureIdle_06_big.bmp" ,"resources/ui/TreasureIdle_07_big.bmp" ,"resources/ui/TreasureIdle_08_big.bmp", "resources/ui/TreasureOpen_01_big.bmp", "resources/ui/TreasureOpen_02_big.bmp" , "resources/ui/TreasureOpen_03_big.bmp" , "resources/ui/TreasureOpen_04_big.bmp" , "resources/ui/TreasureOpen_05_big.bmp" , "resources/ui/TreasureOpen_06_big.bmp" , "resources/ui/TreasureOpen_07_big.bmp" , "resources/ui/TreasureOpen_08_big.bmp" });
 	chest_animation.set_animation(100, true);
 	chest_animation.set_base_pos(5, 75);
-	vector<CPoint> chest_item_pos = { CPoint(0,-50), CPoint(-80,-110), CPoint(80,-110), CPoint(-100,-10), CPoint(100,-10) };
+	CPoint chest_item_pos[] = {(0,-50), (-80,-110), (80,-110), (-100,-10), (100,-10)};
 	for (int i = 0; i < 5; i++) {
 		chest_item_icon[i].load_icon();
 		chest_item_icon[i].set_base_pos(chest_item_pos[i]);
@@ -96,6 +96,13 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	xp_bar_cover.set_base_pos(-8, -300 + (xp_bar_frame.get_height() >> 1));
 	xp_bar.load_skin("resources/ui/xp_bar.bmp");
 	xp_bar.set_base_pos(-8, -300 + (xp_bar.get_height() >> 1));
+
+	inv_slot.load_skin("resources/ui/weaponSlots.bmp");
+	inv_slot.set_base_pos(-400 + (inv_slot.get_width()>>1), -300 + 24 + (inv_slot.get_height()>>1));
+	for (int i = 0; i < 12; i++) {
+		inv_icon[i].load_icon();
+		inv_icon[i].set_base_pos(-400 + 8 + i%6*16, -300 + 24 + 8 + i/6*16);
+	}
 }
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -179,7 +186,7 @@ int CGameStateRun::draw_level_up(bool pull_from_inv)
 	//32~62: evo
 	//63~83: passive
 	if (pull_from_inv) {
-		if (Weapon::weapon_count() + player.passive_count() == 1) {
+		if (Weapon::weapon_count() + Passive::passive_count() == 1) {
 			return draw_level_up(false);
 		}
 		if (player.all_max()) {
@@ -220,7 +227,7 @@ int CGameStateRun::draw_level_up(bool pull_from_inv)
 	for (int i = 0; i < 2; i++) {
 		if (level_up_choice[0] == i || level_up_choice[1] == i || level_up_choice[2] == i || level_up_choice[3] == i)
 			continue;
-		if ((pull_from_inv && player_items[i] == 1) || (!pull_from_inv && player_items[i] == 0)) {
+		if ((pull_from_inv && player_items[i] == 1) || (!pull_from_inv && Weapon::weapon_count()<6 && player_items[i] == 0)) {
 			weights[i] = Weapon::_base_weapon[i].get_rarity();
 			no_weight = false;
 		}
@@ -229,7 +236,7 @@ int CGameStateRun::draw_level_up(bool pull_from_inv)
 	for (int i = 63; i < 84; i++) {
 		if (level_up_choice[0] == i || level_up_choice[1] == i || level_up_choice[2] == i || level_up_choice[3] == i)
 			continue;
-		if ((pull_from_inv && player_items[i] == 1) || (!pull_from_inv && player_items[i] == 0)) {
+		if ((pull_from_inv && player_items[i] == 1) || (!pull_from_inv && Passive::passive_count()<6 && player_items[i] == 0)) {
 			weights[i] = Passive(i).get_rarity();
 			no_weight = false;
 		}
@@ -461,7 +468,15 @@ void CGameStateRun::OnShow()
 	xp_bar.show();
 	xp_bar_frame.show();
 
-	if (_gamerun_status == LEVEL_UP) {
+	switch (_gamerun_status) {
+	case(PLAYING):
+		inv_slot.show();
+		for (int i = 0; i < Weapon::weapon_count(); i++)
+			inv_icon[i].show(Weapon::all_weapon[i].get_type());
+		for (int i = 0; i < Passive::passive_count(); i++)
+			inv_icon[i+6].show(Passive::all_passive[i].get_type());
+		break;
+	case(LEVEL_UP):
 		event_background.show();
 		for (int i = 0; i < 4; i++) {
 			if (level_up_choice[i]>-1) {
@@ -470,8 +485,8 @@ void CGameStateRun::OnShow()
 				level_up_icon[i].show(level_up_choice[i]);
 			}
 		}
-	}
-	else if (_gamerun_status == OPEN_CHEST) {
+		break;
+	case(OPEN_CHEST):
 		event_background.show();
 		chest_animation.show();
 		for (int i = 0; i < 5; i++) {
@@ -480,5 +495,6 @@ void CGameStateRun::OnShow()
 				chest_item_icon[i].show(chest_item[i]);
 			}
 		}
+		break;
 	}
 }

@@ -187,11 +187,6 @@ int Player::get_exp_percent()
 	return (_exp < _max_exp) ? (_exp * 100 / _max_exp):(100);
 }
 
-int Player::passive_count()
-{
-	return Passive::all_passive.size();
-}
-
 void Player::obtain_item(int type)
 {
 	bool is_own = false;

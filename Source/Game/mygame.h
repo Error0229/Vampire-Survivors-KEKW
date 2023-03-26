@@ -120,6 +120,9 @@ namespace game_framework {
 		Ui xp_bar_frame;
 		Ui xp_bar_cover;
 		Ui xp_bar;
+
+		Ui inv_slot;
+		Icon inv_icon[12];
 	};
 
 	/////////////////////////////////////////////////////////////////////////////

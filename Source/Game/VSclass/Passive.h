@@ -12,6 +12,7 @@ public:
 	int get_alt_effect();
 	int get_rarity();
 	static deque<Passive> all_passive;
+	static int passive_count();
 private:
 	int _level, _stacking;
 	int _type, _rarity,  _max_level;
