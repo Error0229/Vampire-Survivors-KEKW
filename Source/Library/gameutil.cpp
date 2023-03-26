@@ -8,6 +8,8 @@
 #include <ddraw.h>
 #include <direct.h>
 #include <string.h>
+#include <any>
+#include <unordered_map>
 #include "audio.h"
 #include "gameutil.h"
 #include "gamecore.h"

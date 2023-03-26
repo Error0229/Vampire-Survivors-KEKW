@@ -30,6 +30,7 @@ protected:
 	Projectile _base_proj;
 	deque<Projectile> _proj_q;
 	deque<Projectile> _unused_proj_q;
+	unordered_map<string, any> _base_stats;
 	string _name;
 	int _type, _level, _max_level, _speed, _rarity,   
 		_amount, _duration, _pierce, _cooldown, _proj_interval,

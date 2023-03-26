@@ -14,6 +14,24 @@ Player::Player()
 	_exp = 0;
 	_max_exp = 5;
 	_level = 1;
+	_base_stats = {
+		{"might", _might},
+		{"armor", _armor},
+		{"max_health", _max_health},
+		{"recovery", _recovery},
+		{"cooldown", _cooldown},
+		{"area", _area},
+		{"proj_speed", _proj_speed},
+		{"duration", _duration},
+		{"amount", _amount},
+		{"move_speed", _move_speed},
+		{"magnet", _magnet},
+		{"luck", _luck},
+		{"growth", _growth},
+		{"greed", _greed},
+		{"revival", _revival},
+		{"curse", _curse }
+	};
 	//for some reason, load skin in constructor will cause the some error
 	//_bleed_animation.load_skin({ "resources/character/Blood1.bmp", "resources/character/Blood2.bmp", "resources/character/Blood3.bmp" });
 	//_bleed_animation.set_animation(50, false);
@@ -62,33 +80,43 @@ void Player::update_passive_effect(Passive& p) {
 	switch (p.get_type()) {
 	case POWER:
 		_might += effect;
+		_might = any_cast<int>(_base_stats["might"]) + effect;
 		break;
 	case ARMOR:
 		_armor += effect;
+		_armor = any_cast<int>(_base_stats["armor"]) + effect;
 		break;
 	case MAXHEALTH:
 		_max_health += effect;
+		_max_health = any_cast<int>(_base_stats["max_health"]) * effect / 100;
 		break;
 	case REGEN:
 		_recovery += effect;
+		_recovery = any_cast<double>(_base_stats["recovery"]) + effect;
 		break;
 	case COOLDOWN:
 		_cooldown += effect;
+		_cooldown = any_cast<int>(_base_stats["cooldown"]) + effect;
 		break;
 	case AREA:
 		_area += effect;
+		_area = any_cast<int>(_base_stats["area"]) + effect;
 		break;
 	case SPEED:
 		_proj_speed += effect;
+		_proj_speed = any_cast<int>(_base_stats["proj_speed"]) + effect;
 		break;
 	case DURATION:
 		_duration += effect;
+		_duration = any_cast<int>(_base_stats["duration"]) + effect;
 		break;
 	case AMOUNT:
 		_amount += effect;
+		_amount = any_cast<int>(_base_stats["amount"]) + effect;
 		break;
 	case MOVESPEED:
 		_speed += effect;
+		_speed = any_cast<int>(_base_stats["move_speed"]) * (1 + effect) / 100
 		break;
 	case MAGNET:
 		_magnet += effect;

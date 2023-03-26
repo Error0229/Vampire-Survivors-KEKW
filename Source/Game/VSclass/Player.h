@@ -31,17 +31,15 @@ private:
 	// vector<Weapon> _weapons;
 	// vector<Passive> _passives;
 	vector<int> stats;
-	int _might, _armor, _max_health, _recovery, _cooldown, _area, 
+	unordered_map <string, any> _base_stats;
+	int _might, _armor, _max_health, _cooldown, 
 		_proj_speed, _duration, _amount, _move_speed, _magnet,
 		_luck, _growth, _greed, _revival, _curse;
+	double _area, _recovery;
 	int _hp;
 	int _exp, _max_exp;
 	int _level;
-	int _weapon_type, _weapon_level;
-	int _passive_type, _passive_level;
 	int _direction;
-	int _range;
-	int _speed;	//this have same name with VSObject::speed, might change in the future
 	int _money;
 	int _reroll;
 	bool _is_hurt = false;

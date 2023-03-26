@@ -236,6 +236,15 @@ void Passive::level_up()
 	}
 	_level++;
 }
+void Passive::upgrade() {
+	for (auto& p : all_passive) {
+		if (p.get_type() == this->_type) {
+			p.level_up();
+			return;
+		}
+	}
+
+}
 int Passive::get_type()
 {
 	return _type;

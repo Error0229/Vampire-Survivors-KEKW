@@ -26,6 +26,24 @@ Weapon::Weapon(int type, char* skin, vector<int> stats) {
 		_proj_interval = stats[10], _hitbox_delay = stats[11], _knock_back = stats[12] / 100.0,
 		_pool_limit = stats[13], _chance = stats[14], _crit_multi = stats[15],
 		_block_by_wall = stats[16], _evolution_type = stats[17], _evolution_require = stats[18];
+	_base_stats = {
+		{"level", _level},
+		{"max_level", _max_level},
+		{"damage", _damage},
+		{"speed", _speed},
+		{"area", _area},
+		{"rarity", _rarity},
+		{"amount", _amount},
+		{"duration", _duration},
+		{"pierce", _pierce},
+		{"cooldown", _cooldown},
+		{"proj_interval", _proj_interval},
+		{"hitbox_delay", _hitbox_delay},
+		{"knock_back", _knock_back},
+		{"pool_limit", _pool_limit},
+		{"chance", _chance},
+		{"crit_multi", _crit_multi}
+	};
 
 	switch (_type) {
 	case WHIP:
