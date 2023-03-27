@@ -128,3 +128,44 @@ namespace game_framework {
 	};
 
 }
+
+
+enum font_styles {
+	FONT_24x18_B
+};
+enum align_styles {
+	ALIGN_LEFT,
+	ALIGN_CENTER,
+	ALIGN_RIGHT
+};
+
+class Text {
+public:
+	Text() = delete;
+	Text(string, CPoint, int, int, int);
+	~Text();
+	bool is_remain();
+	friend class TextDevice;
+private:
+	string str;
+	CPoint pos;
+	int font_id, align_id, duration;
+};
+
+typedef struct VS_font {
+	int height, width;
+	CFont cfont;
+} VS_font;
+
+class TextDevice {
+public:
+	TextDevice();
+	~TextDevice();
+	void print_all();
+	void add_text(string str="", CPoint pos = (0, 0), int duration = 1, int font_id=FONT_24x18_B, int align_id=ALIGN_CENTER);
+private:
+	CDC* ptr_CDC;
+	VS_font fonts[1];
+	deque<Text> texts;
+	void set_font(VS_font& font, int height, int width, int weight, bool italic, bool underline, string font_name="CourierNew");
+};

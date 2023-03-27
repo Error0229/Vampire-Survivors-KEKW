@@ -17,6 +17,7 @@
 #include <filesystem>
 #include <experimental/filesystem> // Header file for pre-standard implementation
 #include <comdef.h>
+#include "../Game/VSclass/VSObject.h"
 
 namespace game_framework {
 
@@ -292,4 +293,94 @@ namespace game_framework {
 		fp = pDC->SelectObject(&f);
 	}
 
+}
+
+
+Text::Text(string str, CPoint pos, int duration, int font_id, int align_id)
+{
+	this->str = str;
+	this->pos = pos;
+	this->font_id = font_id;
+	this->align_id = align_id;
+	this->duration = duration;
+}
+Text::~Text()
+{
+}
+bool Text::is_remain()
+{
+	return --duration > 0;
+}
+
+
+TextDevice::TextDevice()
+{
+	set_font(fonts[FONT_24x18_B], 24, 18, FW_BOLD, false, false);
+}
+TextDevice::~TextDevice()
+{
+	for (auto& i : fonts)
+		i.cfont.DeleteObject();
+}
+void TextDevice::add_text(string str, CPoint pos, int duration, int font_id, int align_id)
+{
+	texts.emplace_back(Text(str, pos, duration, font_id, align_id));
+}
+void TextDevice::print_all()
+{
+	ptr_CDC = game_framework::CDDraw::GetBackCDC();
+	ptr_CDC->SetBkMode(TRANSPARENT);
+	ptr_CDC->SetTextColor(RGB(255, 255, 255));
+	int x, y;
+	Text* ptext;
+	VS_font* pfont;
+	for (int i = 0; i < (int)texts.size(); i++) {
+		// offset position
+		ptext = &texts.back();
+		pfont = &fonts[ptext->font_id];
+		if (ptext->align_id == ALIGN_LEFT)
+			x = ptext->pos.x + VSObject::player_dx;
+		else if (ptext->align_id == ALIGN_CENTER)
+			x = ptext->pos.x - ((pfont->width * (ptext->str.size())) >> 1) + VSObject::player_dx;
+		else if (ptext->align_id == ALIGN_RIGHT)
+			x = ptext->pos.x - (pfont->width * ptext->str.size()) + VSObject::player_dx;
+		else
+			VS_ASSERT(false, "text align id error");
+		y = ptext->pos.y - (pfont->height >> 1) + VSObject::player_dy;
+		
+		// select font
+		ptr_CDC->SelectObject(&(pfont->cfont));
+		
+		// print
+		ptr_CDC->TextOutA(x, y, texts.back().str.c_str());
+		
+		// remove/keep 
+		if (texts.back().is_remain())
+			texts.emplace_front(texts.back());
+		texts.pop_back();
+	}
+	if (!(clock() % 60000))
+		texts.shrink_to_fit();
+	game_framework::CDDraw::ReleaseBackCDC();
+}
+void TextDevice::set_font(VS_font& font, int height, int width, int weight, bool italic, bool underline, string font_name)
+{
+	font.height = height;
+	font.width = width;
+	font.cfont.CreateFont(
+			height,						// nHeight
+			width,						// nWidth
+			0,							// nEscapement
+			0,							// nOrientation
+			weight,						// nWeight
+			italic,						// bItalic
+			underline,					// bUnderline
+			0,							// cStrikeOut
+			ANSI_CHARSET,				// nCharSet
+			OUT_DEFAULT_PRECIS,			// nOutPrecision
+			CLIP_DEFAULT_PRECIS,		// nClipPrecision
+			NONANTIALIASED_QUALITY,		// nQuality
+			DEFAULT_PITCH | FF_MODERN,	// nPitchAndFamily
+			font_name.c_str()			// lpszFacename
+		);
 }

@@ -123,6 +123,8 @@ namespace game_framework {
 
 		Ui inv_slot;
 		Icon inv_icon[12];
+
+		TextDevice text_device;
 	};
 
 	/////////////////////////////////////////////////////////////////////////////

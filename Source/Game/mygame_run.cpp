@@ -9,6 +9,7 @@
 #include "config.h"
 #include "mygame.h"
 #include "VSclass/VS.h"
+#include <string>
 
 using namespace game_framework;
 
@@ -59,7 +60,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	// QT.clear();
 
 	for (int i = 0; i < 100; i++) {
-		enemy.push_back(Enemy::get_template_enemy(SKELETON2));
+		enemy.push_back(Enemy::get_template_enemy(XLFLOWER));
 		xp.push_back(Xp());
 		chest.push_back(Chest());
 	}
@@ -81,7 +82,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	chest_animation.load_skin({"resources/ui/TreasureIdle_01_big.bmp", "resources/ui/TreasureIdle_02_big.bmp" , "resources/ui/TreasureIdle_03_big.bmp" , "resources/ui/TreasureIdle_04_big.bmp" , "resources/ui/TreasureIdle_05_big.bmp" , "resources/ui/TreasureIdle_06_big.bmp" ,"resources/ui/TreasureIdle_07_big.bmp" ,"resources/ui/TreasureIdle_08_big.bmp", "resources/ui/TreasureOpen_01_big.bmp", "resources/ui/TreasureOpen_02_big.bmp" , "resources/ui/TreasureOpen_03_big.bmp" , "resources/ui/TreasureOpen_04_big.bmp" , "resources/ui/TreasureOpen_05_big.bmp" , "resources/ui/TreasureOpen_06_big.bmp" , "resources/ui/TreasureOpen_07_big.bmp" , "resources/ui/TreasureOpen_08_big.bmp" });
 	chest_animation.set_animation(100, true);
 	chest_animation.set_base_pos(5, 75);
-	CPoint chest_item_pos[] = {(0,-50), (-80,-110), (80,-110), (-100,-10), (100,-10)};
+	CPoint chest_item_pos[] = {CPoint(0,-50), CPoint(-80,-110), CPoint(80,-110), CPoint(-100,-10), CPoint(100,-10)};
 	for (int i = 0; i < 5; i++) {
 		chest_item_icon[i].load_icon();
 		chest_item_icon[i].set_base_pos(chest_item_pos[i]);
@@ -257,6 +258,10 @@ int CGameStateRun::draw_open_chest(bool pull_evo)
 	for (auto& i : Weapon::all_weapon) {
 		if (i.can_evo())
 			can_evo = true;
+		if (!i.is_max_level())
+			all_max = false;
+	}
+	for (auto& i : Passive::all_passive) {
 		if (!i.is_max_level())
 			all_max = false;
 	}
@@ -441,6 +446,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		// poll chest item
 		for (int i = 0; i < chest_item_count; i++) {
 			chest_item[i] = draw_open_chest(can_evo);
+			TRACE(_T("%d\n"), chest_item[i]);
 			if (chest_item[i] > -1) {
 				// -2 means pull empty
 				player.obtain_item(chest_item[i]);
@@ -497,4 +503,7 @@ void CGameStateRun::OnShow()
 		}
 		break;
 	}
+
+	text_device.add_text("LV " + to_string(player.get_level()), CPoint(380, -287) + player.get_pos(), 1, FONT_24x18_B, ALIGN_RIGHT);
+	text_device.print_all();
 }

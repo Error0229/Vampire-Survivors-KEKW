@@ -148,6 +148,7 @@ void Player::pick_up_xp(int xp_value)
 bool Player::apply_level_up()
 {
 	VS_ASSERT(_exp >= _max_exp, "attemp to lvl up when xp < max_xp");
+	_level++;
 	_exp -= _max_exp;
 
 	if (_level < 20)
