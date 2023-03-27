@@ -23,7 +23,7 @@ Passive::Passive(int type) {
 		_name = "Armor";
 		_rarity = 100;
 		_level_up_msg = { "", "Reduces incoming damage by 1. Increases retaliatory damage by 10%", "Reduces incoming damage by 1" };
-		_effect_by_level = { 0, -1, -2, -3, -4, -5 };
+		_effect_by_level = { 0, 1, 2, 3, 4, 5 };
 		_level = 1;
 		_max_level = 5;
 		_stacking = Additive;
@@ -33,7 +33,7 @@ Passive::Passive(int type) {
 		_name = "Hollow Heart";
 		_rarity = 90;
 		_level_up_msg = { "", "Augment max health by 20%", "Max health increases by 20%" };
-		_effect_by_level = { 100, 120, 144, 173, 207, 249 };
+		_effect_by_level = { 0, 20, 40, 60, 80, 100 };
 		_level = 1;
 		_max_level = 5;
 		_stacking = Multiplicative;
@@ -115,7 +115,7 @@ Passive::Passive(int type) {
 		_level_up_msg = { "", "Character picks up items from further away",
 			"Pickup range increased by 33%", "Pickup range increased by 25%",
 			"Pickup range increased by 20%", "Pickup range increased by 33%" };
-		_effect_by_level = { 0, 150, 200, 250, 300, 400 };
+		_effect_by_level = { 0, 50, 100, 150, 200, 300 };
 		_level = 1;
 		_max_level = 5;
 		_stacking = Additive;
@@ -195,8 +195,7 @@ Passive::Passive(int type) {
 		_name = "Metaglio Left";
 		_rarity = 10;
 		_level_up_msg = {"", "Channels dark powers to protect the bearer", "Health recovery increases by 0.1 HP per second. Max Health increases by 5%" };
-		_effect_by_level = { 0, 0, 105, 110, 116, 122, 128, 134, 140, 148 };
-		_alt_effect = { 0, 0, 10, 20, 30, 40, 50, 60, 70, 80 };
+		_effect_by_level = { 0, 0, 5, 10, 15, 20, 25, 30, 35, 40 };
 		_level = 1;
 		_max_level = 9;
 		_stacking = Additive | Multiplicative;
@@ -245,6 +244,14 @@ void Passive::upgrade() {
 	}
 
 }
+void Passive::upgrade(int passive_id) {
+	for (Passive& p : all_passive) {
+		if (p._type == passive_id) {
+			VS_ASSERT(!p.is_max_level(), "The level already max don\'t keep upgrading :(");
+			p.level_up();
+		}
+	}
+}
 int Passive::get_type()
 {
 	return _type;
@@ -253,9 +260,13 @@ int Passive::get_effect()
 {
 	return (_effect_by_level[_level] - _effect_by_level[_level - 1]);
 }
-int Passive::get_alt_effect()
-{
-	return _alt_effect[_level] - _alt_effect[_level - 1];
+int Passive::get_effect(int type) {
+	for (Passive& p : all_passive) {
+		if (type == p._type) {
+			return p._effect_by_level[p._level];
+		}
+	}
+	return 0;
 }
 int Passive::get_level()
 {

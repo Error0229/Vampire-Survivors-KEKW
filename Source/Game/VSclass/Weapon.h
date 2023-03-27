@@ -6,10 +6,7 @@ public:
 	Weapon();
 	Weapon(int, char*, vector<int>);
 	~Weapon();
-	// void show_proj();
-	// void update_proj(CPoint, int, int, int);
 	void upgrade();
-	deque<Projectile>& get_all_proj();
 	static void load_weapon_stats();
 	static map<int, Weapon> _base_weapon; //name, stats
 	double get_damage();
@@ -20,6 +17,8 @@ public:
 	bool is_evo_weapon();
 	double get_kb();
 	int get_pierce();
+	void update_weapon_stats(int might, int cooldown, int proj_speed, int duration, int amount, double area);
+	static void update_all_weapon_stats(int might, int cooldown, int proj_speed, int duration, int amount, double area);
 	static void evolution(int type);
 	static map <int, int> evolution_pair;
 	static void attack();
@@ -28,8 +27,6 @@ public:
 	static int weapon_count();
 protected:
 	Projectile _base_proj;
-	deque<Projectile> _proj_q;
-	deque<Projectile> _unused_proj_q;
 	unordered_map<string, any> _base_stats;
 	string _name;
 	int _type, _level, _max_level, _speed, _rarity,   

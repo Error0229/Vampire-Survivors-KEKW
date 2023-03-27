@@ -8,9 +8,12 @@ public:
 
 	//weapon & passive
 	void acquire_weapon(Weapon&);
+	void acquire_weapon(int type);
 	void acquire_passive(Passive&);
-	void update_passive_effect(Passive&);
+	void acquire_passive(int type);
 	void level_up_passive(Passive&);
+	void level_up_passive(int type);
+	void update_all_passive_effect();
 	void obtain_item(int);
 	
 	//getter

@@ -9,8 +9,22 @@ Player::Player()
 {
 	obj_type = PLAYER;
 	_magnet = 100;
+	_max_health = 100;
+	_recovery = 0;
+	_armor = 0;
+	_speed = 100; // 100%
+	_might = 100; // 100%
+	_area = 100;
+	_proj_speed = 100;
+	_duration = 100;
+	_amount = 0;
+	_cooldown = 100; // 100%
 	_luck = 100;
-	_speed = 200;
+	_growth = 100;
+	_greed = 100;
+	_curse = 100;
+	_magnet = 100; // base value is 30
+	_reroll = 0;
 	_exp = 0;
 	_max_exp = 5;
 	_level = 1;
@@ -71,104 +85,43 @@ void Player::hurt(int damage) {
 void Player::acquire_weapon(Weapon& weapon) {
 	Weapon::all_weapon.push_back(weapon);
 }
+void Player::acquire_weapon(int weapon_id) {
+	Weapon::all_weapon.push_back(Weapon::_base_weapon[weapon_id]);
+}
 void Player::acquire_passive(Passive& passive) {
-	update_passive_effect(passive);
 	Passive::all_passive.push_back(passive);
 }
-void Player::update_passive_effect(Passive& p) {
-	int effect = p.get_effect();
-	switch (p.get_type()) {
-	case POWER:
-		_might += effect;
-		_might = any_cast<int>(_base_stats["might"]) + effect;
-		break;
-	case ARMOR:
-		_armor += effect;
-		_armor = any_cast<int>(_base_stats["armor"]) + effect;
-		break;
-	case MAXHEALTH:
-		_max_health += effect;
-		_max_health = any_cast<int>(_base_stats["max_health"]) * effect / 100;
-		break;
-	case REGEN:
-		_recovery += effect;
-		_recovery = any_cast<double>(_base_stats["recovery"]) + effect;
-		break;
-	case COOLDOWN:
-		_cooldown += effect;
-		_cooldown = any_cast<int>(_base_stats["cooldown"]) + effect;
-		break;
-	case AREA:
-		_area += effect;
-		_area = any_cast<int>(_base_stats["area"]) + effect;
-		break;
-	case SPEED:
-		_proj_speed += effect;
-		_proj_speed = any_cast<int>(_base_stats["proj_speed"]) + effect;
-		break;
-	case DURATION:
-		_duration += effect;
-		_duration = any_cast<int>(_base_stats["duration"]) + effect;
-		break;
-	case AMOUNT:
-		_amount += effect;
-		_amount = any_cast<int>(_base_stats["amount"]) + effect;
-		break;
-	case MOVESPEED:
-		_speed += effect;
-		_speed = any_cast<int>(_base_stats["move_speed"]) * (1 + effect) / 100
-		break;
-	case MAGNET:
-		_magnet += effect;
-		break;
-	case LUCK:
-		_luck += effect;
-		break;
-	case GROWTH:
-		_growth += effect;
-		break;
-	case GREED:
-		_greed += effect;
-		break;
-	case REVIVAL:
-		_revival += effect;
-		break;
-	case CURSE:
-		_curse += effect;
-		break;
-	case SILVER:
-		_duration += effect;
-		_area += effect;
-		break;
-	case GOLD:
-		_curse += effect;
-		break;
-	case pLEFT:
-		_max_health += effect;
-		_recovery += p.get_alt_effect();
-		break;
-	case pRIGHT:
-		_curse += effect;
-		break;
-	case PANDORA:
-		if (p.is_max_level()) {
-			_curse += effect;
-		}
-		else {
-			_might += effect;
-			_proj_speed += effect;
-			_duration += effect;
-			_area += effect;
-		}
-		break;
-	}	
+void Player::acquire_passive(int passive_id) {
+	Passive::all_passive.push_back(Passive(passive_id));
 }
+void Player::update_all_passive_effect() {
+	_might = any_cast<int>(_base_stats["might"]) + Passive::get_effect(POWER) + Passive::get_effect(PANDORA);
+	_armor = any_cast<int>(_base_stats["armor"]) + Passive::get_effect(ARMOR);
+	_max_health = any_cast<int>(_base_stats["max_health"]) + Passive::get_effect(MAXHEALTH) + Passive::get_effect(pLEFT);
+	_recovery = any_cast<double>(_base_stats["recovery"]) + Passive::get_effect(REGEN)/100.0 + Passive::get_effect(pLEFT) / 500.0;
+	_cooldown = any_cast<int>(_base_stats["cooldown"]) + Passive::get_effect(COOLDOWN);
+	_area = any_cast<int>(_base_stats["area"]) + Passive::get_effect(AREA) + Passive::get_effect(SILVER) + Passive::get_effect(PANDORA);
+	_proj_speed = any_cast<int>(_base_stats["proj_speed"]) + Passive::get_effect(SPEED) + Passive::get_effect(PANDORA);
+	_duration = any_cast<int>(_base_stats["duration"]) + Passive::get_effect(DURATION) + Passive::get_effect(SILVER) + Passive::get_effect(PANDORA);
+	_amount = any_cast<int>(_base_stats["amount"]) + Passive::get_effect(AMOUNT);
+	_move_speed = any_cast<int>(_base_stats["move_speed"]) + Passive::get_effect(MOVESPEED);
+	_magnet = any_cast<int>(_base_stats["magnet"]) + Passive::get_effect(MAGNET);
+	_luck = any_cast<int>(_base_stats["luck"]) + Passive::get_effect(LUCK);
+	_growth = any_cast<int>(_base_stats["growth"]) + Passive::get_effect(GROWTH);
+	_greed = any_cast<int>(_base_stats["greed"]) + Passive::get_effect(GREED);
+	_revival = any_cast<int>(_base_stats["revival"]) + Passive::get_effect(REVIVAL);
+	_curse = any_cast<int>(_base_stats["curse"]) + Passive::get_effect(CURSE) + Passive::get_effect(GOLD) + Passive::get_effect(pRIGHT);
+	Weapon::update_all_weapon_stats(_might, _cooldown, _proj_speed, _duration, _amount, _area); // should this be here ? 
+}
+
 void Player::level_up_passive(Passive& p) {
 	VS_ASSERT(!p.is_max_level(), "level up passive above max level.");
 	p.level_up();
-	update_passive_effect(p);
 }
-
+void Player::level_up_passive(int passive_id) {
+	Passive::upgrade(passive_id);
+	update_all_passive_effect();
+}
 bool Player::pick_up_xp(int xp_value)
 {
 	_exp += xp_value;

@@ -215,8 +215,19 @@ void Weapon::attack() {
 void Weapon::show() {
 	Projectile::show();
 }
-deque<Projectile>& Weapon::get_all_proj() {
-	return _proj_q;
+
+void Weapon::update_weapon_stats(int might, int cooldown, int proj_speed, int duration, int amount, double area) {
+	_damage = any_cast<double>(_base_stats["damage"]) * might / 100;
+	_cooldown = any_cast<int>(_base_stats["cooldown"]) * cooldown / 100;	
+	_speed = any_cast<int>(_base_stats["speed"]) * proj_speed / 100;
+	_duration = any_cast<int>(_base_stats["duration"]) * duration / 100;
+	_amount = any_cast<int>(_base_stats["amount"]) + amount;
+	_area = any_cast<double>(_base_stats["area"]) * area / 100;
+}
+void Weapon::update_all_weapon_stats(int might, int cooldown, int proj_speed, int duration, int amount, double area) {
+	for (Weapon& w : all_weapon) {
+		w.update_weapon_stats(might, cooldown, proj_speed, duration, amount, area);
+	}
 }
 void Weapon::upgrade()
 {
@@ -227,9 +238,11 @@ void Weapon::upgrade()
 		switch (_level) {
 		case 2:
 			_amount += 1;
+			_base_stats["amount"] = any_cast<int>(_base_stats["amount"]) + 1;
 			break;
 		case 3:
 			_damage += 5;
+			_base_stats["damage"] = any_cast<double>(_base_stats["damage"]) + 5;
 			break;
 		case 4:
 			_damage += 5;
