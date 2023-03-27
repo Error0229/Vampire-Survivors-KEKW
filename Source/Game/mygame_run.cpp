@@ -474,6 +474,8 @@ void CGameStateRun::OnShow()
 	xp_bar.show();
 	xp_bar_frame.show();
 
+	bool is_own;
+	string level_up_desc, level_text, type_text;
 	switch (_gamerun_status) {
 	case(PLAYING):
 		inv_slot.show();
@@ -489,6 +491,40 @@ void CGameStateRun::OnShow()
 				level_up_button[i].show();
 				level_up_icon_frame[i].show();
 				level_up_icon[i].show(level_up_choice[i]);
+
+				// find the text
+				is_own = false;
+				if (level_up_choice[i] < 63) {
+					for (auto& w : Weapon::all_weapon) {
+						if (w.get_type() == level_up_choice[i]) {
+							level_text = "level:" + to_string(w.get_level());
+							level_up_desc = w.get_level_up_msg();
+							is_own = true;
+							break;
+						}
+					}
+					if (!is_own) {
+						level_text = "level:1";
+						level_up_desc = Weapon(level_up_choice[i]).get_level_up_msg(true);
+					}
+				}
+				else {
+					for (auto& p : Passive::all_passive) {
+						if (p.get_type() == level_up_choice[i]) {
+							level_text = "level:" + to_string(p.get_level());
+							level_up_desc = p.get_level_up_msg();
+							is_own = true;
+							break;
+						}
+					}
+					if (!is_own) {
+						level_text = "level:1";
+						level_up_desc = Passive(level_up_choice[i]).get_level_up_msg(true);
+					}
+				}
+				//text_device.add_text(type_text, CPoint(0, -50 + 75 * i) + player.get_pos(), 1, FONT_12x08, ALIGN_LEFT);
+				text_device.add_text(level_text, CPoint(70, -100 + 75 * i) + player.get_pos(), 1, FONT_12x08, ALIGN_LEFT);
+				text_device.add_text(level_up_desc, CPoint(-130, -70 + 75 * i) + player.get_pos(), 1, FONT_12x08, ALIGN_LEFT);
 			}
 		}
 		break;

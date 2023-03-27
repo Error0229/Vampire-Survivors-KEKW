@@ -4,6 +4,7 @@
 class Weapon : public VSObject {
 public:
 	Weapon();
+	Weapon(int);
 	Weapon(int, char*, vector<int>);
 	~Weapon();
 	// void show_proj();
@@ -16,6 +17,8 @@ public:
 	int get_duration();
 	int get_rarity();
 	int get_type();
+	int get_level();
+	string get_level_up_msg(bool is_new = false);
 	int get_evo_passive();
 	bool is_max_level();
 	bool is_evo_weapon();

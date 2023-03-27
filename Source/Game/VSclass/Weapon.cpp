@@ -15,29 +15,19 @@ Weapon::Weapon()
 {
 	obj_type = WEAPON;
 }
-Weapon::~Weapon()
+Weapon::Weapon(int type)
 {
-}
-Weapon::Weapon(int type, char* skin, vector<int> stats) {
-	this->load_skin(skin);
-	this->_type = type;
-	_level = stats[0], _max_level = stats[1], _damage = (double)stats[2] / 100.0,
-		_speed = stats[3] * 10, _area = (double)(stats[4])/100.0, _rarity = stats[5], _amount = stats[6],
-		_duration = stats[7], _pierce = stats[8], _cooldown = stats[9],
-		_proj_interval = stats[10], _hitbox_delay = stats[11], _knock_back = stats[12] / 100.0,
-		_pool_limit = stats[13], _chance = stats[14], _crit_multi = stats[15],
-		_block_by_wall = stats[16], _evolution_type = stats[17], _evolution_require = stats[18];
-
-	switch (_type) {
+	_type = type;
+	switch (type) {
 	case WHIP:
 		_level_up_msg = {
 			"",
 			"Attacks horizontally, passes through enemies." ,
 			"Fires 1 more projectile.",
-			"Base damage up by 5."
-			"Base damage up by 5. Base area up by 10%."
-			"Base damage up by 5."
-			"Base damage up by 5. Base area up by 10%."
+			"Base damage up by 5.",
+			"Base damage up by 5. Base area up by 10%.",
+			"Base damage up by 5.",
+			"Base damage up by 5. Base area up by 10%.",
 			"Base damage up by 5.",
 			"Base damage up by 5.",
 			"Base damage up by 5."
@@ -57,13 +47,25 @@ Weapon::Weapon(int type, char* skin, vector<int> stats) {
 		};
 		break;
 	case VAMPIRICA:
-		_level_up_msg = { "", "Can deal critical damage and absorb HP."};
+		_level_up_msg = { "", "Can deal critical damage and absorb HP." };
 		break;
 	case HOLY_MISSILE:
-		_level_up_msg = { "", "Fires with no delay."};
+		_level_up_msg = { "", "Fires with no delay." };
 		break;
-
 	}
+}
+Weapon::~Weapon()
+{
+}
+Weapon::Weapon(int type, char* skin, vector<int> stats) : Weapon(type) {
+	this->load_skin(skin);
+	this->_type = type;
+	_level = stats[0], _max_level = stats[1], _damage = (double)stats[2] / 100.0,
+		_speed = stats[3] * 10, _area = (double)(stats[4])/100.0, _rarity = stats[5], _amount = stats[6],
+		_duration = stats[7], _pierce = stats[8], _cooldown = stats[9],
+		_proj_interval = stats[10], _hitbox_delay = stats[11], _knock_back = stats[12] / 100.0,
+		_pool_limit = stats[13], _chance = stats[14], _crit_multi = stats[15],
+		_block_by_wall = stats[16], _evolution_type = stats[17], _evolution_require = stats[18];
 }
 
 void Weapon::attack() {
@@ -299,6 +301,12 @@ int Weapon::get_rarity() {
 }
 int Weapon::get_type() {
 	return _type;
+}
+int Weapon::get_level() {
+	return _level;
+}
+string Weapon::get_level_up_msg(bool is_new) {
+	return (is_new) ? (_level_up_msg[1]) : (_level_up_msg[_level + 1]);
 }
 bool Weapon::is_max_level() {
 	return _level >= _max_level;
