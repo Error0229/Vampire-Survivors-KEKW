@@ -528,7 +528,7 @@ void CGameStateRun::OnShow()
 				}
 				text_device.add_text(type_text, CPoint(-85, -95 + 75 * i) + player.get_pos(), 1, FONT_12x08, ALIGN_LEFT);
 				text_device.add_text(level_text, CPoint(70, -95 + 75 * i) + player.get_pos(), 1, FONT_12x08, ALIGN_LEFT);
-				text_device.add_text(level_up_desc, CPoint(-130, -70 + 75 * i) + player.get_pos(), 1, FONT_12x08, ALIGN_LEFT);
+				text_device.add_text(level_up_desc, CPoint(-130, -70 + 75 * i) + player.get_pos(), 1, FONT_12x08, MULTILINE_LEFT);
 			}
 		}
 		text_device.add_text("Level Up!", CPoint(0, -150) + player.get_pos(), 1, FONT_24x18_B, ALIGN_CENTER);

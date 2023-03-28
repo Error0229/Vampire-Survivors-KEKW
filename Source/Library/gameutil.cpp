@@ -335,6 +335,7 @@ void TextDevice::print_all()
 	int x, y;
 	Text* ptext;
 	VS_font* pfont;
+	RECT rc;
 	for (int i = 0; i < (int)texts.size(); i++) {
 		// offset position
 		ptext = &texts.back();
@@ -345,15 +346,21 @@ void TextDevice::print_all()
 			x = ptext->pos.x - ((pfont->width * (ptext->str.size())) >> 1) + VSObject::player_dx;
 		else if (ptext->align_id == ALIGN_RIGHT)
 			x = ptext->pos.x - (pfont->width * ptext->str.size()) + VSObject::player_dx;
-		else
-			VS_ASSERT(false, "text align id error");
+		else if(ptext->align_id == MULTILINE_LEFT)
+			x = ptext->pos.x + VSObject::player_dx;
 		y = ptext->pos.y - (pfont->height >> 1) + VSObject::player_dy;
 		
 		// select font
 		ptr_CDC->SelectObject(&(pfont->cfont));
 		
 		// print
-		ptr_CDC->TextOutA(x, y, texts.back().str.c_str());
+		if (ptext->align_id != MULTILINE_LEFT) {
+			ptr_CDC->TextOutA(x, y, ptext->str.c_str());
+		}
+		else {
+			rc = {x, y, x+250, y+50};
+			ptr_CDC->DrawText(ptext->str.c_str(), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+		}
 		
 		// remove/keep 
 		if (texts.back().is_remain())

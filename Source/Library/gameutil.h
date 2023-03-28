@@ -137,7 +137,8 @@ enum font_styles {
 enum align_styles {
 	ALIGN_LEFT,
 	ALIGN_CENTER,
-	ALIGN_RIGHT
+	ALIGN_RIGHT,
+	MULTILINE_LEFT
 };
 
 class Text {
