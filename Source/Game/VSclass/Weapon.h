@@ -13,8 +13,10 @@ public:
 	int get_duration();
 	int get_rarity();
 	int get_type();
+	int get_evo_passive();
 	bool is_max_level();
 	bool is_evo_weapon();
+	bool can_evo();
 	double get_kb();
 	int get_pierce();
 	void recalaulte_stat();
@@ -23,6 +25,7 @@ public:
 	static void update_all_weapon_stats(int might, int cooldown, int proj_speed, int duration, int amount, int area);
 	static void evolution(int type);
 	static map <int, int> evolution_pair;
+	static map <int, int> evolution_pair_reverse;
 	static void attack();
 	static void upgrade(int weapon);
 	static void show();

@@ -152,14 +152,14 @@ Passive::Passive(int type) {
 		this->load_skin("Resources/Passive/Mask.bmp");
 		break;
 	case REVIVAL:
-		_name = "Tiragisu";
+		_name = "Tiramisu";
 		_rarity = 40;
 		_level_up_msg = { "", "Revives once with 50% health", "Adds 1 Revival" };
 		_effect_by_level = { 0, 1, 2 };
 		_level = 1;
 		_max_level = 2;
 		_stacking = Additive;
-		this->load_skin("Resources/Passive/Tiragisu.bmp");
+		this->load_skin("Resources/Passive/Tiramisu.bmp");
 		break;
 	case CURSE:
 		_name = "Skull O\'Maniac";

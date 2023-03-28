@@ -96,7 +96,7 @@ namespace game_framework {
 		void OnShow();									// 顯示這個狀態的遊戲畫面
 		void update_mouse_pos();
 		int draw_level_up(bool);
-		int draw_open_chest(bool);
+		int draw_open_chest(bool pull_evo=true);
 		CPoint mouse_pos;								// 滑鼠的座標
 		Map map;
 		Player player;

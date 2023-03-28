@@ -60,7 +60,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	QuadTree::VSPlain.clear();
 
 	for (int i = 0; i < 100; i++) {
-		enemy.push_back(Enemy::get_template_enemy(GHOST));
+		enemy.push_back(Enemy::get_template_enemy(SKELETON2));
 		xp.push_back(Xp());
 		chest.push_back(Chest());
 	}
@@ -68,10 +68,10 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 		enemy[i].spawn(CPoint(-300 + 30 * i/10, -400 + 40 * i%10));
 	}
 
-	event_background.load_skin("resources/ui/event_background.bmp", BLACK);
+	event_background.load_skin("resources/ui/event_background.bmp");
 	event_background.set_base_pos(0, 0);
 	for (int i = 0; i < 4; i++) {
-		level_up_button[i].load_skin("resources/ui/event_button.bmp", BLACK);
+		level_up_button[i].load_skin("resources/ui/event_button.bmp");
 		level_up_icon_frame[i].load_skin("resources/ui/frameB.bmp");
 		level_up_button[i].set_base_pos(0, -75 + 75 * i);
 		level_up_icon_frame[i].set_base_pos(-120, -90 + 75*i);
@@ -79,14 +79,14 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 		level_up_icon[i].load_icon();
 		level_up_choice[i] = -1;
 	}
-	chest_animation.load_skin({"resources/ui/TreasureIdle_01_big.bmp", "resources/ui/TreasureIdle_02_big.bmp" , "resources/ui/TreasureIdle_03_big.bmp" , "resources/ui/TreasureIdle_04_big.bmp" , "resources/ui/TreasureIdle_05_big.bmp" , "resources/ui/TreasureIdle_06_big.bmp" ,"resources/ui/TreasureIdle_07_big.bmp" ,"resources/ui/TreasureIdle_08_big.bmp", "resources/ui/TreasureOpen_01_big.bmp", "resources/ui/TreasureOpen_02_big.bmp" , "resources/ui/TreasureOpen_03_big.bmp" , "resources/ui/TreasureOpen_04_big.bmp" , "resources/ui/TreasureOpen_05_big.bmp" , "resources/ui/TreasureOpen_06_big.bmp" , "resources/ui/TreasureOpen_07_big.bmp" , "resources/ui/TreasureOpen_08_big.bmp" }, BLACK);
+	chest_animation.load_skin({"resources/ui/TreasureIdle_01_big.bmp", "resources/ui/TreasureIdle_02_big.bmp" , "resources/ui/TreasureIdle_03_big.bmp" , "resources/ui/TreasureIdle_04_big.bmp" , "resources/ui/TreasureIdle_05_big.bmp" , "resources/ui/TreasureIdle_06_big.bmp" ,"resources/ui/TreasureIdle_07_big.bmp" ,"resources/ui/TreasureIdle_08_big.bmp", "resources/ui/TreasureOpen_01_big.bmp", "resources/ui/TreasureOpen_02_big.bmp" , "resources/ui/TreasureOpen_03_big.bmp" , "resources/ui/TreasureOpen_04_big.bmp" , "resources/ui/TreasureOpen_05_big.bmp" , "resources/ui/TreasureOpen_06_big.bmp" , "resources/ui/TreasureOpen_07_big.bmp" , "resources/ui/TreasureOpen_08_big.bmp" });
 	chest_animation.set_animation(100, true);
 	chest_animation.set_base_pos(5, 75);
 	vector<CPoint> chest_item_pos = { CPoint(0,-50), CPoint(-80,-110), CPoint(80,-110), CPoint(-100,-10), CPoint(100,-10) };
 	for (int i = 0; i < 5; i++) {
 		chest_item_icon[i].load_icon();
 		chest_item_icon[i].set_base_pos(chest_item_pos[i]);
-		chest_item_frame[i].load_skin("resources/ui/sun.bmp", RGB(1, 11, 111));
+		chest_item_frame[i].load_skin("resources/ui/PrizeBG.bmp");
 		chest_item_frame[i].set_base_pos(chest_item_pos[i]);
 		chest_item[i] = -1;
 	}
@@ -194,17 +194,24 @@ int CGameStateRun::draw_level_up(bool pull_from_inv)
 	vector<double> weights(84, 0);
 	bool no_weight = true;
 	int player_items[84];
+	int base_weapon;
 	memset(player_items, 0, sizeof(player_items));
 	// store player's items, 0: not owned, 1: owned, 2: max level
 	for (auto& i : Weapon::all_weapon) {
 		player_items[i.get_type()] = (i.is_max_level()) ? 2 : 1;
+		if (i.is_evo_weapon()) {
+			base_weapon = Weapon::evolution_pair_reverse.find(i.get_type())->second;
+			player_items[base_weapon % 100] = 2;
+			if (base_weapon / 100)
+				player_items[base_weapon / 100] = 2;
+		}
 	}
 	for (auto i : Passive::all_passive) {
 		player_items[i.get_type()] = (i.is_max_level()) ? 2 : 1;
 	}
 	// calc weapon weights
 	// increase this once we made a new weapom.
-	for (int i = 0; i < 1; i++) {
+	for (int i = 0; i < 2; i++) {
 		if (level_up_choice[0] == i || level_up_choice[1] == i || level_up_choice[2] == i || level_up_choice[3] == i)
 			continue;
 		if ((pull_from_inv && player_items[i] == 1) || (!pull_from_inv && player_items[i] == 0)) {
@@ -225,15 +232,23 @@ int CGameStateRun::draw_level_up(bool pull_from_inv)
 		return draw_level_up(false);
 	return poll(weights, true);
 }
-int CGameStateRun::draw_open_chest(bool can_evo)
+int CGameStateRun::draw_open_chest(bool pull_evo)
 {
 	// 0~31: weapon
 	//32~62: evo
 	//63~83: passive
 	vector<double> weights;
 	vector<int> index_to_type;
-	if (player.all_max()) {
-		TRACE("open chest: all max.\n");
+	
+	bool all_max = true, can_evo = false;
+	for (auto& i : Weapon::all_weapon) {
+		if (i.can_evo())
+			can_evo = true;
+		if (!i.is_max_level())
+			all_max = false;
+	}
+	if (all_max && (!can_evo || !pull_evo)) {
+		TRACE("open chest: all max and cant evo.\n");
 		return -2;
 	}
 	for (auto& i : Passive::all_passive) {
@@ -246,6 +261,10 @@ int CGameStateRun::draw_open_chest(bool can_evo)
 		if (!i.is_max_level()) {
 			weights.push_back(i.get_rarity());
 			index_to_type.push_back(i.get_type());
+		}
+		else if (i.can_evo()) {
+			weights.push_back(i.get_rarity());
+			index_to_type.push_back(Weapon::evolution_pair.find(i.get_type())->second);
 		}
 	}
 	return index_to_type[poll(weights)];
@@ -386,7 +405,6 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			if (poll(weights, true))
 				chest_item_count = 3;
 		}
-		chest_item_count = 5;
 		// poll chest item
 		for (int i = 0; i < chest_item_count; i++) {
 			chest_item[i] = draw_open_chest(can_evo);

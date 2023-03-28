@@ -38,7 +38,7 @@ void Pickup::show_skin(double factor)
 
 Xp::Xp()
 {
-	load_skin({ "Resources/pickup/GemBlue.bmp", "Resources/pickup/GemGreen.bmp", "Resources/pickup/GemRed.bmp" }, RGB(255, 255, 255));
+	load_skin({ "Resources/pickup/GemBlue.bmp", "Resources/pickup/GemGreen.bmp", "Resources/pickup/GemRed.bmp" });
 	_type = XP;
 	_xp_value = 0;
 }
@@ -68,7 +68,7 @@ void Xp::show_skin(double factor)
 
 Chest::Chest()
 {
-	load_skin({ "Resources/pickup/BoxOpen.bmp" }, RGB(255, 255, 255));
+	load_skin({ "Resources/pickup/BoxOpen.bmp" });
 	_type = CHEST;
 	_can_evo = false;
 }

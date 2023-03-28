@@ -54,8 +54,8 @@ number,id(enum),old id,filename,type
 52,MISSING,Anima_of_Mortaccio,MISSING,evolution
 53,MISSING,Vandalier,Silf3,evolution
 54,MISSING,Phieraggi,Guns3,evolution
-55,MISSING,Fuwalafuwaloo,MISSING,evolution
-56,MISSING,Sole_Solution,MISSING,evolution
+55,MISSING,Fuwalafuwaloo,Whip4,evolution
+56,MISSING,Sole_Solution,solesolution,evolution
 57,MISSING,Super_Candybox_II_Turbo,candybox2,evolution
 58,MISSING,Cygnus,Silf1_counter,counter
 59,MISSING,Zhar_Ptytsia,Silf2_counter,counter
@@ -76,7 +76,7 @@ number,id(enum),old id,filename,type
 74,LUCK,LUCK,Clover,passive
 75,GROWTH,GROWTH,Crown,passive
 76,GREED,GREED,Mask,passive
-77,REVIVAL,REVIVAL,Tiragisu,passive
+77,REVIVAL,REVIVAL,Tiramisu,passive
 78,CURSE,CURSE,Skull OManiac,passive
 79,SILVER,SILVER,Silver Ring,passive
 80,GOLD,GOLD,Gold Ring,passive

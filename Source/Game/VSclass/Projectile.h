@@ -4,7 +4,7 @@ class Projectile : public VSObject
 {
 public:
 	Projectile();
-	Projectile(vector<char*> filename, COLORREF color = BLACK);
+	Projectile(vector<char*> filename, COLORREF color = RGB(1,11,111));
 	~Projectile();
 	void set_delay(int);
 	void set_create_time(clock_t);

@@ -5,6 +5,7 @@
 #include "QuadTree.h"
 #include "Projectile.h"
 #include "Weapon.h"
+#include "Passive.h"
 #include <fstream>
 #include <sstream>
 using namespace game_framework;
@@ -372,7 +373,7 @@ void Weapon::load_weapon_stats() {
 			stats.push_back(stoi(token));
 		}
 		Weapon w = Weapon(type, const_cast<char*>(skin_file.c_str()), stats);
-		Projectile p(proj_vec, BLACK);
+		Projectile p(proj_vec);
 		switch (type) {
 		case WHIP:
 			p.set_default_direct(RIGHT);
@@ -424,17 +425,30 @@ int Weapon::get_pierce() {
 double Weapon::get_kb() {
 	return _knock_back;
 }
+int Weapon::get_evo_passive() {
+	return _evolution_require;
+}
 int Weapon::weapon_count() {
 	return static_cast<int>  (Weapon::all_weapon.size());
 }
 bool Weapon::is_evo_weapon() {
 	return this->_type >= 32;
 }
+bool Weapon::can_evo() {
+	if (_level < _max_level || _type >= 32)
+		return false;
+	for (auto& i : Passive::all_passive) {
+		if (i.get_type() == _evolution_require) {
+			return true;
+		}
+	}
+	return false;
+}
 void Weapon::evolution(int type) {
-	VS_ASSERT(Weapon::evolution_pair.find(type) != Weapon::evolution_pair.end(), "This weapon can't not be evolve");
 	for (auto& w : all_weapon) {
-		if (w._type == type) {
-			w = Weapon::_base_weapon[Weapon::evolution_pair[type]];
+		if (w._type == Weapon::evolution_pair_reverse.find(type)->second) {
+			VS_ASSERT(w.can_evo(), "This weapon can't not be evolve");
+			w = Weapon::_base_weapon[type];
 			return;
 		}
 	}
@@ -453,4 +467,17 @@ map <int, int> Weapon::evolution_pair = {
 	{CANDYBOX, CANDYBOX2}, {TRIASSO1, TRIASSO2}, {TRIASSO2, TRIASSO3},
 	{VICTORY, SOLES}
 };
+// make a reverse map of evolution_pair
+map <int, int> Weapon::evolution_pair_reverse = {
+	{VAMPIRICA, WHIP}, {HOLY_MISSILE, MAGIC_MISSILE},{THOUSAND, KNIFE},
+	{SCYTHE, AXE},{HEAVENSWORD, CROSS},{VESPERS, HOLYBOOK},
+	{HELLFIRE, FIREBALL},{VORTEX, GARLIC},{BORA, HOLYWATER},
+	{ROCHER, DIAMOND},{LOOP, LIGHTNING},{SIRE, PENTAGRAM},
+	{SILF3, SILF*100 + SILF2}, {GUNS3, GUNS*100 + GUNS2},
+	{STIGRANGATTI, GATTI},{MANNAGGIA, SONG},{TRAPANO2, TRAPING},
+	{CORRIDOR, LANCET}, {SHROUD, LAUREL},{VENTO2, VENTO},
+	{CANDYBOX2, CANDYBOX}, {TRIASSO2, TRIASSO1}, {TRIASSO3, TRIASSO2},
+	{SOLES, VICTORY}
+};
+
 deque<Weapon> Weapon::all_weapon = {};
