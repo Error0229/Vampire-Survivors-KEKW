@@ -7,6 +7,7 @@ public:
 	void level_up();
 	int get_type();
 	int get_effect();
+	static int get_effect(int type);
 	int get_level();
 	bool is_max_level();
 	int get_max_level();
@@ -14,13 +15,14 @@ public:
 	int get_alt_effect();
 	int get_rarity();
 	string get_name();
+	void upgrade();
+	static void upgrade(int type);
 	static deque<Passive> all_passive;
 	static int passive_count();
 private:
 	int _level, _stacking;
 	int _type, _rarity,  _max_level;
 	vector<int> _effect_by_level;
-	vector<int> _alt_effect;
 	vector<string> _level_up_msg;
 	string _name;
 };

@@ -4,13 +4,9 @@
 class Weapon : public VSObject {
 public:
 	Weapon();
-	Weapon(int);
 	Weapon(int, char*, vector<int>);
 	~Weapon();
-	// void show_proj();
-	// void update_proj(CPoint, int, int, int);
 	void upgrade();
-	deque<Projectile>& get_all_proj();
 	static void load_weapon_stats();
 	static map<int, Weapon> _base_weapon; //name, stats
 	double get_damage();
@@ -26,18 +22,23 @@ public:
 	bool can_evo();
 	double get_kb();
 	int get_pierce();
+	void recalaulte_stat();
+	void modify_base(string type, double effect);
+	void update_weapon_stats(int might, int cooldown, int proj_speed, int duration, int amount, int area);
+	static void update_all_weapon_stats(int might, int cooldown, int proj_speed, int duration, int amount, int area);
 	string get_name();
 	static void evolution(int type);
 	static map <int, int> evolution_pair;
 	static map <int, int> evolution_pair_reverse;
 	static void attack();
+	static void upgrade(int weapon);
 	static void show();
 	static deque<Weapon> all_weapon;
 	static int weapon_count();
 protected:
 	Projectile _base_proj;
-	deque<Projectile> _proj_q;
-	deque<Projectile> _unused_proj_q;
+	unordered_map<string, any> _base_stats;
+	unordered_map<string, int> _modifier;
 	string _name;
 	int _type, _level, _max_level, _speed, _rarity,   
 		_amount, _duration, _pierce, _cooldown, _proj_interval,

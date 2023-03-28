@@ -30,7 +30,7 @@ void Projectile::collide_with_enemy(Enemy& 🥵) {
 	🥵._last_time_got_hit = now;
 	🥵._last_time_got_hit_by_projectile[this->_type] = now;
 	this->_pierce -= 1;
-	if (this->_pierce < 0)
+	if (this->_pierce == 0)
 		this->_is_over = true;
 	🥵.hurt(static_cast<int>(this->_damage));
 }
@@ -77,6 +77,9 @@ void Projectile::update_position() {
 		case(MAGIC_MISSILE):
 			proj.MAGIC_MISSILE_transition();
 			break;
+		case (KNIFE):
+			proj.KNIFE_transition();
+			break;
 		case (VAMPIRICA):
 			proj.VAMPIRICA_transition();
 			break;
@@ -114,7 +117,7 @@ void Projectile::WHIP_transition() {
 }
 void Projectile::MAGIC_MISSILE_transition() {
 	VS_ASSERT(true, "are we here?");
-	if (!_is_start && clock() - _create_time - _delay < _proj_interval) {
+	if (!_is_start && clock() - _create_time - _delay < 0) {
 		CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
 		int min_dis = 1000000000;
 		this->set_pos(player_pos);
@@ -127,19 +130,35 @@ void Projectile::MAGIC_MISSILE_transition() {
 		this->update_pos_by_vec();
 	}
 }
+void Projectile::KNIFE_transition() {
+	if (!_is_start && clock() - _create_time - _delay < 0) {
+		CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
+		CPoint p;
+		GetCursorPos(&p);
+		HWND targetWindow = FindWindow(NULL, GAME_TITLE);
+		ScreenToClient(targetWindow, &p);
+		p.x = p.x - VSObject::player_dx;
+		p.y = p.y - VSObject::player_dy;
+		this->set_target_vec(p - player_pos);
+		_position = player_pos + _offset;
+	}
+	else {
+		this->update_pos_by_vec();
+	}
+}
 void Projectile::VAMPIRICA_transition() {
 	CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
 	_position = player_pos + _offset;
 }
 void Projectile::HOLY_MISSILE_transition() {
-	if (!_is_start && clock() - _create_time - _delay < this->_proj_interval) {
+	if (!_is_start && clock() - _create_time - _delay < 0) {
 		CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
 		int min_dis = 1000000000;
 		this->set_pos(player_pos);
 		CPoint target = (player_pos);
 		QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(this), min_dis);
 		this->set_target_vec((target != player_pos ? target - player_pos : _target_vec));
-		this->update_pos_by_vec();
+		// this->update_pos_by_vec();
 	}
 	else {
 		this->update_pos_by_vec();

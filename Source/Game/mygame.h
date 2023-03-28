@@ -103,7 +103,6 @@ namespace game_framework {
 		vector<Enemy> enemy;
 		vector<Xp> xp;
 		vector<Chest> chest;
-		// QuadTree QT;
 		int _gamerun_status, _next_status;
 
 		Ui event_background;
