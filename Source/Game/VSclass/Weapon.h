@@ -21,6 +21,7 @@ public:
 	string get_level_up_msg(bool is_new = false);
 	int get_evo_passive();
 	bool is_max_level();
+	int get_max_level();
 	bool is_evo_weapon();
 	bool can_evo();
 	double get_kb();

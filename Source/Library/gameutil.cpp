@@ -316,7 +316,7 @@ bool Text::is_remain()
 TextDevice::TextDevice()
 {
 	set_font(fonts[FONT_24x18_B], 24, 18, FW_BOLD, false, false);
-	set_font(fonts[FONT_12x08], 12, 8, FW_REGULAR, false, false);
+	set_font(fonts[FONT_12x08], 12, 8, FW_BOLD, false, false);
 }
 TextDevice::~TextDevice()
 {
@@ -329,6 +329,8 @@ void TextDevice::add_text(string str, CPoint pos, int duration, int font_id, int
 }
 void TextDevice::print_all()
 {
+	if (texts.empty())
+		return;
 	ptr_CDC = game_framework::CDDraw::GetBackCDC();
 	ptr_CDC->SetBkMode(TRANSPARENT);
 	ptr_CDC->SetTextColor(RGB(255, 255, 255));
@@ -387,7 +389,7 @@ void TextDevice::set_font(VS_font& font, int height, int width, int weight, bool
 			ANSI_CHARSET,				// nCharSet
 			OUT_DEFAULT_PRECIS,			// nOutPrecision
 			CLIP_DEFAULT_PRECIS,		// nClipPrecision
-			DEFAULT_QUALITY,		// nQuality
+			PROOF_QUALITY,		// nQuality
 			DEFAULT_PITCH | FF_MODERN,	// nPitchAndFamily
 			font_name.c_str()			// lpszFacename
 		);

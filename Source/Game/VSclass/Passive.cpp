@@ -256,6 +256,10 @@ bool Passive::is_max_level()
 {
 	return (_level >= _max_level);
 }
+int Passive::get_max_level()
+{
+	return _max_level;
+}
 string Passive::get_level_up_msg(bool is_new)
 {
 	if (is_new)

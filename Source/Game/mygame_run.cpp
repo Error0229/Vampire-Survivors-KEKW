@@ -104,6 +104,19 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 		inv_icon[i].load_icon();
 		inv_icon[i].set_base_pos(-400 + 8 + i%6*16, -300 + 24 + 8 + i/6*16);
 	}
+
+	inv_detail_frame.load_skin("resources/ui/inv_detail_frame.bmp");
+	inv_detail_frame.set_base_pos(-400+(inv_detail_frame.get_width() >> 1), -300+24+(inv_detail_frame.get_height() >> 1));
+	for (int i = 0; i < 12; i++) {
+		inv_detail_item_icons[i].load_icon();
+		inv_detail_item_icons[i].set_base_pos(-400 + 20 + i%6*26, -300 + 24 + 20 + i/6*58);
+		for (int j = 0; j < 12; j++) {
+			inv_detail_item_knots[i][j][0].load_skin("resources/ui/weaponLevelEmpty.bmp");
+			inv_detail_item_knots[i][j][1].load_skin("resources/ui/weaponLevelFull.bmp");
+			inv_detail_item_knots[i][j][0].set_base_pos(-388 + j % 3 * 8 + i % 6 * 26, -244 + j / 3 * 8 + i / 6 * 58);
+			inv_detail_item_knots[i][j][1].set_base_pos(-388 + j % 3 * 8 + i % 6 * 26, -244 + j / 3 * 8 + i / 6 * 58);
+		}
+	}
 }
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -486,6 +499,8 @@ void CGameStateRun::OnShow()
 		break;
 	case(LEVEL_UP):
 		event_background.show();
+		
+		inv_detail_frame.show();
 		for (int i = 0; i < 4; i++) {
 			if (level_up_choice[i]>-1) {
 				level_up_button[i].show();
@@ -535,6 +550,16 @@ void CGameStateRun::OnShow()
 		if ((level_up_choice[0] > -1) && (level_up_choice[1] > -1) && (level_up_choice[2] > -1) && (level_up_choice[3] == -1)) {
 			text_device.add_text("Increase your luck", CPoint(0, 140) + player.get_pos(), 1, FONT_12x08, ALIGN_CENTER);
 			text_device.add_text("  for a chance to get 4 choices.", CPoint(0, 160) + player.get_pos(), 1, FONT_12x08, ALIGN_CENTER);
+		}
+		for (int i = 0; i < Weapon::weapon_count(); i++) {
+			inv_detail_item_icons[i].show(Weapon::all_weapon[i].get_type());
+			for(int j = 0; j < Weapon::all_weapon[i].get_max_level(); j++)
+				inv_detail_item_knots[i][j][Weapon::all_weapon[i].get_level() > j].show();
+		}
+		for (int i = 0; i < Passive::passive_count(); i++) {
+			inv_detail_item_icons[i+6].show(Passive::all_passive[i].get_type());
+			for (int j = 0; j < Passive::all_passive[i].get_max_level(); j++)
+				inv_detail_item_knots[i+6][j][Passive::all_passive[i].get_level() > j].show();
 		}
 		break;
 	case(OPEN_CHEST):

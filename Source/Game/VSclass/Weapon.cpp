@@ -315,6 +315,9 @@ string Weapon::get_level_up_msg(bool is_new) {
 bool Weapon::is_max_level() {
 	return _level >= _max_level;
 }
+int Weapon::get_max_level() {
+	return _max_level;
+}
 int Weapon::get_pierce() {
 	return _pierce;
 }

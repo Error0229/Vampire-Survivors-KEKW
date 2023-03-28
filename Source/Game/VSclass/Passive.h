@@ -9,6 +9,7 @@ public:
 	int get_effect();
 	int get_level();
 	bool is_max_level();
+	int get_max_level();
 	string get_level_up_msg(bool is_new=false);
 	int get_alt_effect();
 	int get_rarity();
