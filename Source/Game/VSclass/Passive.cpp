@@ -269,6 +269,10 @@ int Passive::get_rarity()
 {
 	return _rarity;
 }
+string Passive::get_name()
+{
+	return _name;
+}
 int Passive::passive_count()
 {
 	return all_passive.size();

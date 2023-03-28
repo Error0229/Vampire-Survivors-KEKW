@@ -380,7 +380,7 @@ void TextDevice::set_font(VS_font& font, int height, int width, int weight, bool
 			ANSI_CHARSET,				// nCharSet
 			OUT_DEFAULT_PRECIS,			// nOutPrecision
 			CLIP_DEFAULT_PRECIS,		// nClipPrecision
-			DRAFT_QUALITY,		// nQuality
+			DEFAULT_QUALITY,		// nQuality
 			DEFAULT_PITCH | FF_MODERN,	// nPitchAndFamily
 			font_name.c_str()			// lpszFacename
 		);

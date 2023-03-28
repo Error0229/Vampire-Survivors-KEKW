@@ -25,6 +25,7 @@ public:
 	bool can_evo();
 	double get_kb();
 	int get_pierce();
+	string get_name();
 	static void evolution(int type);
 	static map <int, int> evolution_pair;
 	static map <int, int> evolution_pair_reverse;

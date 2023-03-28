@@ -497,6 +497,7 @@ void CGameStateRun::OnShow()
 				if (level_up_choice[i] < 63) {
 					for (auto& w : Weapon::all_weapon) {
 						if (w.get_type() == level_up_choice[i]) {
+							type_text = w.get_name();
 							level_text = "level:" + to_string(w.get_level());
 							level_up_desc = w.get_level_up_msg();
 							is_own = true;
@@ -504,13 +505,15 @@ void CGameStateRun::OnShow()
 						}
 					}
 					if (!is_own) {
-						level_text = "level:1";
+						type_text = Weapon(level_up_choice[i]).get_name();
+						level_text = "New!";
 						level_up_desc = Weapon(level_up_choice[i]).get_level_up_msg(true);
 					}
 				}
 				else {
 					for (auto& p : Passive::all_passive) {
 						if (p.get_type() == level_up_choice[i]) {
+							type_text = p.get_name();
 							level_text = "level:" + to_string(p.get_level());
 							level_up_desc = p.get_level_up_msg();
 							is_own = true;
@@ -518,14 +521,20 @@ void CGameStateRun::OnShow()
 						}
 					}
 					if (!is_own) {
-						level_text = "level:1";
+						type_text = Passive(level_up_choice[i]).get_name();
+						level_text = "New!";
 						level_up_desc = Passive(level_up_choice[i]).get_level_up_msg(true);
 					}
 				}
-				//text_device.add_text(type_text, CPoint(0, -50 + 75 * i) + player.get_pos(), 1, FONT_12x08, ALIGN_LEFT);
-				text_device.add_text(level_text, CPoint(70, -100 + 75 * i) + player.get_pos(), 1, FONT_12x08, ALIGN_LEFT);
+				text_device.add_text(type_text, CPoint(-85, -95 + 75 * i) + player.get_pos(), 1, FONT_12x08, ALIGN_LEFT);
+				text_device.add_text(level_text, CPoint(70, -95 + 75 * i) + player.get_pos(), 1, FONT_12x08, ALIGN_LEFT);
 				text_device.add_text(level_up_desc, CPoint(-130, -70 + 75 * i) + player.get_pos(), 1, FONT_12x08, ALIGN_LEFT);
 			}
+		}
+		text_device.add_text("Level Up!", CPoint(0, -150) + player.get_pos(), 1, FONT_24x18_B, ALIGN_CENTER);
+		if ((level_up_choice[0] > -1) && (level_up_choice[1] > -1) && (level_up_choice[2] > -1) && (level_up_choice[3] == -1)) {
+			text_device.add_text("Increase your luck", CPoint(0, 140) + player.get_pos(), 1, FONT_12x08, ALIGN_CENTER);
+			text_device.add_text("  for a chance to get 4 choices.", CPoint(0, 160) + player.get_pos(), 1, FONT_12x08, ALIGN_CENTER);
 		}
 		break;
 	case(OPEN_CHEST):

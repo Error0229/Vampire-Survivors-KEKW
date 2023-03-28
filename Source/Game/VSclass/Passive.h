@@ -12,6 +12,7 @@ public:
 	string get_level_up_msg(bool is_new=false);
 	int get_alt_effect();
 	int get_rarity();
+	string get_name();
 	static deque<Passive> all_passive;
 	static int passive_count();
 private:

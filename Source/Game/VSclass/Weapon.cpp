@@ -20,6 +20,7 @@ Weapon::Weapon(int type)
 	_type = type;
 	switch (type) {
 	case WHIP:
+		_name = "Whip";
 		_level_up_msg = {
 			"",
 			"Attacks horizontally, passes through enemies." ,
@@ -34,6 +35,7 @@ Weapon::Weapon(int type)
 		};
 		break;
 	case MAGIC_MISSILE:
+		_name = "Magic Wand";
 		_level_up_msg = {
 			"",
 			"Fires at the nearest enemy.",
@@ -47,9 +49,11 @@ Weapon::Weapon(int type)
 		};
 		break;
 	case VAMPIRICA:
+		_name = "Bloody Tear";
 		_level_up_msg = { "", "Can deal critical damage and absorb HP." };
 		break;
 	case HOLY_MISSILE:
+		_name = "Holy Wand";
 		_level_up_msg = { "", "Fires with no delay." };
 		break;
 	}
@@ -316,6 +320,9 @@ int Weapon::get_pierce() {
 }
 double Weapon::get_kb() {
 	return _knock_back;
+}
+string Weapon::get_name() {
+	return _name;
 }
 int Weapon::get_evo_passive() {
 	return _evolution_require;
