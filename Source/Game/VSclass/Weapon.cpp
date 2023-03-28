@@ -9,7 +9,6 @@
 #include <sstream>
 using namespace game_framework;
 #define var_name(var) (#var)
-
 Weapon::Weapon()
 {
 	obj_type = WEAPON;
@@ -43,6 +42,14 @@ Weapon::Weapon(int type, char* skin, vector<int> stats) {
 		{"pool_limit", _pool_limit},
 		{"chance", _chance},
 		{"crit_multi", _crit_multi}
+	};
+	_modifier = {
+		{"might", 100},
+		{"cooldown", 100},
+		{"proj_speed", 100},
+		{"duration", 100},
+		{"amount", 100},
+		{"area", 100}
 	};
 
 	switch (_type) {
@@ -216,17 +223,42 @@ void Weapon::show() {
 	Projectile::show();
 }
 
-void Weapon::update_weapon_stats(int might, int cooldown, int proj_speed, int duration, int amount, double area) {
-	_damage = any_cast<double>(_base_stats["damage"]) * might / 100;
-	_cooldown = any_cast<int>(_base_stats["cooldown"]) * cooldown / 100;	
-	_speed = any_cast<int>(_base_stats["speed"]) * proj_speed / 100;
-	_duration = any_cast<int>(_base_stats["duration"]) * duration / 100;
-	_amount = any_cast<int>(_base_stats["amount"]) + amount;
-	_area = any_cast<double>(_base_stats["area"]) * area / 100;
+void Weapon::update_weapon_stats(int might, int cooldown, int proj_speed, int duration, int amount, int area) {
+	_modifier["might"] = might;
+	_modifier["cooldown"] = cooldown;
+	_modifier["proj_speed"] = proj_speed;
+	_modifier["duration"] = duration;
+	_modifier["amount"] = amount;
+	_modifier["area"] = area;
+	recalaulte_stat();
 }
-void Weapon::update_all_weapon_stats(int might, int cooldown, int proj_speed, int duration, int amount, double area) {
+void Weapon::recalaulte_stat() {
+	_damage = any_cast<double>(_base_stats["damage"]) * _modifier["might"] / 100;
+	_cooldown = any_cast<int>(_base_stats["cooldown"]) * _modifier["cooldown"] / 100;
+	_speed = any_cast<int>(_base_stats["speed"]) * _modifier["proj_speed"] / 100;
+	_duration = any_cast<int>(_base_stats["duration"]) * _modifier["duration"] / 100;
+	_amount = any_cast<int>(_base_stats["amount"]) + _modifier["amount"];
+	_area = any_cast<double>(_base_stats["area"]) * _modifier["area"] / 100;
+}
+void Weapon::update_all_weapon_stats(int might, int cooldown, int proj_speed, int duration, int amount, int area) {
 	for (Weapon& w : all_weapon) {
 		w.update_weapon_stats(might, cooldown, proj_speed, duration, amount, area);
+	}
+}
+void Weapon::modify_base(string type, double effect) {
+	if (type != "damage" && type != "area") {
+		_base_stats[type] = any_cast<int>(_base_stats[type]) + static_cast<int>(effect);
+	}
+	else {
+		_base_stats[type] = any_cast<double>(_base_stats[type]) + effect;
+	}
+}
+void Weapon::upgrade(int weapon_type) {
+	for (Weapon& w : all_weapon) {
+		if (w._type == weapon_type) {
+			w.upgrade();
+			return;
+		}
 	}
 }
 void Weapon::upgrade()
@@ -237,87 +269,84 @@ void Weapon::upgrade()
 	case WHIP:
 		switch (_level) {
 		case 2:
-			_amount += 1;
-			_base_stats["amount"] = any_cast<int>(_base_stats["amount"]) + 1;
+			modify_base("amount", 1);
 			break;
 		case 3:
-			_damage += 5;
-			_base_stats["damage"] = any_cast<double>(_base_stats["damage"]) + 5;
+			modify_base("damage", 5);
 			break;
 		case 4:
-			_damage += 5;
-			_area += 0.1;
+			modify_base("damage", 5);
+			modify_base("area", 0.1);
 			break;
 		case 5:
-			_damage += 5;
+			modify_base("damage", 5);
 			break;
 		case 6:
-			_damage += 5;
-			_area += 0.1;
+			modify_base("damage", 5);
+			modify_base("area", 0.1);
 			break;
 		case 7:
-			_damage += 5;
+			modify_base("damage", 5);
 			break;
 		case 8:
-			_damage += 5;
+			modify_base("damage", 5);
 			break;
 		}
 		break;
 	case HOLY_MISSILE:
 		switch (_level) {
 		case 2:
-			_amount += 1;
+			modify_base("amount", 1);
 			break;
 		case 3:
-			_cooldown -= 200;
+			modify_base("cooldown", -200);
 			break;
 		case 4:
-			_amount += 1;
+			modify_base("amount", 1);
 			break;
 		case 5:
-			_damage += 10;
+			modify_base("damage", 10);
 			break;
 		case 6:
-			_amount += 1;
+			modify_base("amount", 1);
 			break;
 		case 7:
-			_pierce += 1;
+			modify_base("pierce", 1);
 			break;
 		case 8:
-			_damage += 10;
+			modify_base("damage", 10);
 			break;
 		}
 	case KNIFE:
 		switch (_level) {
 		case 2:
-			_amount += 1;
+			modify_base("amount", 1);
 			break;
 		case 3:
-			_amount += 1;
-			_damage += 5;
+			modify_base("amount", 1);
+			modify_base("damage", 5);
 			break;
 		case 4:
-			_amount += 1;
+			modify_base("amount", 1);
 			break;
 		case 5:
-			_pierce += 1;
+			modify_base("pierce", 1);
 			break;
 		case 6:
-			_amount += 5;
+			modify_base("damage", 5);
 			break;
 		case 7:
-			_amount += 1;
-			_damage += 5;
+			modify_base("amount", 1);
+			modify_base("damage", 5);
+			break;
 		case 8:
-			_pierce += 1;
+			modify_base("pierce", 1);
 			break;
 
 		}
 		break;
-
 	}
-
-	
+	recalaulte_stat();
 }
 void Weapon::load_weapon_stats() {
 	ifstream file("source/game/VSclass/weapon_stats.csv");
@@ -396,7 +425,7 @@ double Weapon::get_kb() {
 	return _knock_back;
 }
 int Weapon::weapon_count() {
-	return static_cast<int>  (Weapon::_base_weapon.size());
+	return static_cast<int>  (Weapon::all_weapon.size());
 }
 bool Weapon::is_evo_weapon() {
 	return this->_type >= 32;

@@ -23,6 +23,7 @@ public:
 	int passive_count();
 	
 	//things
+	bool have(int type);
 	void hurt(int damage);
 	void load_bleed();
 	bool pick_up_xp(int);
@@ -35,10 +36,10 @@ private:
 	// vector<Passive> _passives;
 	vector<int> stats;
 	unordered_map <string, any> _base_stats;
-	int _might, _armor, _max_health, _cooldown, 
+	int _might, _armor, _max_health, _cooldown, _area, // area is a modifier 
 		_proj_speed, _duration, _amount, _move_speed, _magnet,
 		_luck, _growth, _greed, _revival, _curse;
-	double _area, _recovery;
+	double _recovery;
 	int _hp;
 	int _exp, _max_exp;
 	int _level;

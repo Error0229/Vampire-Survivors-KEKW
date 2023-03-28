@@ -87,6 +87,7 @@ void Player::acquire_weapon(Weapon& weapon) {
 }
 void Player::acquire_weapon(int weapon_id) {
 	Weapon::all_weapon.push_back(Weapon::_base_weapon[weapon_id]);
+	Weapon::update_all_weapon_stats(_might, _cooldown, _proj_speed, _duration, _amount, _area);
 }
 void Player::acquire_passive(Passive& passive) {
 	Passive::all_passive.push_back(passive);
@@ -169,38 +170,62 @@ int Player::passive_count()
 {
 	return Passive::all_passive.size();
 }
-
+bool Player::have(int type) {
+	for (auto& i : Weapon::all_weapon) {
+		if (i.get_type() == type) {
+			return true;
+		}
+	} 
+	for (auto& i : Passive::all_passive) {
+		if (i.get_type() == type) {
+			return true;
+		}
+	}
+	return false;
+}
 void Player::obtain_item(int type)
 {
 	bool is_own = false;
 	if (type < 32) {
 		//weapon
-		for (auto& i : Weapon::all_weapon) {
-			if (i.get_type() == type) {
-				i.upgrade();
-				is_own = true;
-				break;
-			}
+		if (this->have(type)) {
+			Weapon::upgrade(type);
 		}
-		if (!is_own) {
-			acquire_weapon(Weapon::_base_weapon[type]);
+		else {
+			acquire_weapon(type);
 		}
+		//for (auto& i : Weapon::all_weapon) {
+		//	if (i.get_type() == type) {
+		//		i.upgrade();
+		//		is_own = true;
+		//		break;
+		//	}
+		//}
+		//if (!is_own) {
+		//	acquire_weapon(Weapon::_base_weapon[type]);
+		//}
 	}
 	else if (type < 63) {
 		//evo
 	}
 	else {
 		//passive
-		for (auto& i : Passive::all_passive) {
-			if (i.get_type() == type) {
-				level_up_passive(i);
-				is_own = true;
-				break;
-			}
+		if (this->have(type)) {
+			level_up_passive(type);
 		}
-		if (!is_own) {
-			acquire_passive(Passive(type));
+		else {
+			acquire_passive(type);
 		}
+		//for (auto& i : Passive::all_passive) {
+		//	if (i.get_type() == type) {
+		//		level_up_passive(i);
+		//		is_own = true;
+		//		break;
+		//	}
+		//}
+		//if (!is_own) {
+		//	acquire_passive(Passive(type));
+		//}
 	}
 }
 

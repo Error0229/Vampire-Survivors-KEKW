@@ -17,17 +17,21 @@ public:
 	bool is_evo_weapon();
 	double get_kb();
 	int get_pierce();
-	void update_weapon_stats(int might, int cooldown, int proj_speed, int duration, int amount, double area);
-	static void update_all_weapon_stats(int might, int cooldown, int proj_speed, int duration, int amount, double area);
+	void recalaulte_stat();
+	void modify_base(string type, double effect);
+	void update_weapon_stats(int might, int cooldown, int proj_speed, int duration, int amount, int area);
+	static void update_all_weapon_stats(int might, int cooldown, int proj_speed, int duration, int amount, int area);
 	static void evolution(int type);
 	static map <int, int> evolution_pair;
 	static void attack();
+	static void upgrade(int weapon);
 	static void show();
 	static deque<Weapon> all_weapon;
 	static int weapon_count();
 protected:
 	Projectile _base_proj;
 	unordered_map<string, any> _base_stats;
+	unordered_map<string, int> _modifier;
 	string _name;
 	int _type, _level, _max_level, _speed, _rarity,   
 		_amount, _duration, _pierce, _cooldown, _proj_interval,

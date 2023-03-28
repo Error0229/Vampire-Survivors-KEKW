@@ -50,8 +50,11 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	player.set_default_direct(RIGHT);
 	player.set_animation(150, false);
 	player.load_bleed();
-	player.acquire_weapon(Weapon::_base_weapon[KNIFE]);
-	player.acquire_passive(Passive(POWER));
+	// player.acquire_weapon(Weapon::_base_weapon[KNIFE]);
+	player.acquire_weapon(WHIP);
+	// player.acquire_passive(Passive(POWER));
+	player.acquire_passive(POWER);
+
 	map.load_map({ "resources/map/dummy1.bmp" });
 	map.set_pos(0, 0);
 	QuadTree::VSPlain.clear();
