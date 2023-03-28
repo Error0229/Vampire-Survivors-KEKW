@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "../config.h"
 #include "../../Library/gameutil.h"
-#include "VSMath.h"
+#include "VSUtil.h"
 #include "VSObject.h"
 
 VSObject::VSObject()

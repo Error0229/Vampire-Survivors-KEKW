@@ -276,7 +276,7 @@
     <ClCompile Include="Source\Game\VSclass\Passive.cpp" />
     <ClCompile Include="Source\Game\VSclass\Pickup.cpp" />
     <ClCompile Include="Source\Game\VSclass\Player.cpp" />
-    <ClCompile Include="Source\Game\VSclass\VSMath.cpp" />
+    <ClCompile Include="Source\Game\VSclass\VSUtil.cpp" />
     <ClCompile Include="Source\Game\VSclass\Weapon.cpp" />
     <ClCompile Include="Source\Library\audio.cpp" />
     <ClCompile Include="Source\Library\gamecore.cpp" />
@@ -295,7 +295,7 @@
     <ClInclude Include="Source\Core\StdAfx.h" />
     <ClInclude Include="Source\Game\config.h" />
     <ClInclude Include="Source\Game\VSclass\Enemy.h" />
-    <ClInclude Include="Source\Game\VSclass\VSMath.h" />
+    <ClInclude Include="Source\Game\VSclass\VSUtil.h" />
     <ClInclude Include="Source\Game\VSclass\Map.h" />
     <ClInclude Include="Source\Game\mygame.h" />
     <ClInclude Include="Source\Game\VSclass\Passive.h" />

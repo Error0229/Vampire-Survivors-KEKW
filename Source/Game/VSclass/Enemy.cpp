@@ -2,7 +2,7 @@
 #include "../../Library/gameutil.h"
 #include "VSObject.h"
 #include "Enemy.h"
-#include "VSMath.h"
+#include "VSUtil.h"
 #include <fstream>
 #include <sstream>
 Enemy::Enemy()

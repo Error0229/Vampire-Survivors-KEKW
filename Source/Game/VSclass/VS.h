@@ -1,5 +1,5 @@
 #pragma once
-#include "VSMath.h"
+#include "VSUtil.h"
 #include "VSObject.h"
 #include "QuadTree.h"
 #include "UI.h"
