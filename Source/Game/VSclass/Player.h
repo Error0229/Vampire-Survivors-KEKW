@@ -1,4 +1,10 @@
 #pragma once
+
+typedef struct stat_struct {
+	int type;
+	string name_string, val_string;
+} stat_struct;
+
 class Player :public VSObject{
 public:
 	Player();
@@ -18,9 +24,11 @@ public:
 	
 	//getter
 	int get_level();
-	int get_pickup_range();
-	int get_luck();
 	int get_exp_percent();
+	int get_move_speed();
+	int get_magnet();
+	int get_luck();
+	vector<stat_struct> get_stats_string();
 	
 	//things
 	bool have(int type);
@@ -47,4 +55,6 @@ private:
 	int _money;
 	int _reroll;
 	bool _is_hurt = false;
+
+	string stat_to_string(int val, bool percent=true);
 };

@@ -118,6 +118,11 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 			inv_detail_item_knots[i][j][1].set_base_pos(-388 + j % 3 * 8 + i % 6 * 26, -244 + j / 3 * 8 + i / 6 * 58);
 		}
 	}
+
+	stat_frame.load_skin("resources/ui/stat_frame.bmp");
+	stat_frame.set_base_pos(-400 + (stat_frame.get_width() >> 1), -300 + 154 + (stat_frame.get_height() >> 1));
+	for (int i = 0; i < 16; i++)
+		stat_icon[i].load_icon();
 }
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -370,7 +375,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		QuadTree::VSPlain.clear();
 		// suck xp
 		for (auto& i : xp) {
-			if (i.is_enable() && VSObject::distance(player, i) < player.get_pickup_range()) {
+			if (i.is_enable() && VSObject::distance(player, i) < player.get_magnet()) {
 				i.set_speed(1000);
 				i.update_pos(player.get_pos());
 				if (is_overlapped(player, i)) {
@@ -473,6 +478,10 @@ void CGameStateRun::OnShow()
 
 	bool is_own;
 	string level_up_desc, level_text, type_text;
+
+	vector<stat_struct> player_stats;
+	int cnt;
+	string 🍆;
 	switch (_gamerun_status) {
 	case(PLAYING):
 		inv_slot.show();
@@ -535,6 +544,7 @@ void CGameStateRun::OnShow()
 			text_device.add_text("Increase your luck", CPoint(0, 140) + player.get_pos(), 1, FONT_12x08, ALIGN_CENTER);
 			text_device.add_text("  for a chance to get 4 choices.", CPoint(0, 160) + player.get_pos(), 1, FONT_12x08, ALIGN_CENTER);
 		}
+		//inventory detail 
 		for (int i = 0; i < Weapon::weapon_count(); i++) {
 			inv_detail_item_icons[i].show(Weapon::all_weapon[i].get_type());
 			for(int j = 0; j < Weapon::all_weapon[i].get_max_level(); j++)
@@ -544,6 +554,18 @@ void CGameStateRun::OnShow()
 			inv_detail_item_icons[i+6].show(Passive::all_passive[i].get_type());
 			for (int j = 0; j < Passive::all_passive[i].get_max_level(); j++)
 				inv_detail_item_knots[i+6][j][Passive::all_passive[i].get_level() > j].show();
+		}
+		// player stat text
+		stat_frame.show();
+		player_stats = player.get_stats_string();
+		cnt = 0;
+		for (int i = 0; i < 16; i++) {
+			text_device.add_text(player_stats[i].name_string, CPoint(-375, -130 + 16 * cnt) + player.get_pos(), 1, FONT_12x08, ALIGN_LEFT);
+			text_device.add_text(player_stats[i].val_string, CPoint(-235, -130 + 16 * cnt) + player.get_pos(), 1, FONT_12x08, ALIGN_RIGHT);
+			stat_icon[i].set_base_pos(-385, -130 + 16 * cnt);
+			stat_icon[i].show(player_stats[i].type);
+			cnt++;
+			cnt += (i % 4 == 3); //empty line
 		}
 		break;
 	case(OPEN_CHEST):

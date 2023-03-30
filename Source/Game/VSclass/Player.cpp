@@ -1,10 +1,12 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "../../Library/gameutil.h"
 #include "VSObject.h"
 #include "Weapon.h"
 #include "Passive.h"
 #include "Player.h"
+#include <string>
 using namespace game_framework;
+
 Player::Player()
 {
 	obj_type = PLAYER;
@@ -154,21 +156,51 @@ bool Player::apply_level_up()
 	}
 	return (_exp >= _max_exp);
 }
-int Player::get_pickup_range()
-{
-	return _magnet;
-}
 int Player::get_level()
 {
 	return _level;
+}
+int Player::get_exp_percent()
+{
+	return (_exp < _max_exp) ? (_exp * 100 / _max_exp):(100);
+}
+int Player::get_move_speed()
+{
+	return _move_speed;
+}
+int Player::get_magnet()
+{
+	return _magnet;
 }
 int Player::get_luck()
 {
 	return _luck;
 }
-int Player::get_exp_percent()
+vector<stat_struct> Player::get_stats_string()
 {
-	return (_exp < _max_exp) ? (_exp * 100 / _max_exp):(100);
+	vector<stat_struct> stats;
+	stats.push_back({ MAXHEALTH,"Max Health",	to_string(_max_health) });
+	string 💕 = to_string(_recovery);
+	💕 = 💕.substr(0, 💕.find(".") + 3);
+	stats.push_back({ REGEN,	"Recovery",		💕 }); // 1:double
+	stats.push_back({ ARMOR,	"Armor",		stat_to_string(_armor, false) });
+	stats.push_back({ MOVESPEED,"Move Speed",	stat_to_string(_move_speed)});
+	stats.push_back({ POWER,	"Might",		stat_to_string(_might) });
+	stats.push_back({ SPEED,	"Speed",		stat_to_string(_proj_speed) });
+	stats.push_back({ DURATION,	"Duration",		stat_to_string(_duration) });
+	stats.push_back({ AREA,		"Area", 		stat_to_string(_area) });
+	stats.push_back({ COOLDOWN, "Cooldown",		stat_to_string(_cooldown) });
+	stats.push_back({ AMOUNT,	"Amount",		stat_to_string(_amount, false) });
+	stats.push_back({ REVIVAL,	"Revival",		stat_to_string(_revival, false) });
+	stats.push_back({ MAGNET,	"Magnet",		to_string(_magnet) });
+	stats.push_back({ LUCK,		"Luck",			stat_to_string(_luck) });
+	stats.push_back({ GROWTH,	"Growth",		stat_to_string(_growth) });
+	stats.push_back({ GREED,	"Greed",		stat_to_string(_greed) });
+	stats.push_back({ CURSE,	"Curse",		stat_to_string(_curse) });
+	//Reroll
+	//Skip
+	//Banish
+	return stats;
 }
 bool Player::have(int type) {
 	for (auto& i : Weapon::all_weapon) {
@@ -244,4 +276,19 @@ bool Player::all_max()
 bool Player::full_inv()
 {
 	return Weapon::weapon_count() >= 6 && Passive::all_passive.size() >= 6;
+}
+string Player::stat_to_string(int val, bool percent)
+{
+	string 🍆;
+	if (percent) {
+		if(val >= 100)
+			🍆 = "+" + to_string(val - 100) + "%";
+		else
+			🍆 = to_string(val - 100) + "%";
+	}
+	else if(val >= 0)
+		🍆 = "+" + to_string(val);
+	else
+		🍆 = to_string(val);
+	return 🍆;
 }

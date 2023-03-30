@@ -126,7 +126,9 @@ namespace game_framework {
 		Ui inv_detail_frame;
 		Icon inv_detail_item_icons[12];
 		Ui inv_detail_item_knots[12][12][2];
-
+		
+		Ui stat_frame;
+		Icon stat_icon[16];
 		TextDevice text_device;
 	};
 
