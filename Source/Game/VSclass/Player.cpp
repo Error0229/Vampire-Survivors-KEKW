@@ -10,43 +10,50 @@ using namespace game_framework;
 Player::Player()
 {
 	obj_type = PLAYER;
-	_magnet = 100;
-	_max_health = 100;
-	_recovery = 0;
-	_armor = 0;
-	_speed = 100; // 100%
-	_might = 100; // 100%
-	_area = 100;
-	_proj_speed = 100;
-	_duration = 100;
+	_coef_magnet = 100;
+	_coef_max_health = 100;
+	_coef_move_speed = 100; // 100%
+	_coef_might = 100; // 100%
+	_coef_area = 100;
+	_coef_proj_speed = 100;
+	_coef_duration = 100;
+	_coef_cooldown = 100; // 100%
+	_coef_luck = 100;
+	_coef_growth = 100;
+	_coef_greed = 100;
+	_coef_curse = 100;
+	_coef_magnet = 100; // base value is 30
+
 	_amount = 0;
-	_cooldown = 100; // 100%
-	_luck = 100;
-	_growth = 100;
-	_greed = 100;
-	_curse = 100;
-	_magnet = 100; // base value is 30
+	_armor = 0;
+	_revival = 0;
+	_recovery = 0;
 	_reroll = 0;
 	_exp = 0;
+	_base_speed = 200;
+	_base_max_health = 130;
+	_base_magnet = 30;
 	_max_exp = 5;
 	_level = 1;
+
 	_base_stats = {
-		{"might", _might},
+		{"speed", _speed},
+		{"might", _coef_might},
 		{"armor", _armor},
-		{"max_health", _max_health},
+		{"max_health", _coef_max_health},
 		{"recovery", _recovery},
-		{"cooldown", _cooldown},
-		{"area", _area},
-		{"proj_speed", _proj_speed},
-		{"duration", _duration},
+		{"cooldown", _coef_cooldown},
+		{"area", _coef_area},
+		{"proj_speed", _coef_proj_speed},
+		{"duration", _coef_duration},
 		{"amount", _amount},
-		{"move_speed", _move_speed},
-		{"magnet", _magnet},
-		{"luck", _luck},
-		{"growth", _growth},
-		{"greed", _greed},
+		{"move_speed", _coef_move_speed},
+		{"magnet", _coef_magnet},
+		{"luck", _coef_luck},
+		{"growth", _coef_growth},
+		{"greed", _coef_greed},
 		{"revival", _revival},
-		{"curse", _curse }
+		{"curse", _coef_curse }
 	};
 	//for some reason, load skin in constructor will cause the some error
 	//_bleed_animation.load_skin({ "resources/character/Blood1.bmp", "resources/character/Blood2.bmp", "resources/character/Blood3.bmp" });
@@ -84,12 +91,18 @@ void Player::hurt(int damage) {
 		_hp = 0;
 	}
 }
+void Player::set_speed(int s){
+	_speed = static_cast<int>(s * _coef_move_speed / 100.0);
+};
+void Player::set_speed(double s) {
+	set_speed(static_cast<int> (s));
+};
 void Player::acquire_weapon(Weapon& weapon) {
 	Weapon::all_weapon.push_back(weapon);
 }
 void Player::acquire_weapon(int weapon_id) {
 	Weapon::all_weapon.push_back(Weapon::_base_weapon[weapon_id]);
-	Weapon::update_all_weapon_stats(_might, _cooldown, _proj_speed, _duration, _amount, _area);
+	Weapon::update_all_weapon_stats(_coef_might, _coef_cooldown, _coef_proj_speed, _coef_duration, _amount, _coef_area);
 }
 void Player::acquire_passive(Passive& passive) {
 	Passive::all_passive.push_back(passive);
@@ -98,23 +111,26 @@ void Player::acquire_passive(int passive_id) {
 	Passive::all_passive.push_back(Passive(passive_id));
 }
 void Player::update_all_passive_effect() {
-	_might = any_cast<int>(_base_stats["might"]) + Passive::get_effect(POWER) + Passive::get_effect(PANDORA);
+	_coef_might = any_cast<int>(_base_stats["might"]) + Passive::get_effect(POWER) + Passive::get_effect(PANDORA);
 	_armor = any_cast<int>(_base_stats["armor"]) + Passive::get_effect(ARMOR);
-	_max_health = any_cast<int>(_base_stats["max_health"]) + Passive::get_effect(MAXHEALTH) + Passive::get_effect(pLEFT);
+	_coef_max_health = any_cast<int>(_base_stats["max_health"]) + Passive::get_effect(MAXHEALTH) + Passive::get_effect(pLEFT);
 	_recovery = any_cast<double>(_base_stats["recovery"]) + Passive::get_effect(REGEN)/100.0 + Passive::get_effect(pLEFT) / 500.0;
-	_cooldown = any_cast<int>(_base_stats["cooldown"]) + Passive::get_effect(COOLDOWN);
-	_area = any_cast<int>(_base_stats["area"]) + Passive::get_effect(AREA) + Passive::get_effect(SILVER) + Passive::get_effect(PANDORA);
-	_proj_speed = any_cast<int>(_base_stats["proj_speed"]) + Passive::get_effect(SPEED) + Passive::get_effect(PANDORA);
-	_duration = any_cast<int>(_base_stats["duration"]) + Passive::get_effect(DURATION) + Passive::get_effect(SILVER) + Passive::get_effect(PANDORA);
+	_coef_cooldown = any_cast<int>(_base_stats["cooldown"]) + Passive::get_effect(COOLDOWN);
+	_coef_area = any_cast<int>(_base_stats["area"]) + Passive::get_effect(AREA) + Passive::get_effect(SILVER) + Passive::get_effect(PANDORA);
+	_coef_proj_speed = any_cast<int>(_base_stats["proj_speed"]) + Passive::get_effect(SPEED) + Passive::get_effect(PANDORA);
+	_coef_duration = any_cast<int>(_base_stats["duration"]) + Passive::get_effect(DURATION) + Passive::get_effect(SILVER) + Passive::get_effect(PANDORA);
 	_amount = any_cast<int>(_base_stats["amount"]) + Passive::get_effect(AMOUNT);
-	_move_speed = any_cast<int>(_base_stats["move_speed"]) + Passive::get_effect(MOVESPEED);
-	_magnet = any_cast<int>(_base_stats["magnet"]) + Passive::get_effect(MAGNET);
-	_luck = any_cast<int>(_base_stats["luck"]) + Passive::get_effect(LUCK);
-	_growth = any_cast<int>(_base_stats["growth"]) + Passive::get_effect(GROWTH);
-	_greed = any_cast<int>(_base_stats["greed"]) + Passive::get_effect(GREED);
+	_coef_move_speed = any_cast<int>(_base_stats["move_speed"]) + Passive::get_effect(MOVESPEED);
+	_coef_magnet = any_cast<int>(_base_stats["magnet"]) + Passive::get_effect(MAGNET);
+	_coef_luck = any_cast<int>(_base_stats["luck"]) + Passive::get_effect(LUCK);
+	_coef_growth = any_cast<int>(_base_stats["growth"]) + Passive::get_effect(GROWTH);
+	_coef_greed = any_cast<int>(_base_stats["greed"]) + Passive::get_effect(GREED);
 	_revival = any_cast<int>(_base_stats["revival"]) + Passive::get_effect(REVIVAL);
-	_curse = any_cast<int>(_base_stats["curse"]) + Passive::get_effect(CURSE) + Passive::get_effect(GOLD) + Passive::get_effect(pRIGHT);
-	Weapon::update_all_weapon_stats(_might, _cooldown, _proj_speed, _duration, _amount, _area); // should this be here ? 
+	_coef_curse = any_cast<int>(_base_stats["curse"]) + Passive::get_effect(CURSE) + Passive::get_effect(GOLD) + Passive::get_effect(pRIGHT);
+	Weapon::update_all_weapon_stats(_coef_might, _coef_cooldown, _coef_proj_speed, _coef_duration, _amount, _coef_area); // should this be here ? 
+	_speed = static_cast<int>(_base_speed * _coef_move_speed / 100.0);
+	_max_health = static_cast<int>(_base_max_health * _coef_max_health / 100.0);
+	_magnet = static_cast<int>(_base_magnet * _coef_magnet / 100.0);
 }
 
 void Player::level_up_passive(Passive& p) {
@@ -145,16 +161,22 @@ bool Player::apply_level_up()
 
 	if (_level == 20) {
 		_max_exp += 600;
-		_growth += 100;
+		_base_stats["growth"] = any_cast<int>(_base_stats["growth"]) + 100;
 	}
 	else if (_level == 40) {
 		_max_exp += 2400;
-		_growth += 100;
+		_base_stats["growth"] = any_cast<int>(_base_stats["growth"]) + 100;
 	}
-	else if (_level == 21 && _level == 41) {
-		_growth -= 100;
+	else if (_level == 21 || _level == 41) {
+		_base_stats["growth"] = any_cast<int>(_base_stats["growth"]) - 100;
 	}
+
+	_coef_growth = any_cast<int>(_base_stats["growth"]) + Passive::get_effect(GROWTH);
 	return (_exp >= _max_exp);
+}
+int Player::get_pickup_range()
+{
+	return _magnet;
 }
 int Player::get_level()
 {
@@ -166,7 +188,7 @@ int Player::get_exp_percent()
 }
 int Player::get_move_speed()
 {
-	return _move_speed;
+	return _speed;
 }
 int Player::get_magnet()
 {
@@ -174,7 +196,7 @@ int Player::get_magnet()
 }
 int Player::get_luck()
 {
-	return _luck;
+	return _coef_luck;
 }
 vector<stat_struct> Player::get_stats_string()
 {
@@ -184,19 +206,19 @@ vector<stat_struct> Player::get_stats_string()
 	💕 = 💕.substr(0, 💕.find(".") + 3);
 	stats.push_back({ REGEN,	"Recovery",		💕 }); // 1:double
 	stats.push_back({ ARMOR,	"Armor",		stat_to_string(_armor, false) });
-	stats.push_back({ MOVESPEED,"Move Speed",	stat_to_string(_move_speed)});
-	stats.push_back({ POWER,	"Might",		stat_to_string(_might) });
-	stats.push_back({ SPEED,	"Speed",		stat_to_string(_proj_speed) });
-	stats.push_back({ DURATION,	"Duration",		stat_to_string(_duration) });
-	stats.push_back({ AREA,		"Area", 		stat_to_string(_area) });
-	stats.push_back({ COOLDOWN, "Cooldown",		stat_to_string(_cooldown) });
+	stats.push_back({ MOVESPEED,"Move Speed",	stat_to_string(_coef_move_speed)});
+	stats.push_back({ POWER,	"Might",		stat_to_string(_coef_might) });
+	stats.push_back({ SPEED,	"Speed",		stat_to_string(_coef_proj_speed) });
+	stats.push_back({ DURATION,	"Duration",		stat_to_string(_coef_duration) });
+	stats.push_back({ AREA,		"Area", 		stat_to_string(_coef_area) });
+	stats.push_back({ COOLDOWN, "Cooldown",		stat_to_string(_coef_cooldown) });
 	stats.push_back({ AMOUNT,	"Amount",		stat_to_string(_amount, false) });
 	stats.push_back({ REVIVAL,	"Revival",		stat_to_string(_revival, false) });
 	stats.push_back({ MAGNET,	"Magnet",		to_string(_magnet) });
-	stats.push_back({ LUCK,		"Luck",			stat_to_string(_luck) });
-	stats.push_back({ GROWTH,	"Growth",		stat_to_string(_growth) });
-	stats.push_back({ GREED,	"Greed",		stat_to_string(_greed) });
-	stats.push_back({ CURSE,	"Curse",		stat_to_string(_curse) });
+	stats.push_back({ LUCK,		"Luck",			stat_to_string(_coef_luck) });
+	stats.push_back({ GROWTH,	"Growth",		stat_to_string(_coef_growth) });
+	stats.push_back({ GREED,	"Greed",		stat_to_string(_coef_greed) });
+	stats.push_back({ CURSE,	"Curse",		stat_to_string(_coef_curse) });
 	//Reroll
 	//Skip
 	//Banish
@@ -226,21 +248,11 @@ void Player::obtain_item(int type)
 		else {
 			acquire_weapon(type);
 		}
-		//for (auto& i : Weapon::all_weapon) {
-		//	if (i.get_type() == type) {
-		//		i.upgrade();
-		//		is_own = true;
-		//		break;
-		//	}
-		//}
-		//if (!is_own) {
-		//	acquire_weapon(Weapon::_base_weapon[type]);
-		//}
 	}
 	else if (type < 63) {
 		Weapon::evolution(type);
 	}
-	else{
+	else {
 		//passive
 		if (this->have(type)) {
 			level_up_passive(type);
@@ -248,16 +260,6 @@ void Player::obtain_item(int type)
 		else {
 			acquire_passive(type);
 		}
-		//for (auto& i : Passive::all_passive) {
-		//	if (i.get_type() == type) {
-		//		level_up_passive(i);
-		//		is_own = true;
-		//		break;
-		//	}
-		//}
-		//if (!is_own) {
-		//	acquire_passive(Passive(type));
-		//}
 	}
 }
 

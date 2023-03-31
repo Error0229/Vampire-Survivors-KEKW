@@ -112,7 +112,9 @@ namespace game_framework {
 	}
 
 	void CMovingBitmap::SetAnimation(int delay, bool _once, int cooldown) {
-		if ( !_once ) isAnimation = true;
+		if (!_once) isAnimation = true;
+		else 
+			isPause = true;
 		once = _once;
 		delayCount = delay;
 		animation_cooldown = cooldown;

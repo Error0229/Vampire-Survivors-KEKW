@@ -346,7 +346,6 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		QuadTree::VSPlain.set_range(-Player::player_dx - offset, -Player::player_dy - offset, (OPEN_AS_FULLSCREEN ? RESOLUTION_X : SIZE_X) + offset, (OPEN_AS_FULLSCREEN ? RESOLUTION_Y : SIZE_Y) + offset);
 		for (Enemy& i_enemy : enemy) {
 			if (!i_enemy.is_dead() && i_enemy.is_enable()) {
-				// QT.insert((VSObject*)(&i_enemy));
 				QuadTree::VSPlain.insert((VSObject*)(&i_enemy));
 			}
 		}
@@ -371,14 +370,17 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 				enemy[i].append_collide(player, 1, 0.5);
 				enemy[i].update_collide();
 				player.hurt(enemy[i].get_power());
-				//if (enemy[i].hurt(1)) {
-				//	//when the enemy die from this damage
-				//	xp[i].spawn_xp(enemy[i].get_pos(), enemy[i].get_xp_value());
-				//}
 			}
 		}
 		QuadTree::VSPlain.clear();
 		// suck xp
+		Xp::update_XP_pos(player.get_pickup_range());
+		for (Xp& i : Xp::xp_all) {
+			if (is_overlapped(player, i)) {
+				i.despawn();
+				player.pick_up_xp(i.get_xp_value());
+			}
+		}
 		for (auto& i : xp) {
 			if (i.is_enable() && VSObject::distance(player, i) < player.get_magnet()) {
 				i.set_speed(1000);
@@ -480,6 +482,7 @@ void CGameStateRun::OnShow()
 		i.show_skin();
 	for(auto& i: chest)
 		i.show_skin();
+	Xp::show();
 	
 	xp_bar_cover.show();
 	xp_bar.set_base_pos(-8 - (xp_bar.get_width() * (100 - player.get_exp_percent()) / 100), -300 + (xp_bar.get_height() >> 1));
@@ -594,3 +597,4 @@ void CGameStateRun::OnShow()
 	text_device.add_text("LV " + to_string(player.get_level()), CPoint(380, -287) + player.get_pos(), 1, FONT_24x18_B, ALIGN_RIGHT);
 	text_device.print_all();
 }
+

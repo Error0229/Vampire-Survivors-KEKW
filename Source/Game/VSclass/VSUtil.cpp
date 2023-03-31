@@ -4,7 +4,7 @@
 #include <random>
 #include "../config.h"
 #include "../../Library/gameutil.h"
-#include "VSMath.h"
+#include "VSUtil.h"
 #include <string>
 
 
