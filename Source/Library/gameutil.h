@@ -103,6 +103,8 @@ namespace game_framework {
 		void  SelectShowBitmap(int select);
 		int   GetSelectShowBitmap();
 		void  ToggleAnimation();
+		void  EnableAnimation();
+		void  DisableAnimation();
 		int   Top();						// 取得圖形的左上角的 y 座標
 		int   Width();						// 取得圖形的寬度
 		bool  IsAnimationDone();
@@ -117,6 +119,7 @@ namespace game_framework {
 		bool isAnimation = false;
 		bool isAnimationDone = false;
 		bool once = false;
+		bool isPause = false;
 		vector<unsigned> SurfaceID;
 		bool     isBitmapLoaded = false;	// whether a bitmap has been loaded
 		CRect    location;			// location of the bitmap

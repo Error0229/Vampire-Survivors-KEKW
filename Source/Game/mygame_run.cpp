@@ -97,8 +97,10 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	xp_bar_frame.set_base_pos(-8, -300 + (xp_bar_frame.get_height() >> 1));
 	xp_bar_cover.load_skin("resources/ui/xp_bar_cover.bmp");
 	xp_bar_cover.set_base_pos(-8, -300 + (xp_bar_frame.get_height() >> 1));
-	xp_bar.load_skin("resources/ui/xp_bar.bmp");
+	xp_bar.load_skin({ "resources/ui/xp_bar.bmp", "resources/ui/xp_bar_1.bmp", "resources/ui/xp_bar_2.bmp", "resources/ui/xp_bar_3.bmp", "resources/ui/xp_bar_4.bmp", "resources/ui/xp_bar_5.bmp" });
 	xp_bar.set_base_pos(-8, -300 + (xp_bar.get_height() >> 1));
+	xp_bar.set_animation(1, false);
+	xp_bar.disable_animation();
 
 	inv_slot.load_skin("resources/ui/weaponSlots.bmp");
 	inv_slot.set_base_pos(-400 + (inv_slot.get_width()>>1), -300 + 24 + (inv_slot.get_height()>>1));
@@ -493,12 +495,14 @@ void CGameStateRun::OnShow()
 	switch (_gamerun_status) {
 	case(PLAYING):
 		inv_slot.show();
+		xp_bar.disable_animation();
 		for (int i = 0; i < Weapon::weapon_count(); i++)
 			inv_icon[i].show(Weapon::all_weapon[i].get_type());
 		for (int i = 0; i < Passive::passive_count(); i++)
 			inv_icon[i+6].show(Passive::all_passive[i].get_type());
 		break;
 	case(LEVEL_UP):
+		xp_bar.enable_animation();
 		event_background.show();
 		inv_detail_frame.show();
 		for (int i = 0; i < 4; i++) {

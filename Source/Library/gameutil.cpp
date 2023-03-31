@@ -200,7 +200,7 @@ namespace game_framework {
 			selector = 0;
 			return;
 		}
-		if ( isAnimation == true && now - last_time >= delayCount ) {
+		if ( isAnimation == true && now - last_time >= delayCount  && !isPause) {
 			selector += 1;
 			last_time = now;
 			if ( selector == SurfaceID.size() && animation_cooldown != 0 ) {
@@ -260,7 +260,22 @@ namespace game_framework {
 		isAnimation = true;
 		isAnimationDone = false;
 	}
-
+	void CMovingBitmap::EnableAnimation() {
+		if (isPause) {
+			isPause = false;
+			selector = 0;
+			isAnimation = true;
+			isAnimationDone = false;
+		}
+	}
+	void CMovingBitmap::DisableAnimation() {
+		if (!isPause) {
+			isPause = true;
+			selector = 0;
+			isAnimation = false;
+			isAnimationDone = true;
+		}
+	}
 	bool CMovingBitmap::IsAnimationDone() {
 		return isAnimationDone;
 	}
