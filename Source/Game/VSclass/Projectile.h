@@ -15,6 +15,7 @@ public:
 	void WHIP_transition();
 	void VAMPIRICA_transition();
 	void MAGIC_MISSILE_transition();
+	void KNIFE_transition();
 	void HOLY_MISSILE_transition();
 	void collide_with_enemy(Enemy&);
 	// int _type, _level, _max_level, _damage, _speed, _rarity,  _amount, _duration, _pierce, _cooldown, _proj_interval, _hitbox_delay, _knock_back, _pool_limit, _chance, _crit_multi, _block_by_wall;

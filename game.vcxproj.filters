@@ -21,6 +21,7 @@
     </None>
     <None Include="Source\Game\VSclass\weapon_stats.csv" />
     <None Include="Resources\item_id.csv" />
+    <None Include="Source\Game\VSclass\enemy_stats.csv" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Library\audio.cpp">

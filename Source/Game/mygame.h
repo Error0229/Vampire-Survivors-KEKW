@@ -103,8 +103,8 @@ namespace game_framework {
 		vector<Enemy> enemy;
 		vector<Xp> xp;
 		vector<Chest> chest;
-		// QuadTree QT;
 		int _gamerun_status, _next_status;
+		VSTimer timer;
 
 		Ui event_background;
 		Ui level_up_button[4];
@@ -116,6 +116,21 @@ namespace game_framework {
 		Icon chest_item_icon[5];
 		Ui chest_animation;
 		Ui chest_item_frame[5];
+
+		Ui xp_bar_frame;
+		Ui xp_bar_cover;
+		Ui xp_bar;
+
+		Ui inv_slot;
+		Icon inv_icon[12];
+
+		Ui inv_detail_frame;
+		Icon inv_detail_item_icons[12];
+		Ui inv_detail_item_knots[12][12][2];
+		
+		Ui stat_frame;
+		Icon stat_icon[16];
+		TextDevice text_device;
 	};
 
 	/////////////////////////////////////////////////////////////////////////////

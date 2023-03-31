@@ -121,3 +121,4 @@ void Icon::load_filename()
 	}
 }
 vector<string> Icon::icon_filename;
+

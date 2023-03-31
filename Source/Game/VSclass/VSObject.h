@@ -74,6 +74,7 @@ public:
 	void set_animation(int delay, bool _once, int cooldown = 0);
 	void set_selector(int);
 	void enable_animation();
+	void disable_animation();
 	void set_pos(CPoint);
 	void set_pos(int, int);
 	void set_pos(double, double);
