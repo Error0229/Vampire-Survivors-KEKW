@@ -61,9 +61,12 @@ void VSObject::set_selector(int selector)
 }
 void VSObject::enable_animation()
 {
-	this->_skin.ToggleAnimation();
+	this->_skin.EnableAnimation();
 }
-
+void VSObject::disable_animation()
+{
+	this->_skin.DisableAnimation();
+}
 void VSObject::set_pos(CPoint pos)
 {
 	this->_position = pos;

@@ -1,4 +1,10 @@
 #pragma once
+
+typedef struct stat_struct {
+	int type;
+	string name_string, val_string;
+} stat_struct;
+
 class Player :public VSObject{
 public:
 	Player();
@@ -18,9 +24,12 @@ public:
 	
 	//getter
 	int get_level();
-	int get_pickup_range();
+	int get_exp_percent();
+	int get_move_speed();
+	int get_magnet();
 	int get_luck();
-	int passive_count();
+	int get_pickup_range();
+	vector<stat_struct> get_stats_string();
 	
 	//things
 	void set_speed(double) override;
@@ -28,7 +37,7 @@ public:
 	bool have(int type);
 	void hurt(int damage);
 	void load_bleed();
-	bool pick_up_xp(int);
+	void pick_up_xp(int);
 	bool apply_level_up();
 	bool all_max();
 	bool full_inv();
@@ -52,4 +61,6 @@ private:
 	int _money;
 	int _reroll;
 	bool _is_hurt = false;
+
+	string stat_to_string(int val, bool percent=true);
 };

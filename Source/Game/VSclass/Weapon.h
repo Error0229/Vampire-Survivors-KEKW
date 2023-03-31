@@ -13,8 +13,11 @@ public:
 	int get_duration();
 	int get_rarity();
 	int get_type();
+	int get_level();
+	string get_level_up_msg(bool is_new = false);
 	int get_evo_passive();
 	bool is_max_level();
+	int get_max_level();
 	bool is_evo_weapon();
 	bool can_evo();
 	double get_kb();
@@ -23,6 +26,7 @@ public:
 	void modify_base(string type, double effect);
 	void update_weapon_stats(int might, int cooldown, int proj_speed, int duration, int amount, int area);
 	static void update_all_weapon_stats(int might, int cooldown, int proj_speed, int duration, int amount, int area);
+	string get_name();
 	static void evolution(int type);
 	static map <int, int> evolution_pair;
 	static map <int, int> evolution_pair_reverse;

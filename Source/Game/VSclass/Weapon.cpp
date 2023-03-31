@@ -52,23 +52,24 @@ Weapon::Weapon(int type, char* skin, vector<int> stats) {
 		{"amount", 100},
 		{"area", 100}
 	};
-
 	switch (_type) {
 	case WHIP:
+		_name = "Whip";
 		_level_up_msg = {
 			"",
 			"Attacks horizontally, passes through enemies." ,
 			"Fires 1 more projectile.",
-			"Base damage up by 5."
-			"Base damage up by 5. Base area up by 10%."
-			"Base damage up by 5."
-			"Base damage up by 5. Base area up by 10%."
+			"Base damage up by 5.",
+			"Base damage up by 5. Base area up by 10%.",
+			"Base damage up by 5.",
+			"Base damage up by 5. Base area up by 10%.",
 			"Base damage up by 5.",
 			"Base damage up by 5.",
 			"Base damage up by 5."
 		};
 		break;
 	case MAGIC_MISSILE:
+		_name = "Magic Wand";
 		_level_up_msg = {
 			"",
 			"Fires at the nearest enemy.",
@@ -82,24 +83,25 @@ Weapon::Weapon(int type, char* skin, vector<int> stats) {
 		};
 	case KNIFE:
 		_level_up_msg = {
-			"", 
-			"Fires quickly in the faced direction.", 
-			"Fires 1 more projectile.", 
-			"Fires 1 more projectile. Base damage up by 5.",
-			"Fires 1 more projectile.", 
-			"Passes through 1 more enemy.", 
+			"",
+			"Fires quickly in the faced direction.",
 			"Fires 1 more projectile.",
-			"Fires 1 more projectile. Base damage up by 5.", 
+			"Fires 1 more projectile. Base damage up by 5.",
+			"Fires 1 more projectile.",
+			"Passes through 1 more enemy.",
+			"Fires 1 more projectile.",
+			"Fires 1 more projectile. Base damage up by 5.",
 			"Passes through 1 more enemy."
 		};
 		break;
 	case VAMPIRICA:
-		_level_up_msg = { "", "Can deal critical damage and absorb HP."};
+		_name = "Bloody Tear";
+		_level_up_msg = { "", "Can deal critical damage and absorb HP." };
 		break;
 	case HOLY_MISSILE:
-		_level_up_msg = { "", "Fires with no delay."};
+		_name = "Holy Wand";
+		_level_up_msg = { "", "Fires with no delay." };
 		break;
-
 	}
 }
 
@@ -294,7 +296,7 @@ void Weapon::upgrade()
 			break;
 		}
 		break;
-	case HOLY_MISSILE:
+	case MAGIC_MISSILE:
 		switch (_level) {
 		case 2:
 			modify_base("amount", 1);
@@ -416,14 +418,26 @@ int Weapon::get_rarity() {
 int Weapon::get_type() {
 	return _type;
 }
+int Weapon::get_level() {
+	return _level;
+}
+string Weapon::get_level_up_msg(bool is_new) {
+	return (is_new) ? (_level_up_msg[1]) : (_level_up_msg[_level + 1]);
+}
 bool Weapon::is_max_level() {
 	return _level >= _max_level;
+}
+int Weapon::get_max_level() {
+	return _max_level;
 }
 int Weapon::get_pierce() {
 	return _pierce;
 }
 double Weapon::get_kb() {
 	return _knock_back;
+}
+string Weapon::get_name() {
+	return _name;
 }
 int Weapon::get_evo_passive() {
 	return _evolution_require;

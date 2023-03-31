@@ -276,8 +276,30 @@ bool Passive::is_max_level()
 {
 	return (_level >= _max_level);
 }
+int Passive::get_max_level()
+{
+	return _max_level;
+}
+string Passive::get_level_up_msg(bool is_new)
+{
+	if (is_new)
+		return _level_up_msg[1];
+	if (_level + 1 > (int)_level_up_msg.size() - 1)
+		return _level_up_msg[_level_up_msg.size() - 1];
+	else
+		return _level_up_msg[_level + 1];
+}
 int Passive::get_rarity()
 {
 	return _rarity;
 }
+string Passive::get_name()
+{
+	return _name;
+}
+int Passive::passive_count()
+{
+	return all_passive.size();
+}
+
 deque<Passive> Passive::all_passive;

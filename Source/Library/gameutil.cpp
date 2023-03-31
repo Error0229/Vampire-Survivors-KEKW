@@ -19,6 +19,7 @@
 #include <filesystem>
 #include <experimental/filesystem> // Header file for pre-standard implementation
 #include <comdef.h>
+#include "../Game/VSclass/VSObject.h"
 
 namespace game_framework {
 
@@ -111,7 +112,9 @@ namespace game_framework {
 	}
 
 	void CMovingBitmap::SetAnimation(int delay, bool _once, int cooldown) {
-		if ( !_once ) isAnimation = true;
+		if (!_once) isAnimation = true;
+		else 
+			isPause = true;
 		once = _once;
 		delayCount = delay;
 		animation_cooldown = cooldown;
@@ -199,7 +202,7 @@ namespace game_framework {
 			selector = 0;
 			return;
 		}
-		if ( isAnimation == true && now - last_time >= delayCount ) {
+		if ( isAnimation == true && now - last_time >= delayCount  && !isPause) {
 			selector += 1;
 			last_time = now;
 			if ( selector == SurfaceID.size() && animation_cooldown != 0 ) {
@@ -259,7 +262,22 @@ namespace game_framework {
 		isAnimation = true;
 		isAnimationDone = false;
 	}
-
+	void CMovingBitmap::EnableAnimation() {
+		if (isPause) {
+			isPause = false;
+			selector = 0;
+			isAnimation = true;
+			isAnimationDone = false;
+		}
+	}
+	void CMovingBitmap::DisableAnimation() {
+		if (!isPause) {
+			isPause = true;
+			selector = 0;
+			isAnimation = false;
+			isAnimationDone = true;
+		}
+	}
 	bool CMovingBitmap::IsAnimationDone() {
 		return isAnimationDone;
 	}
@@ -294,4 +312,101 @@ namespace game_framework {
 		fp = pDC->SelectObject(&f);
 	}
 
+}
+
+
+Text::Text(string str, CPoint pos, int duration, int font_id, int align_id)
+{
+	this->str = str;
+	this->pos = pos;
+	this->font_id = font_id;
+	this->align_id = align_id;
+	this->duration = duration;
+}
+Text::~Text()
+{
+}
+bool Text::is_remain()
+{
+	return duration--;
+}
+
+
+TextDevice::TextDevice()
+{
+	set_font(fonts[FONT_24x18_B], 24, 18, FW_BOLD, false, false);
+	set_font(fonts[FONT_12x08], 12, 8, FW_BOLD, false, false);
+}
+TextDevice::~TextDevice()
+{
+	for (auto& i : fonts)
+		i.cfont.DeleteObject();
+}
+void TextDevice::add_text(string str, CPoint pos, int duration, int font_id, int align_id)
+{
+	texts.emplace_back(Text(str, pos, duration, font_id, align_id));
+}
+void TextDevice::print_all()
+{
+	if (texts.empty())
+		return;
+	ptr_CDC = game_framework::CDDraw::GetBackCDC();
+	ptr_CDC->SetBkMode(TRANSPARENT);
+	ptr_CDC->SetTextColor(RGB(255, 255, 255));
+	int x, y;
+	Text* ptext;
+	VS_font* pfont;
+	RECT rc;
+	for (int i = 0; i < (int)texts.size(); i++) {
+		// offset position
+		ptext = &texts.back();
+		pfont = &fonts[ptext->font_id];
+		if (ptext->align_id == ALIGN_LEFT)
+			x = ptext->pos.x + VSObject::player_dx;
+		else if (ptext->align_id == ALIGN_CENTER)
+			x = ptext->pos.x - ((pfont->width * (ptext->str.size())) >> 1) + VSObject::player_dx;
+		else if (ptext->align_id == ALIGN_RIGHT)
+			x = ptext->pos.x - (pfont->width * ptext->str.size()) + VSObject::player_dx;
+		else if (ptext->align_id == MULTILINE_LEFT)
+			x = ptext->pos.x + VSObject::player_dx;
+		y = ptext->pos.y - (pfont->height >> 1) + VSObject::player_dy;
+		rc = { x, y, x + 250, y + 50 };
+
+		// select font
+		ptr_CDC->SelectObject(&(pfont->cfont));
+		
+		if (texts.back().is_remain()) {
+			// textout
+			if (ptext->align_id != MULTILINE_LEFT)
+				ptr_CDC->ExtTextOutA(x, y, ETO_CLIPPED, NULL, ptext->str.c_str(), ptext->str.size(), NULL);
+			else
+				ptr_CDC->DrawText(ptext->str.c_str(), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
+			texts.emplace_front(texts.back());
+		}
+		texts.pop_back();
+	}
+	if (!(clock() % 60000))
+		texts.shrink_to_fit();
+	game_framework::CDDraw::ReleaseBackCDC();
+}
+void TextDevice::set_font(VS_font& font, int height, int width, int weight, bool italic, bool underline, string font_name)
+{
+	font.height = height;
+	font.width = width;
+	font.cfont.CreateFont(
+			height,						// nHeight
+			width,						// nWidth
+			0,							// nEscapement
+			0,							// nOrientation
+			weight,						// nWeight
+			italic,						// bItalic
+			underline,					// bUnderline
+			0,							// cStrikeOut
+			ANSI_CHARSET,				// nCharSet
+			OUT_DEFAULT_PRECIS,			// nOutPrecision
+			CLIP_DEFAULT_PRECIS,		// nClipPrecision
+			PROOF_QUALITY,		// nQuality
+			DEFAULT_PITCH | FF_MODERN,	// nPitchAndFamily
+			font_name.c_str()			// lpszFacename
+		);
 }

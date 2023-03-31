@@ -5,8 +5,7 @@
 #include "../config.h"
 #include "../../Library/gameutil.h"
 #include "VSUtil.h"
-
-
+#include <string>
 
 
 int square(int x) {
@@ -51,4 +50,71 @@ int poll(vector<double>& weights, bool handle_negtive)
     static mt19937 gen(rd());
     discrete_distribution<> dist(weights.begin(), weights.end());
     return dist(gen);
+}
+
+VSTimer::VSTimer()
+{
+	start_ticks = 0;
+	paused_ticks = 0;
+	running = false;
+}
+VSTimer::~VSTimer()
+{
+}
+void VSTimer::start()
+{
+    if (!running) {
+	    running = true;
+	    start_ticks = clock();
+    }
+}
+void VSTimer::reset()
+{
+	running = false;
+	start_ticks = 0;
+	paused_ticks = 0;
+}
+void VSTimer::pause()
+{
+    if (running) {
+		running = false;
+		paused_ticks = clock() - start_ticks;
+	}
+}
+void VSTimer::resume()
+{
+    if (!running) {
+		running = true;
+		start_ticks = clock() - paused_ticks;
+		paused_ticks = 0;
+	}
+}
+bool VSTimer::is_running()
+{
+	return running;
+}
+clock_t VSTimer::get_ticks()
+{
+	if (running)
+		return clock() - start_ticks;
+	else
+		return paused_ticks;
+}
+int VSTimer::get_second()
+{
+	return get_ticks() / 1000;
+}
+string VSTimer::get_minute_string()
+{
+    string s = to_string(get_ticks()/60000);
+    if (s.size() == 1)
+		s = "0" + s;
+    return s;
+}
+string VSTimer::get_second_string()
+{
+	string s = to_string(get_ticks()/1000%60);
+	if (s.size() == 1)
+		s = "0" + s;
+	return s;
 }

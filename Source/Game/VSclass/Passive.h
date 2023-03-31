@@ -10,10 +10,15 @@ public:
 	static int get_effect(int type);
 	int get_level();
 	bool is_max_level();
+	int get_max_level();
+	string get_level_up_msg(bool is_new=false);
+	int get_alt_effect();
 	int get_rarity();
+	string get_name();
 	void upgrade();
 	static void upgrade(int type);
 	static deque<Passive> all_passive;
+	static int passive_count();
 private:
 	int _level, _stacking;
 	int _type, _rarity,  _max_level;
