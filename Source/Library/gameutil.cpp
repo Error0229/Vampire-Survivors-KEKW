@@ -311,7 +311,7 @@ Text::~Text()
 }
 bool Text::is_remain()
 {
-	return --duration > 0;
+	return duration--;
 }
 
 
@@ -350,25 +350,22 @@ void TextDevice::print_all()
 			x = ptext->pos.x - ((pfont->width * (ptext->str.size())) >> 1) + VSObject::player_dx;
 		else if (ptext->align_id == ALIGN_RIGHT)
 			x = ptext->pos.x - (pfont->width * ptext->str.size()) + VSObject::player_dx;
-		else if(ptext->align_id == MULTILINE_LEFT)
+		else if (ptext->align_id == MULTILINE_LEFT)
 			x = ptext->pos.x + VSObject::player_dx;
 		y = ptext->pos.y - (pfont->height >> 1) + VSObject::player_dy;
-		
+		rc = { x, y, x + 250, y + 50 };
+
 		// select font
 		ptr_CDC->SelectObject(&(pfont->cfont));
 		
-		// print
-		if (ptext->align_id != MULTILINE_LEFT) {
-			ptr_CDC->TextOutA(x, y, ptext->str.c_str());
-		}
-		else {
-			rc = {x, y, x+250, y+50};
-			ptr_CDC->DrawText(ptext->str.c_str(), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
-		}
-		
-		// remove/keep 
-		if (texts.back().is_remain())
+		if (texts.back().is_remain()) {
+			// textout
+			if (ptext->align_id != MULTILINE_LEFT)
+				ptr_CDC->ExtTextOutA(x, y, ETO_CLIPPED, NULL, ptext->str.c_str(), ptext->str.size(), NULL);
+			else
+				ptr_CDC->DrawText(ptext->str.c_str(), &rc, DT_LEFT | DT_EXTERNALLEADING | DT_WORDBREAK);
 			texts.emplace_front(texts.back());
+		}
 		texts.pop_back();
 	}
 	if (!(clock() % 60000))

@@ -492,7 +492,6 @@ void CGameStateRun::OnShow()
 		break;
 	case(LEVEL_UP):
 		event_background.show();
-		
 		inv_detail_frame.show();
 		for (int i = 0; i < 4; i++) {
 			if (level_up_choice[i]>-1) {
@@ -579,7 +578,7 @@ void CGameStateRun::OnShow()
 		}
 		break;
 	}
-
+	text_device.add_text(to_string(clock() / 60000) + ":" + to_string(clock() / 1000 % 60), CPoint(0, -265) + player.get_pos(), 1, FONT_24x18_B, ALIGN_CENTER);
 	text_device.add_text("LV " + to_string(player.get_level()), CPoint(380, -287) + player.get_pos(), 1, FONT_24x18_B, ALIGN_RIGHT);
 	text_device.print_all();
 }
