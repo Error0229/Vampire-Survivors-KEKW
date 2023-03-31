@@ -1,63 +1,5 @@
 #pragma once
-#define VS_ASSERT(boolexp,str)											\
-		if (!(boolexp)) {													\
-			int id;															\
-			char s[300]="";													\
-			sprintf(s,"Game fatal error:\n\n%s\n\nFile: %s\n\nLine: %d"		\
-				"\n\n(Press Retry to debug the application, "				\
-				"if it is executed in debug mode.)"							\
-				"\n(Press Cancel otherwise.)",								\
-				 str , __FILE__,__LINE__);									\
-			id = AfxMessageBox(s, MB_RETRYCANCEL);							\
-																			\
-			if (id == IDCANCEL)												\
-				exit(1);													\
-			AfxDebugBreak();												\
-		}
-enum direction { UP, DOWN, LEFT, RIGHT };
-enum VSObject_types {
-	VSOBJECT = 499,
-	PLAYER,
-	PASSIVE,
-	ENEMY,
-	WEAPON,
-	PROJECTILE,
-	PICKUP,
-	WALL,
-	MAP
-};
-enum weapon_names {
-	WHIP = 0, MAGIC_MISSILE, KNIFE, AXE, CROSS, HOLYBOOK,
-	FIREBALL, GARLIC, HOLYWATER, DIAMOND, LIGHTNING,
-	PENTAGRAM, SILF, SILF2, GUNS, GUNS2, GATTI, SONG,
-	TRAPING, LANCET, LAUREL, VENTO, BONE, CHERRY,
-	CART2, FLOWER, LAROBBA, JUBILEE, TRIASSO1, CANDYBOX,
-	VICTORY, MISSPELL
-};
-enum evolution_weapon_names {
-	VAMPIRICA = 32, HOLY_MISSILE, THOUSAND, SCYTHE,
-	HEAVENSWORD, VESPERS, HELLFIRE, VORTEX, BORA,
-	ROCHER, LOOP, SIRE, STIGRANGATTI, MANNAGGIA,
-	TRAPANO2, MISSPELL2, CORRIDOR, SHROUD, TRIASSO2,
-	TRIASSO3, GUNS3, SILF3, VENTO2, SOLES, CANDYBOX2
-};
-enum pickup_types {
-	XP,
-	COIN,
-	COIN_BAG,
-	Rich_Coin_Bag,
-	ROSARY,
-	NDUJA_FRITTA_TANTO,
-	OROLOGION,
-	VACUUM,
-	FLOOR_CHICKEN,
-	GILDED_CLOVER,
-	LITTLE_COLVER,
-	CHEST,
-	GOLDEN_EGG
-};
-#define BLACK (RGB(0,0,0))
-#define WHITE (RGB(255,255,255))
+#include "VSUtil.h"
 class VSObject
 {
 public:
@@ -79,8 +21,8 @@ public:
 	void set_pos(double, double);
 	void set_target_vec(CPoint);
 	void set_target_vec(int, int);
-	void set_speed(int);
-	void set_speed(double);
+	virtual void set_speed(int);
+	virtual void set_speed(double);
 	void select_show_animation(int);
 	CPoint get_pos();
 	virtual void update_pos(CPoint);

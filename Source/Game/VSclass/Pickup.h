@@ -17,12 +17,18 @@ protected:
 class Xp : public Pickup {
 public:
 	Xp();
+	Xp(CPoint pos, int xp_vaalue);
 	~Xp();
 	void spawn(CPoint, int);
 	int get_xp_value();
 	void show_skin(double factor = 1.0);
+	static void spawnXP(CPoint, int);
+	static void show();
+	static void update_XP_pos(int player_magnet);
+	static deque<Xp> xp_all;
 private:
 	int _xp_value;
+	bool _is_moving = false;
 };
 
 class Chest : public Pickup {

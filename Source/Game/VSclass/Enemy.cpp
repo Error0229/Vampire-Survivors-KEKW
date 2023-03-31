@@ -2,6 +2,7 @@
 #include "../../Library/gameutil.h"
 #include "VSObject.h"
 #include "Enemy.h"
+#include "Pickup.h"
 #include "VSUtil.h"
 #include <fstream>
 #include <sstream>
@@ -83,6 +84,7 @@ bool Enemy::hurt(int damage)
 		_hp -= damage;
 		if (is_dead()) {
 			unshow_skin();
+			Xp::spawnXP(this->_position, static_cast<int>(_xp_value));
 			_death_animation.set_pos(get_pos());
 			_death_animation.set_animation(100, true);
 			_death_animation.set_is_mirror(_is_mirror);

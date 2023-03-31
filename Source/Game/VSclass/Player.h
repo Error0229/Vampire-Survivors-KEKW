@@ -23,6 +23,8 @@ public:
 	int passive_count();
 	
 	//things
+	void set_speed(double) override;
+	void set_speed(int) override;
 	bool have(int type);
 	void hurt(int damage);
 	void load_bleed();
@@ -36,9 +38,12 @@ private:
 	// vector<Passive> _passives;
 	vector<int> stats;
 	unordered_map <string, any> _base_stats;
-	int _might, _armor, _max_health, _cooldown, _area, // area is a modifier 
-		_proj_speed, _duration, _amount, _move_speed, _magnet,
-		_luck, _growth, _greed, _revival, _curse;
+	int _armor, _max_health, _revival, _magnet, _amount, _base_max_health, _base_magnet, _base_speed;
+	int _coef_might, _coef_max_health, _coef_magnet, 
+		_coef_cooldown, _coef_area, _coef_proj_speed, 
+		_coef_duration, _coef_move_speed, _coef_luck, 
+		_coef_growth, _coef_curse, _coef_greed; // coefficients
+
 	double _recovery;
 	int _hp;
 	int _exp, _max_exp;
