@@ -104,7 +104,7 @@ namespace game_framework {
 		vector<Xp> xp;
 		vector<Chest> chest;
 		int _gamerun_status, _next_status;
-		clock_t time;
+		VSTimer timer;
 
 		Ui event_background;
 		Ui level_up_button[4];

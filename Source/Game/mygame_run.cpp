@@ -33,6 +33,7 @@ CGameStateRun::~CGameStateRun()
 
 void CGameStateRun::OnBeginState()
 {
+	timer.start();
 }
 
 
@@ -337,6 +338,8 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		//--------------------------------------------------------
 		//playing status
 		//--------------------------------------------------------
+		timer.resume();
+
 		player.update_pos(mouse_pos);
 		QuadTree::VSPlain.set_range(-Player::player_dx - offset, -Player::player_dy - offset, (OPEN_AS_FULLSCREEN ? RESOLUTION_X : SIZE_X) + offset, (OPEN_AS_FULLSCREEN ? RESOLUTION_Y : SIZE_Y) + offset);
 		for (Enemy& i_enemy : enemy) {
@@ -400,6 +403,8 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		//--------------------------------------------------------
 		//level up status
 		//--------------------------------------------------------
+		timer.pause();
+		
 		if (level_up_choice[0] != -1)
 			break;
 
@@ -432,6 +437,9 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		//--------------------------------------------------------
 		if (chest_item[0] != -1)
 			break;
+
+		timer.pause();
+
 		chest_animation.enable_animation();
 		// poll chest item count
 		weights[1] = 0.05 * (double)player.get_luck() / 100;
@@ -578,7 +586,7 @@ void CGameStateRun::OnShow()
 		}
 		break;
 	}
-	text_device.add_text(to_string(clock() / 60000) + ":" + to_string(clock() / 1000 % 60), CPoint(0, -265) + player.get_pos(), 1, FONT_24x18_B, ALIGN_CENTER);
+	text_device.add_text(timer.get_minute_string() + ":" + timer.get_second_string(), CPoint(0, -265) + player.get_pos(), 1, FONT_24x18_B, ALIGN_CENTER);
 	text_device.add_text("LV " + to_string(player.get_level()), CPoint(380, -287) + player.get_pos(), 1, FONT_24x18_B, ALIGN_RIGHT);
 	text_device.print_all();
 }
