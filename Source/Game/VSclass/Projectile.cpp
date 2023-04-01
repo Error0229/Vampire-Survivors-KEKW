@@ -116,7 +116,6 @@ void Projectile::WHIP_transition() {
 	_position = player_pos + _offset;
 }
 void Projectile::MAGIC_MISSILE_transition() {
-	VS_ASSERT(true, "are we here?");
 	if (!_is_start && clock() - _create_time - _delay < 0) {
 		CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
 		int min_dis = 1000000000;
@@ -158,7 +157,7 @@ void Projectile::HOLY_MISSILE_transition() {
 		CPoint target = (player_pos);
 		QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(this), min_dis);
 		this->set_target_vec((target != player_pos ? target - player_pos : _target_vec));
-		// this->update_pos_by_vec();
+		this->update_pos_by_vec();
 	}
 	else {
 		this->update_pos_by_vec();
