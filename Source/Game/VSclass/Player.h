@@ -30,7 +30,8 @@ public:
 	int get_luck();
 	int get_pickup_range();
 	vector<stat_struct> get_stats_string();
-	
+
+
 	//things
 	void set_speed(double) override;
 	void set_speed(int) override;

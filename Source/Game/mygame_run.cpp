@@ -52,9 +52,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	player.set_default_direct(RIGHT);
 	player.set_animation(150, false);
 	player.load_bleed();
-	// player.acquire_weapon(Weapon::_base_weapon[KNIFE]);
-	player.acquire_weapon(WHIP);
-	// player.acquire_passive(Passive(POWER));
+	player.acquire_weapon(MAGIC_MISSILE);
 	player.acquire_passive(POWER);
 
 	map.load_map({ "resources/map/dummy1.bmp" });
@@ -135,7 +133,7 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	switch (nChar) {
 	case('A'):
 		// Weapon::evolution(WHIP);
-		for (int i = 0; i < (int)enemy.size();i++) {
+		for (int i = 0; i < (int)enemy.size() - 20;i++) {
 			if (enemy[i].hurt(1000000)) {
 				xp[i].spawn(enemy[i].get_pos(), enemy[i].get_xp_value());
 				chest[i].spawn(enemy[i].get_pos(), 1);
