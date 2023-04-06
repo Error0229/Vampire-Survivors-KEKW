@@ -133,20 +133,26 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	// A kill all enemies
-	// B pick up 10 xp
+	// A: kill all enemies
+	// B: pick up 10 xp
+	// C: spawn a chest above player
+	
+	static int chest_cnt = 0; //tmp
 	switch (nChar) {
 	case('A'):
-		// Weapon::evolution(WHIP);
 		for (int i = 0; i < (int)enemy.size();i++) {
 			if (enemy[i].hurt(1000000)) {
 				xp[i].spawn(enemy[i].get_pos(), enemy[i].get_xp_value());
-				chest[i].spawn(enemy[i].get_pos(), 1);
 			}
 		}
 		break;
 	case('B'):
-		player.pick_up_xp(10);
+		player.pick_up_xp(20);
+		break;
+	case('C'):
+		if (chest_cnt > 99)
+			break;
+		chest[chest_cnt++].spawn(player.get_pos() + CPoint(0, -50), true);
 		break;
 	}
 }
