@@ -131,6 +131,8 @@ namespace game_framework {
 		Ui stat_frame;
 		Icon stat_icon[16];
 		TextDevice text_device;
+
+		Ui hp_bar;
 	};
 
 	/////////////////////////////////////////////////////////////////////////////

@@ -62,7 +62,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	QuadTree::VSPlain.clear();
 
 	for (int i = 0; i < 100; i++) {
-		enemy.push_back(Enemy::get_template_enemy(XLFLOWER));
+		enemy.push_back(Enemy::get_template_enemy(BAT2));
 		xp.push_back(Xp());
 		chest.push_back(Chest());
 	}
@@ -126,6 +126,9 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	stat_frame.set_base_pos(-400 + (stat_frame.get_width() >> 1), -300 + 154 + (stat_frame.get_height() >> 1));
 	for (int i = 0; i < 16; i++)
 		stat_icon[i].load_icon();
+
+	hp_bar.load_skin({ "resources/ui/hp_bar_0.bmp", "resources/ui/hp_bar_1.bmp", "resources/ui/hp_bar_2.bmp", "resources/ui/hp_bar_3.bmp", "resources/ui/hp_bar_4.bmp", "resources/ui/hp_bar_5.bmp", "resources/ui/hp_bar_6.bmp", "resources/ui/hp_bar_7.bmp", "resources/ui/hp_bar_8.bmp", "resources/ui/hp_bar_9.bmp", "resources/ui/hp_bar_10.bmp", "resources/ui/hp_bar_11.bmp", "resources/ui/hp_bar_12.bmp", "resources/ui/hp_bar_13.bmp", "resources/ui/hp_bar_14.bmp", "resources/ui/hp_bar_15.bmp", "resources/ui/hp_bar_16.bmp", "resources/ui/hp_bar_17.bmp", "resources/ui/hp_bar_18.bmp", "resources/ui/hp_bar_19.bmp" });;
+	hp_bar.set_base_pos(0, 15);
 }
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -399,6 +402,9 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			}
 		}
 
+		if (!player.is_hurt())
+			player.regen();
+
 		if(player.get_exp_percent()==100)
 			_next_status = LEVEL_UP;
 
@@ -503,6 +509,9 @@ void CGameStateRun::OnShow()
 			inv_icon[i].show(Weapon::all_weapon[i].get_type());
 		for (int i = 0; i < Passive::passive_count(); i++)
 			inv_icon[i+6].show(Passive::all_passive[i].get_type());
+
+		hp_bar.set_selector((player.get_hp_percent() -1) / 5);
+		hp_bar.show();
 		break;
 	case(LEVEL_UP):
 		xp_bar.enable_animation();
