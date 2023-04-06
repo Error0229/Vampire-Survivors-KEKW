@@ -285,6 +285,11 @@ namespace game_framework {
 	int CMovingBitmap::GetMovingBitmapFrame() {
 		return ( int ) SurfaceID.size();
 	}
+	void CMovingBitmap::ResetBitmap() {
+		this->isBitmapLoaded = false;
+		this->SurfaceID.clear();
+		this->_bitmap_size.clear();
+	}
 
 
 	/////////////////////////////////////////////////////////////////////////////

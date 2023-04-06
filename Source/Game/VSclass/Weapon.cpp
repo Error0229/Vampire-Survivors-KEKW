@@ -158,9 +158,11 @@ void Weapon::attack() {
 				CPoint target = player_pos;
 				int min_dis = 1000000000;
 				QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(&proj), min_dis);
+				double rad = atan2(target.y - player_pos.y, target.x - player_pos.x);
+				proj.set_rotation(rad);
 				proj.set_target_vec((target != player_pos ? target - player_pos : (mouse_pos.x > player_pos.x ? (1000, 1000) : (-1000, 1000))));
 				Projectile::create_projectile(proj, player_pos, (target), w._type, i * w._proj_interval, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
-					w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, (target.x > player_pos.x ? RIGHT:LEFT) == proj.get_direct());
+					w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, false);
 			}
 			break;
 		case KNIFE:
@@ -168,11 +170,13 @@ void Weapon::attack() {
 				Projectile proj = w._base_proj;
 				proj.set_create_time(clock());
 				proj.set_target_vec(mouse_pos - player_pos);
+				double rotate = atan2(mouse_pos.y - player_pos.y, mouse_pos.x - player_pos.x);
+				proj.set_rotation(rotate);
 				int x_factor = (mouse_pos.x > player_pos.x ? 1 : -1);
 				int y_factor = (mouse_pos.y > player_pos.y ? 1 : -1);
 				Projectile::create_projectile(proj, { player_pos.x + x_factor * (2 * i % 4 + i % 2)   , player_pos.y + y_factor * (2 * i % 4 + i % 2)  },
 							mouse_pos, w._type, i * w._proj_interval, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
-							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, (mouse_pos.x > player_pos.x ? RIGHT : LEFT) != proj.get_direct());
+							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, false);
 
 			}
 			break;
@@ -214,9 +218,11 @@ void Weapon::attack() {
 			int min_dis = 1000000000;
 			QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(&proj), min_dis);
 			proj.set_target_vec((target != player_pos ? target - player_pos : (mouse_pos.x > player_pos.x ? (100,10) : (-100,10))));
+			double rad = atan2(target.y - player_pos.y, target.x - player_pos.x);
+			proj.set_rotation(rad);
 			for (int i = 0; i < w._amount; i++) {
 				Projectile::create_projectile(proj, player_pos, (target), w._type, i * w._proj_interval, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
-					w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, (target.x > player_pos.x ? RIGHT : LEFT) == proj.get_direct());
+					w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, false);
 			}
 			break;
 		}
