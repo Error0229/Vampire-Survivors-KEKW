@@ -11,8 +11,9 @@ Projectile::Projectile() {
 	_is_over = false;
 };
 Projectile::~Projectile() {};
-Projectile::Projectile(vector<char*> filename, COLORREF color) {
-	this->_skin.LoadBitmap(filename, color);
+Projectile::Projectile(vector<string> filename, COLORREF color) : Projectile() {
+	this->_skin.LoadBitmapByString(filename, color);
+	this->_file_name = filename;
 }
 
 bool Projectile::operator < (const Projectile& rhs) const {
@@ -159,6 +160,10 @@ void Projectile::HOLY_MISSILE_transition() {
 }
 void Projectile::set_rotation(double angle) {
 	int regular_angle = 15 * static_cast<int> (angle / 15);
-	_skin = _rotation_skin[regular_angle];
+	vector <string> rotated_filename;
+	for (auto s : _file_name) {
+		rotated_filename.emplace_back(s.substr(0, s.find_last_of('.')) + "_r" + std::to_string(regular_angle) + ".bmp");
+	}
+	this->_skin.LoadBitmapByString(rotated_filename);
 }
 deque<Projectile> Projectile::all_proj = {};

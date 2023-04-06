@@ -68,6 +68,7 @@
 #pragma once
 #include "../Core/StdAfx.h" // prevent sometimes intelliscense bugged
 #include <utility>
+#include <string>
 #include <unordered_map>
 #include <any>
 #include <deque>

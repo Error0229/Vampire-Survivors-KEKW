@@ -4,7 +4,7 @@ class Projectile : public VSObject
 {
 public:
 	Projectile();
-	Projectile(vector<char*> filename, COLORREF color = RGB(1,11,111));
+	Projectile(vector<string> filename, COLORREF color = RGB(1,11,111));
 	~Projectile();
 	void set_delay(int);
 	void set_create_time(clock_t);
@@ -31,6 +31,7 @@ protected:
 		_hitbox_delay, _pool_limit, _chance,
 		_crit_multi, _block_by_wall ; 
 	int _delay;
+	std::vector<std::string> _file_name;
 	std::map<int, game_framework::CMovingBitmap> _rotation_skin;
 	// int _speed; hide it then VSObject could see it
 	double _area, _damage, _knock_back, _angle;

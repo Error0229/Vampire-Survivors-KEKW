@@ -358,7 +358,7 @@ void Weapon::load_weapon_stats() {
 	getline(file, header); // no use
 
 	while ( getline(file, line) ) {
-		vector <char*> proj_vec;
+		vector <string> proj_vec;
 		stringstream ss(line);
 		vector<int> stats;
 		getline(ss, skin_file, ',');
@@ -366,7 +366,7 @@ void Weapon::load_weapon_stats() {
 		while ( token != base_proj ) {
 			token = base_proj.substr(0, base_proj.find_first_of(" "));
 			base_proj = base_proj.substr(base_proj.find_first_of(" ") + 1);
-			proj_vec.emplace_back(_strdup(token.c_str()));
+			proj_vec.emplace_back(token);
 		}
 		getline(ss, name, ',');
 		getline(ss, token, ',');
