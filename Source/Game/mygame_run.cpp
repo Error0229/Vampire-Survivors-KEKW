@@ -133,7 +133,7 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	switch (nChar) {
 	case('A'):
 		// Weapon::evolution(WHIP);
-		for (int i = 0; i < (int)enemy.size();i++) {
+		for (int i = 0; i < (int)enemy.size() - 20;i++) {
 			if (enemy[i].hurt(1000000)) {
 				xp[i].spawn(enemy[i].get_pos(), enemy[i].get_xp_value());
 				chest[i].spawn(enemy[i].get_pos(), 1);
