@@ -13,7 +13,7 @@ Projectile::Projectile() {
 Projectile::~Projectile() {};
 Projectile::Projectile(vector<char*> filename, COLORREF color) {
 	this->_skin.LoadBitmap(filename, color);
-};
+}
 
 bool Projectile::operator < (const Projectile& rhs) const {
 	return this->_type < rhs._type;
@@ -107,7 +107,7 @@ void Projectile::show() {
 		}
 		all_proj.pop_front();
 	}
-	if (clock() % 60000) {
+	if (clock() % 60000 == 0) {
 		all_proj.shrink_to_fit(); // release memory
 	}
 }
@@ -123,11 +123,8 @@ void Projectile::MAGIC_MISSILE_transition() {
 		CPoint target = player_pos;
 		QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(this), min_dis);
 		this->set_target_vec((target != player_pos ? target - player_pos : CPoint(420, 69)));
-		this->update_pos_by_vec();
 	}
-	else {
-		this->update_pos_by_vec();
-	}
+	this->update_pos_by_vec();
 }
 void Projectile::KNIFE_transition() {
 	if (!_is_start && clock() - _create_time - _delay < 0) {
@@ -157,10 +154,11 @@ void Projectile::HOLY_MISSILE_transition() {
 		CPoint target = (player_pos);
 		QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(this), min_dis);
 		this->set_target_vec((target != player_pos ? target - player_pos : _target_vec));
-		this->update_pos_by_vec();
 	}
-	else {
-		this->update_pos_by_vec();
-	}
+	this->update_pos_by_vec();
+}
+void Projectile::set_rotation(double angle) {
+	int regular_angle = 15 * static_cast<int> (angle / 15);
+	_skin = _rotation_skin[regular_angle];
 }
 deque<Projectile> Projectile::all_proj = {};
