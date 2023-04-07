@@ -137,8 +137,8 @@ void VSObject::update_pos_by_vec(CPoint vec) {
 		return;
 	if (vec != CPoint{ 0,0 })
 		_target_vec = vec;
-	this->_direct = (this->_target.x > this->_position.x) ? RIGHT : LEFT;
-	this->_is_mirror = (_direct != _default_direct);
+	//this->_direct = (this->_target.x > this->_position.x) ? RIGHT : LEFT;
+	//this->_is_mirror = (_direct != _default_direct);
 	double dis = static_cast<double>(square(_target_vec.x) + square(_target_vec.y));
 	double vx = (_target_vec.x > 0 ? 1.0 : -1.0) *_speed * square(_target_vec.x) / dis;
 	double vy = (_target_vec.y > 0 ? 1.0 : -1.0) *_speed * square(_target_vec.y) / dis;

@@ -11,9 +11,10 @@ Projectile::Projectile() {
 	_is_over = false;
 };
 Projectile::~Projectile() {};
-Projectile::Projectile(vector<char*> filename, COLORREF color) {
-	this->_skin.LoadBitmap(filename, color);
-};
+Projectile::Projectile(vector<string> filename, COLORREF color) : Projectile() {
+	this->_skin.LoadBitmapByString(filename, color);
+	this->_file_name = filename;
+}
 
 bool Projectile::operator < (const Projectile& rhs) const {
 	return this->_type < rhs._type;
@@ -92,7 +93,7 @@ void Projectile::update_position() {
 void Projectile::show_skin(double factor) {
 	VSObject::show_skin(factor);
 	if(this->_life_cycle == -1) return;
-	if(this->_skin.IsAnimationDone() || clock() - this->_create_time - this->_delay >= this->_life_cycle)
+	if(this->_skin.IsAnimationDone() || clock() - this->_create_time - this->_delay >= this->_life_cycle || VSObject::distance(this->_position, CPoint{ (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy }) > 700)
 		this->_is_over = true;
 }
 void Projectile::show() {
@@ -107,7 +108,7 @@ void Projectile::show() {
 		}
 		all_proj.pop_front();
 	}
-	if (clock() % 60000) {
+	if (clock() % 60000 == 0) {
 		all_proj.shrink_to_fit(); // release memory
 	}
 }
@@ -116,7 +117,6 @@ void Projectile::WHIP_transition() {
 	_position = player_pos + _offset;
 }
 void Projectile::MAGIC_MISSILE_transition() {
-	VS_ASSERT(true, "are we here?");
 	if (!_is_start && clock() - _create_time - _delay < 0) {
 		CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
 		int min_dis = 1000000000;
@@ -124,7 +124,8 @@ void Projectile::MAGIC_MISSILE_transition() {
 		CPoint target = player_pos;
 		QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(this), min_dis);
 		this->set_target_vec((target != player_pos ? target - player_pos : CPoint(420, 69)));
-		this->update_pos_by_vec();
+		double rad = atan2(target.y - player_pos.y, target.x - player_pos.x);
+		this->set_rotation(rad);
 	}
 	else {
 		this->update_pos_by_vec();
@@ -141,6 +142,8 @@ void Projectile::KNIFE_transition() {
 		p.y = p.y - VSObject::player_dy;
 		this->set_target_vec(p - player_pos);
 		_position = player_pos + _offset;
+		double rad = atan2(p.y - player_pos.y, p.x - player_pos.x);
+		this->set_rotation(rad);
 	}
 	else {
 		this->update_pos_by_vec();
@@ -158,10 +161,25 @@ void Projectile::HOLY_MISSILE_transition() {
 		CPoint target = (player_pos);
 		QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(this), min_dis);
 		this->set_target_vec((target != player_pos ? target - player_pos : _target_vec));
-		// this->update_pos_by_vec();
+		double rad = atan2(target.y - player_pos.y, target.x - player_pos.x);
+		this->set_rotation(rad);
 	}
 	else {
 		this->update_pos_by_vec();
 	}
+}
+void Projectile::set_rotation(double radien) {
+	// angle += 2*acos(-1)
+	int angle = static_cast<int>(radien * 180 / acos(-1));
+	angle = (angle + 360) % 360;
+	int regular_angle = 15 * static_cast<int> (angle / 15.0);
+	if (regular_angle == 0) return;
+
+	vector <string> rotated_filename;
+	for (auto s : _file_name) {
+		rotated_filename.emplace_back(s.substr(0, s.find_last_of('.')) + "_r" + std::to_string(regular_angle) + ".bmp");
+	}
+	this->_skin.ResetBitmap();
+	this->_skin.LoadBitmapByString(rotated_filename, RGB(1,11,111));
 }
 deque<Projectile> Projectile::all_proj = {};
