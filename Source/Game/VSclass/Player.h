@@ -30,8 +30,9 @@ public:
 	int get_luck();
 	int get_pickup_range();
 	vector<stat_struct> get_stats_string();
-
-
+	int get_hp_percent();
+	bool is_hurt();
+	
 	//things
 	void set_speed(double) override;
 	void set_speed(int) override;
@@ -42,6 +43,7 @@ public:
 	bool apply_level_up();
 	bool all_max();
 	bool full_inv();
+	void regen(double amount = 0);
 private:
 	VSObject _bleed_animation;
 	// vector<Weapon> _weapons;

@@ -35,6 +35,8 @@ Player::Player()
 	_base_magnet = 30;
 	_max_exp = 5;
 	_level = 1;
+	_max_health = 150;
+	_hp = _max_health;
 
 	_base_stats = {
 		{"speed", _speed},
@@ -87,7 +89,7 @@ void Player::show_skin(double factor) {
 void Player::hurt(int damage) {
 	_hp -= damage;
 	_is_hurt = true;
-	if (_hp <= 0) {
+	if (_hp < 0) {
 		_hp = 0;
 	}
 }
@@ -224,6 +226,14 @@ vector<stat_struct> Player::get_stats_string()
 	//Banish
 	return stats;
 }
+int Player::get_hp_percent()
+{
+	return (_hp < _max_health) ? (_hp * 100 / _max_health) : (100);
+}
+bool Player::is_hurt()
+{
+	return _is_hurt;
+}
 bool Player::have(int type) {
 	for (auto& i : Weapon::all_weapon) {
 		if (i.get_type() == type) {
@@ -293,4 +303,28 @@ string Player::stat_to_string(int val, bool percent)
 	else
 		🍆 = to_string(val);
 	return 🍆;
+}
+void Player::regen(double amount)
+{
+	static double 💕 = 0;
+	static time_t last_t = clock();
+	if (_hp >= _max_health)
+		return;
+	if (amount == 0) {
+		if (clock() - last_t >= 1000) {
+			💕 += _recovery;
+			last_t = clock();
+		}
+	}
+	else {
+		💕 += amount;
+	}
+	if (💕 >= 1) {
+		_hp += (int)💕;
+		💕 -= (int)💕;
+		if (_hp >= _max_health) {
+			_hp = _max_health;
+			💕 = 0;
+		}
+	}
 }
