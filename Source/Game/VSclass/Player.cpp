@@ -30,7 +30,7 @@ Player::Player()
 	_recovery = 0;
 	_reroll = 0;
 	_exp = 0;
-	_base_speed = 200;
+	_base_speed = 300;
 	_base_max_health = 130;
 	_base_magnet = 30;
 	_max_exp = 5;
