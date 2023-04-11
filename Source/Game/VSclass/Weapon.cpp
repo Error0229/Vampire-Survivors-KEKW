@@ -388,24 +388,29 @@ void Weapon::load_weapon_stats() {
 			p.set_animation(300, true, 0);
 			p.set_life_cycle(300);
 			p.enable_animation();
+			Projectile::pool.add_obj(type, 10);
 			break;
 		case MAGIC_MISSILE:
 			p.set_default_direct(RIGHT);
 			p.set_life_cycle(-1);
+			Projectile::pool.add_obj(type, w._pool_limit);
 			break;
 		case KNIFE:
 			p.set_default_direct(RIGHT);
 			p.set_life_cycle(-1);
+			Projectile::pool.add_obj(type, w._pool_limit);
 			break;
 		case VAMPIRICA:
 			p.set_default_direct(RIGHT);
 			p.set_animation(300, true, 0);
 			p.set_life_cycle(300);
 			p.enable_animation();
+			Projectile::pool.add_obj(type, 10);
 			break; 
 		case HOLY_MISSILE:
 			p.set_default_direct(RIGHT);
 			p.set_life_cycle(-1);
+			Projectile::pool.add_obj(type, w._pool_limit);
 			break;
 		}
 		w._base_proj = p;

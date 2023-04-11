@@ -1,25 +1,92 @@
-#pragma once
+﻿#pragma once
+//#pragma once
+//template <class T>
+//class ObjPool
+//{
+//public:
+//    ObjPool() {}
+//    ObjPool(int type) : pool_type(type) {}
+//    ~ObjPool() {}
+//
+//    void add_obj(int id, int count)
+//    {
+//        auto& obj_list = pool[id];
+//        obj_list.reserve(obj_list.size() + count);
+//        for (int i = 0; i < count; i++)
+//        {
+//            obj_list.emplace_back(id);
+//        }
+//    }
+//
+//    T& get_obj(int id)
+//    {
+//        auto& obj_list = pool[id];
+//        if (obj_list.empty())
+//        {
+//            add_obj(id, 1);
+//        }
+//        T& obj = obj_list.back();
+//        obj_list.pop_back();
+//        return obj;
+//    }
+//
+//    std::vector<std::reference_wrapper<T>> get_obj(int id, int count)
+//    {
+//        auto& obj_list = pool[id];
+//        std::vector<std::reference_wrapper<T>> result;
+//        result.reserve(count);
+//        for (int i = 0; i < count; i++)
+//        {
+//            if (obj_list.empty())
+//            {
+//                add_obj(id, count - i);
+//            }
+//            result.emplace_back(obj_list.back());
+//            obj_list.pop_back();
+//        }
+//        return result;
+//    }
+//
+//    void free_obj(T& obj)
+//    {
+//        int id = obj.get_id();
+//        auto& obj_list = pool[id];
+//        obj_list.emplace_back(std::move(obj));
+//    }
+//
+//    int pool_type = 0;
+//
+//private:
+//    std::map<int, std::vector<T>> pool;
+//};
+
 template <class T>
 class ObjPool
 {
 public:
 	ObjPool() {}
-	ObjPool(int) {
+	ObjPool(int type) {
 		pool_type = type;
 	}
 	~ObjPool(){}
-	void add_obj(int id, int count) {
+	void add_obj(int id, int count) { // this should be only execute once 
+		int start_index = pool[id].size();
 		for (int i = 0; i < count; i++) {
 			pool[id].push_back(T(id));
+			🔞[id].push_back(i + start_index);
 		}
 	}
 
 	T& get_obj(int id) {
 		if (pool[id].size() == 0) {
-			add_obj(id, 1);
+			VS_ASSERT(false, "The pool is empty, please add more object to the pool");
 		}
-		T& obj = pool[id].back();
-		pool[id].pop_back();
+		if (🔞[id].size() < 0) {
+			VS_ASSERT(false, "exceed poo limit");
+		}
+		T& obj = pool[id][🔞[id].back()];
+		obj.set_pool_id(id);
+		🔞[id].pop_back();
 		return obj;
 	}
 	vector<reference_wrapper<T>> get_obj(int id, int count) {
@@ -29,10 +96,12 @@ public:
 		}
 		return obj_list;
 	}
-	void free_obj(T&) {
-		pool[T.get_id()].push_back(obj);
+	void free_obj(T& obj) {
+		int id = obj.get_pool_id();
+		🔞[obj.get_id()].push_back(id);
 	}
 	int pool_type;
 private:
 	map<int, vector<T>> pool;
+	map<int, vector<int>> 🔞;
 };

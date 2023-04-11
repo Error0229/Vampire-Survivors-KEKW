@@ -22,6 +22,8 @@ public:
 	void set_pos(double, double);
 	void set_target_vec(CPoint);
 	void set_target_vec(int, int);
+	void set_pool_id(int);
+	int get_pool_id();
 	virtual void set_speed(int);
 	virtual void set_speed(double);
 	void select_show_animation(int);
@@ -56,6 +58,7 @@ protected:
 	bool _is_mirror = 0;
 	int _direct, _default_direct=LEFT;
 	int _speed=0;
+	int _pool_id;
 	double _fx, _fy;
 };
 

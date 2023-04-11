@@ -110,6 +110,12 @@ int VSObject::distance(CPoint& p1, CPoint& p2)
 {
 	return fast_sqrt(square(p1.x - p2.x) + square(p1.y - p2.y));
 }
+void VSObject::set_pool_id(int id) {
+	_pool_id = id;
+}
+int VSObject::get_pool_id() {
+	return _pool_id;
+}
 void VSObject::update_pos()
 {
 	// have a speed and moving in a 2d plane

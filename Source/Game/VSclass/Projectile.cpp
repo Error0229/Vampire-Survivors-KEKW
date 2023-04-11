@@ -46,6 +46,8 @@ void Projectile::collide_with_enemy(Enemy& 🥵) {
 	🥵.hurt(static_cast<int>(this->_damage));
 }
 void Projectile::create_projectile(Projectile proj, CPoint position, CPoint target_pos, int type, int delay, double damage, int speed, int duration, int pierce, int proj_interval, int hitbox_delay, double knock_back, int pool_limit, int chance, int criti_multi, int block_by_wall, bool is_mirror) {
+	Projectile::create_projectile(position, target_pos, type, delay, damage, speed, duration, pierce, proj_interval, hitbox_delay, knock_back, pool_limit, chance, criti_multi, block_by_wall, is_mirror);
+	return;
 	proj._type = type;
 	proj._position = position;
 	proj._target = target_pos;
@@ -68,7 +70,8 @@ void Projectile::create_projectile(Projectile proj, CPoint position, CPoint targ
 	Projectile::all_proj.push_back(proj);
 }
 void Projectile::create_projectile(CPoint position, CPoint target_pos, int type, int delay, double damage, int speed, int duration, int pierce, int proj_interval, int hitbox_delay, double knock_back, int pool_limit, int chance, int criti_multi, int block_by_wall, bool is_mirror) {
-	Projectile& proj = pool.get_obj(type);
+	auto& proj = pool.get_obj(type);
+	VS_ASSERT((proj._file_name.size() > 0), "Projectile file name is empty");
 	proj._type = type;
 	proj._position = position;
 	proj._target = target_pos;
@@ -88,7 +91,8 @@ void Projectile::create_projectile(CPoint position, CPoint target_pos, int type,
 	proj._is_start = (delay > 0 ? 0 : 1);
 	CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
 	proj._offset = proj._position - player_pos;
-	Projectile::all_proj_ref.push_back(proj);
+	all_proj.reserve(all_proj.size()+32768);
+	all_proj.push_back(ref(proj));
 }
 void Projectile::create_projectile(Projectile p) {
 	Projectile::all_proj.push_back(p);
@@ -131,7 +135,7 @@ void Projectile::show_skin(double factor) {
 }
 void Projectile::show() {
 	int deq_size = static_cast<int> (all_proj.size());
-	for (int i = 0; i < deq_size; i++) {
+	/*for (int i = 0; i < deq_size; i++) {
 		if (clock() - all_proj.front()._create_time >= all_proj.front()._delay) {
 			all_proj.front().show_skin();
 			all_proj.front()._is_start = true;
@@ -140,7 +144,21 @@ void Projectile::show() {
 			all_proj.emplace_back(all_proj.front());
 		}
 		all_proj.pop_front();
+	}*/
+	for (Projectile& rf : all_proj) {
+		// Projectile& rf = r;
+		if (clock() - rf._create_time >= rf._delay) {
+			rf.show_skin();
+			rf._is_start = true;
+		}
+		if (rf._is_over) {
+			pool.free_obj(rf);
+		}
 	}
+	auto iter = remove_if(all_proj.begin(), all_proj.end(), [](reference_wrapper<Projectile>& a) {
+		return a.get()._is_over;
+	});
+	all_proj.erase(iter, all_proj.end());
 	if (clock() % 60000 == 0) {
 		all_proj.shrink_to_fit(); // release memory
 	}
@@ -218,6 +236,7 @@ void Projectile::set_rotation(double radien) {
 int Projectile::get_id() {
 	return _type;
 }
-deque<Projectile> Projectile::all_proj = {};
-ObjPool<Projectile> Projectile::pool;
-deque<reference_wrapper<Projectile>> Projectile::all_proj_ref = {};
+// deque<Projectile> Projectile::all_proj = {};
+ObjPool<Projectile> Projectile::pool(PROJECTILE);
+vector<reference_wrapper<Projectile>> Projectile::all_proj;
+map <int, Projectile> Projectile::template_proj = {};

@@ -29,9 +29,10 @@ public:
 	static void create_projectile(Projectile p);
 	static void update_position();
 	static void show();
-	static deque<Projectile> all_proj;
-	static deque<reference_wrapper<Projectile>> all_proj_ref;
+	// static deque<Projectile> all_proj;
+	static vector<reference_wrapper<Projectile>> all_proj;
 	static ObjPool<Projectile> pool;
+	static std::map<int, Projectile> template_proj;
 protected:
 	int _type, _level, _max_level, _rarity,
 		_amount, _duration, _pierce, _proj_interval,
@@ -40,7 +41,6 @@ protected:
 	int _delay;
 	std::vector<std::string> _file_name;
 	std::map<int, game_framework::CMovingBitmap> _rotation_skin;
-	std::map<int, Projectile> template_proj;
 	// int _speed; hide it then VSObject could see it
 	double _area, _damage, _knock_back, _angle;
 	bool _is_over = 0, _is_start = 0;
