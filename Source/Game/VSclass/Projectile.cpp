@@ -108,7 +108,7 @@ void Projectile::show_skin(double factor) {
 		this->_is_over = true;
 }
 void Projectile::show() {
-	int deq_size = static_cast<int> (all_proj.size());
+	// int deq_size = static_cast<int> (all_proj.size());
 	/*for (int i = 0; i < deq_size; i++) {
 		if (clock() - all_proj.front()._create_time >= all_proj.front()._delay) {
 			all_proj.front().show_skin();

@@ -69,7 +69,7 @@ public:
 		pool_type = type;
 	}
 	~ObjPool(){}
-	void add_obj(int id, int count) { // this should be only execute once 
+	void add_obj(int id, int count) { // this should be only execute once or not?
 		int start_index = pool[id].size();
 		for (int i = 0; i < count; i++) {
 			pool[id].push_back(T(id));
@@ -78,14 +78,12 @@ public:
 	}
 
 	T& get_obj(int id) {
-		if (pool[id].size() == 0) {
-			VS_ASSERT(false, "The pool is empty, please add more object to the pool");
-		}
-		if (🔞[id].size() <= 0) { // keep first for reseting
-			VS_ASSERT(false, "exceeded pool limit");
-		}
+		VS_ASSERT(pool[id].size() > 0, "The pool is empty, please add more object to the pool");
+		// keep first for reseting
+		VS_ASSERT(🔞[id].size() > 0, "exceeded pool limit");
+		
 		T& obj = pool[id][🔞[id].back()];
-		obj.set_pool_id(id);
+		obj.set_pool_id(🔞[id].back());
 		🔞[id].pop_back();
 		return obj;
 	}
