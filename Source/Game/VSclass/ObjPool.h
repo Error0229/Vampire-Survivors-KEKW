@@ -73,6 +73,7 @@ public:
 		int start_index = pool[id].size();
 		for (int i = 0; i < count; i++) {
 			pool[id].push_back(T(id));
+			pool[id].back().set_pool_id(i + start_index);
 			🔞[id].push_back(i + start_index);
 		}
 	}
@@ -83,7 +84,7 @@ public:
 		VS_ASSERT(🔞[id].size() > 0, "exceeded pool limit");
 		
 		T& obj = pool[id][🔞[id].back()];
-		obj.set_pool_id(🔞[id].back());
+		// obj.set_pool_id(🔞[id].back());
 		🔞[id].pop_back();
 		return obj;
 	}
@@ -98,6 +99,7 @@ public:
 		int id = obj.get_pool_id(), obj_id = obj.get_id();
 		🔞[obj_id].push_back(id);
 		pool[obj_id][id] = pool[obj_id][0];
+		pool[obj_id][id].set_pool_id(id);
 	}
 	int pool_type;
 private:

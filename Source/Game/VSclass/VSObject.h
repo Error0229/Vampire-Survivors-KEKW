@@ -46,7 +46,6 @@ public:
 	static int distance(CPoint&, CPoint&);
 	friend class QuadTree; 
 	int obj_type = VSOBJECT;
-	int id;
 protected:
 	game_framework::CMovingBitmap _skin;
 	vector <game_framework::CMovingBitmap> _animations;

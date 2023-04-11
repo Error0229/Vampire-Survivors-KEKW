@@ -125,14 +125,16 @@ void Projectile::show() {
 			rf.show_skin();
 			rf._is_start = true;
 		}
-		if (rf._is_over) {
-			pool.free_obj(rf);
+	}
+	for (auto it = all_proj.begin(); it != all_proj.end();) {
+		if (it->get()._is_over) {
+			pool.free_obj(it->get());
+			it = all_proj.erase(it);
+		}
+		else {
+			++it;
 		}
 	}
-	auto iter = remove_if(all_proj.begin(), all_proj.end(), [](reference_wrapper<Projectile>& a) {
-		return a.get()._is_over;
-	});
-	all_proj.erase(iter, all_proj.end());
 	if (clock() % 60000 == 0) {
 		all_proj.shrink_to_fit(); // release memory
 	}
