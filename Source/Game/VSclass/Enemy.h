@@ -42,6 +42,7 @@ public:
 	void update_pos(CPoint) override;
 	bool is_dead();
 	bool is_enable();
+	int get_id();
 	int get_xp_value();
 	int get_power();
 	bool hurt(int damage); //this will return true if the enemy die from this damage, otherwise false

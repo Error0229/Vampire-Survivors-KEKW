@@ -45,6 +45,9 @@ int Enemy::get_power()
 {
 	return _power;
 }
+int Enemy::get_id() {
+	return _id;
+}
 
 void Enemy::show_skin(double factor)
 {

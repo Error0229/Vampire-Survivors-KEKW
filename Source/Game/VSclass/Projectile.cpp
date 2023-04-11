@@ -215,6 +215,9 @@ void Projectile::set_rotation(double radien) {
 	this->_skin.ResetBitmap();
 	this->_skin.LoadBitmapByString(rotated_filename, RGB(1,11,111));
 }
+int Projectile::get_id() {
+	return _type;
+}
 deque<Projectile> Projectile::all_proj = {};
 ObjPool<Projectile> Projectile::pool;
 deque<reference_wrapper<Projectile>> Projectile::all_proj_ref = {};
