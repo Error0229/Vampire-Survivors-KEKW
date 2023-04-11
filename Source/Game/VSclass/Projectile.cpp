@@ -16,7 +16,6 @@ Projectile::Projectile(int type, vector<string> filename, COLORREF color) : Proj
 	this->_type = type;
 	this->_skin.LoadBitmapByString(filename, color);
 	this->_file_name = filename;
-	template_proj[type] = *this;
 }
 Projectile::Projectile(int type) {
 	*this = template_proj[type];
@@ -34,7 +33,7 @@ void Projectile::init_projectile(int type, int count) {
 }
 void Projectile::collide_with_enemy(Enemy& 🥵) {
 	clock_t now = clock();
-	if (!is_overlapped((*this), 🥵) || now - 🥵._last_time_got_hit_by_projectile[this->_type] < this->_hitbox_delay)
+	if (_is_over || !is_overlapped((*this), 🥵) || now - 🥵._last_time_got_hit_by_projectile[this->_type] < this->_hitbox_delay)
 		return;
 	🥵._is_stun = true;
 	🥵._stun_speed = -1.0 * 🥵._speed * 🥵._kb * (this->_duration <= 0 ? 1 : this->_duration) * this->_knock_back;
@@ -45,9 +44,7 @@ void Projectile::collide_with_enemy(Enemy& 🥵) {
 		this->_is_over = true;
 	🥵.hurt(static_cast<int>(this->_damage));
 }
-void Projectile::create_projectile(Projectile proj, CPoint position, CPoint target_pos, int type, int delay, double damage, int speed, int duration, int pierce, int proj_interval, int hitbox_delay, double knock_back, int pool_limit, int chance, int criti_multi, int block_by_wall, bool is_mirror) {
-	Projectile::create_projectile(position, target_pos, type, delay, damage, speed, duration, pierce, proj_interval, hitbox_delay, knock_back, pool_limit, chance, criti_multi, block_by_wall, is_mirror);
-	return;
+void Projectile::create_projectile(Projectile& proj, CPoint position, CPoint target_pos, int type, int delay, double damage, int speed, int duration, int pierce, int proj_interval, int hitbox_delay, double knock_back, int pool_limit, int chance, int criti_multi, int block_by_wall, bool is_mirror) {
 	proj._type = type;
 	proj._position = position;
 	proj._target = target_pos;
@@ -65,35 +62,12 @@ void Projectile::create_projectile(Projectile proj, CPoint position, CPoint targ
 	proj._block_by_wall = block_by_wall;
 	proj._is_mirror = is_mirror;
 	proj._is_start = (delay > 0 ? 0 : 1);
+	proj._is_over = false;
 	CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
 	proj._offset = proj._position - player_pos;
 	Projectile::all_proj.push_back(proj);
 }
-void Projectile::create_projectile(CPoint position, CPoint target_pos, int type, int delay, double damage, int speed, int duration, int pierce, int proj_interval, int hitbox_delay, double knock_back, int pool_limit, int chance, int criti_multi, int block_by_wall, bool is_mirror) {
-	auto& proj = pool.get_obj(type);
-	VS_ASSERT((proj._file_name.size() > 0), "Projectile file name is empty");
-	proj._type = type;
-	proj._position = position;
-	proj._target = target_pos;
-	proj._delay = delay;
-	proj._damage = damage;
-	proj._speed = speed;
-	proj._duration = duration;
-	proj._pierce = pierce;
-	proj._proj_interval = proj_interval;
-	proj._hitbox_delay = hitbox_delay;
-	proj._knock_back = knock_back;
-	proj._pool_limit = pool_limit;
-	proj._chance = chance;
-	proj._crit_multi = criti_multi;
-	proj._block_by_wall = block_by_wall;
-	proj._is_mirror = is_mirror;
-	proj._is_start = (delay > 0 ? 0 : 1);
-	CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
-	proj._offset = proj._position - player_pos;
-	all_proj.reserve(all_proj.size()+32768);
-	all_proj.push_back(ref(proj));
-}
+
 void Projectile::create_projectile(Projectile p) {
 	Projectile::all_proj.push_back(p);
 }
@@ -130,7 +104,7 @@ void Projectile::update_position() {
 void Projectile::show_skin(double factor) {
 	VSObject::show_skin(factor);
 	if(this->_life_cycle == -1) return;
-	if(this->_skin.IsAnimationDone() || clock() - this->_create_time - this->_delay >= this->_life_cycle || VSObject::distance(this->_position, CPoint{ (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy }) > 700)
+	if(this->_skin.IsAnimationDone() || clock() - this->_create_time - this->_delay >= this->_life_cycle || VSObject::distance(this->_position, CPoint{ (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy }) > 500)
 		this->_is_over = true;
 }
 void Projectile::show() {

@@ -81,8 +81,8 @@ public:
 		if (pool[id].size() == 0) {
 			VS_ASSERT(false, "The pool is empty, please add more object to the pool");
 		}
-		if (🔞[id].size() < 0) {
-			VS_ASSERT(false, "exceed poo limit");
+		if (🔞[id].size() <= 0) { // keep first for reseting
+			VS_ASSERT(false, "exceeded pool limit");
 		}
 		T& obj = pool[id][🔞[id].back()];
 		obj.set_pool_id(id);
@@ -97,8 +97,9 @@ public:
 		return obj_list;
 	}
 	void free_obj(T& obj) {
-		int id = obj.get_pool_id();
-		🔞[obj.get_id()].push_back(id);
+		int id = obj.get_pool_id(), obj_id = obj.get_id();
+		🔞[obj_id].push_back(id);
+		pool[obj_id][id] = pool[obj_id][0];
 	}
 	int pool_type;
 private:
