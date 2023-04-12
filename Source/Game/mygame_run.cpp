@@ -390,7 +390,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		}
 		for (auto& i : xp) {
 			if (i.is_enable() && VSObject::distance(player, i) < player.get_magnet()) {
-				i.set_speed(1000);
+				i.set_speed(200);
 				i.update_pos(player.get_pos());
 				if (is_overlapped(player, i)) {
 					i.despawn();

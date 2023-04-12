@@ -7,12 +7,21 @@ public:
 	ObjPool(int type) {
 		pool_type = type;
 	}
-	~ObjPool(){}
+	~ObjPool() = default;
 	void add_obj(int type, int count) { // this should be only execute once or not?
 		int start_index = pool[type].size();
-		for (int i = 0; i < count; i++) {
+		for (int i = 0; i < count + 50; i++) { // for safety, its ok to remove it
 			pool[type].push_back(T(type));
 			pool[type].back().set_pool_id(i + start_index);
+			free_vec[type].push_back(i + start_index);
+		}
+	}
+	void add_obj(T obj, int count) {
+		int type = obj.get_id();
+		int start_index = pool[type].size();
+		for (int i = 0; i < count + 50; i++) {
+			obj.set_pool_id(i + start_index);
+			pool[type].push_back(obj);
 			free_vec[type].push_back(i + start_index);
 		}
 	}
