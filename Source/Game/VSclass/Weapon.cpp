@@ -118,10 +118,11 @@ void Weapon::attack() {
 			continue;
 		}
 		w._last_time_attack = clock();
+
 		switch (w._type) {
 		case (WHIP):
 			for (int i = 0; i < w._amount; i++) {
-				Projectile proj = w._base_proj;
+				Projectile& proj = Projectile::pool.get_obj(WHIP);
 				proj.set_create_time(clock());
 				if (mouse_pos.x > player_pos.x) {
 					if (!(i & 1)) {
@@ -152,7 +153,7 @@ void Weapon::attack() {
 
 		case MAGIC_MISSILE:
 			for (int i = 0; i < w._amount; i++) {
-				Projectile proj = w._base_proj;
+				Projectile& proj = Projectile::pool.get_obj(MAGIC_MISSILE);
 				proj.set_pos(player_pos);
 				proj.set_create_time(clock());
 				CPoint target = player_pos;
@@ -167,7 +168,7 @@ void Weapon::attack() {
 			break;
 		case KNIFE:
 			for (int i = 0; i < w._amount; i++) {
-				Projectile proj = w._base_proj;
+				Projectile& proj = Projectile::pool.get_obj(WHIP);
 				proj.set_create_time(clock());
 				proj.set_target_vec(mouse_pos - player_pos);
 				double rotate = atan2(mouse_pos.y - player_pos.y, mouse_pos.x - player_pos.x);
@@ -182,7 +183,7 @@ void Weapon::attack() {
 			break;
 		case (VAMPIRICA):
 			for (int i = 0; i < w._amount; i++) {
-				Projectile proj = w._base_proj;
+				Projectile& proj = Projectile::pool.get_obj(VAMPIRICA);
 				proj.set_create_time(clock());
 				if (mouse_pos.x > player_pos.x) {
 					if (!(i & 1)) {
@@ -211,16 +212,16 @@ void Weapon::attack() {
 			}
 			break;
 		case HOLY_MISSILE:
-			Projectile proj = w._base_proj;
-			proj.set_pos(player_pos);
-			proj.set_create_time(clock());
-			CPoint target = player_pos;
-			int min_dis = 1000000000;
-			QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(&proj), min_dis);
-			proj.set_target_vec((target != player_pos ? target - player_pos : (mouse_pos.x > player_pos.x ? (100,10) : (-100,10))));
-			double rad = atan2(target.y - player_pos.y, target.x - player_pos.x);
-			proj.set_rotation(rad);
 			for (int i = 0; i < w._amount; i++) {
+				Projectile& proj = Projectile::pool.get_obj(HOLY_MISSILE);
+				proj.set_pos(player_pos);
+				proj.set_create_time(clock());
+				CPoint target = player_pos;
+				int min_dis = 1000000000;
+				QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(&proj), min_dis);
+				proj.set_target_vec((target != player_pos ? target - player_pos : (mouse_pos.x > player_pos.x ? (100,10) : (-100,10))));
+				double rad = atan2(target.y - player_pos.y, target.x - player_pos.x);
+				proj.set_rotation(rad);
 				Projectile::create_projectile(proj, player_pos, (target), w._type, i * w._proj_interval, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
 					w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, false);
 			}
@@ -409,6 +410,8 @@ void Weapon::load_weapon_stats() {
 			break;
 		}
 		w._base_proj = p;
+		Projectile::template_proj[type] = p;
+		Projectile::pool.add_obj(type, w._pool_limit);
 		Weapon::_base_weapon[ type ] = w;
 	}
 }

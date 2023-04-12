@@ -16,7 +16,6 @@ Projectile::Projectile(int type, vector<string> filename, COLORREF color) : Proj
 	this->_type = type;
 	this->_skin.LoadBitmapByString(filename, color);
 	this->_file_name = filename;
-	template_proj[type] = *this;
 }
 Projectile::Projectile(int type) {
 	*this = template_proj[type];
@@ -34,7 +33,7 @@ void Projectile::init_projectile(int type, int count) {
 }
 void Projectile::collide_with_enemy(Enemy& 🥵) {
 	clock_t now = clock();
-	if (!is_overlapped((*this), 🥵) || now - 🥵._last_time_got_hit_by_projectile[this->_type] < this->_hitbox_delay)
+	if (_is_over || !is_overlapped((*this), 🥵) || now - 🥵._last_time_got_hit_by_projectile[this->_type] < this->_hitbox_delay)
 		return;
 	🥵._is_stun = true;
 	🥵._stun_speed = -1.0 * 🥵._speed * 🥵._kb * (this->_duration <= 0 ? 1 : this->_duration) * this->_knock_back;
@@ -45,7 +44,7 @@ void Projectile::collide_with_enemy(Enemy& 🥵) {
 		this->_is_over = true;
 	🥵.hurt(static_cast<int>(this->_damage));
 }
-void Projectile::create_projectile(Projectile proj, CPoint position, CPoint target_pos, int type, int delay, double damage, int speed, int duration, int pierce, int proj_interval, int hitbox_delay, double knock_back, int pool_limit, int chance, int criti_multi, int block_by_wall, bool is_mirror) {
+void Projectile::create_projectile(Projectile& proj, CPoint position, CPoint target_pos, int type, int delay, double damage, int speed, int duration, int pierce, int proj_interval, int hitbox_delay, double knock_back, int pool_limit, int chance, int criti_multi, int block_by_wall, bool is_mirror) {
 	proj._type = type;
 	proj._position = position;
 	proj._target = target_pos;
@@ -63,33 +62,12 @@ void Projectile::create_projectile(Projectile proj, CPoint position, CPoint targ
 	proj._block_by_wall = block_by_wall;
 	proj._is_mirror = is_mirror;
 	proj._is_start = (delay > 0 ? 0 : 1);
+	proj._is_over = false;
 	CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
 	proj._offset = proj._position - player_pos;
 	Projectile::all_proj.push_back(proj);
 }
-void Projectile::create_projectile(CPoint position, CPoint target_pos, int type, int delay, double damage, int speed, int duration, int pierce, int proj_interval, int hitbox_delay, double knock_back, int pool_limit, int chance, int criti_multi, int block_by_wall, bool is_mirror) {
-	Projectile& proj = pool.get_obj(type);
-	proj._type = type;
-	proj._position = position;
-	proj._target = target_pos;
-	proj._delay = delay;
-	proj._damage = damage;
-	proj._speed = speed;
-	proj._duration = duration;
-	proj._pierce = pierce;
-	proj._proj_interval = proj_interval;
-	proj._hitbox_delay = hitbox_delay;
-	proj._knock_back = knock_back;
-	proj._pool_limit = pool_limit;
-	proj._chance = chance;
-	proj._crit_multi = criti_multi;
-	proj._block_by_wall = block_by_wall;
-	proj._is_mirror = is_mirror;
-	proj._is_start = (delay > 0 ? 0 : 1);
-	CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
-	proj._offset = proj._position - player_pos;
-	Projectile::all_proj_ref.push_back(proj);
-}
+
 void Projectile::create_projectile(Projectile p) {
 	Projectile::all_proj.push_back(p);
 }
@@ -126,12 +104,12 @@ void Projectile::update_position() {
 void Projectile::show_skin(double factor) {
 	VSObject::show_skin(factor);
 	if(this->_life_cycle == -1) return;
-	if(this->_skin.IsAnimationDone() || clock() - this->_create_time - this->_delay >= this->_life_cycle || VSObject::distance(this->_position, CPoint{ (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy }) > 700)
+	if(this->_skin.IsAnimationDone() || clock() - this->_create_time - this->_delay >= this->_life_cycle || VSObject::distance(this->_position, CPoint{ (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy }) > 500)
 		this->_is_over = true;
 }
 void Projectile::show() {
-	int deq_size = static_cast<int> (all_proj.size());
-	for (int i = 0; i < deq_size; i++) {
+	// int deq_size = static_cast<int> (all_proj.size());
+	/*for (int i = 0; i < deq_size; i++) {
 		if (clock() - all_proj.front()._create_time >= all_proj.front()._delay) {
 			all_proj.front().show_skin();
 			all_proj.front()._is_start = true;
@@ -140,6 +118,22 @@ void Projectile::show() {
 			all_proj.emplace_back(all_proj.front());
 		}
 		all_proj.pop_front();
+	}*/
+	for (Projectile& rf : all_proj) {
+		// Projectile& rf = r;
+		if (clock() - rf._create_time >= rf._delay) {
+			rf.show_skin();
+			rf._is_start = true;
+		}
+	}
+	for (auto it = all_proj.begin(); it != all_proj.end();) {
+		if (it->get()._is_over) {
+			pool.free_obj(it->get());
+			it = all_proj.erase(it);
+		}
+		else {
+			++it;
+		}
 	}
 	if (clock() % 60000 == 0) {
 		all_proj.shrink_to_fit(); // release memory
@@ -215,6 +209,10 @@ void Projectile::set_rotation(double radien) {
 	this->_skin.ResetBitmap();
 	this->_skin.LoadBitmapByString(rotated_filename, RGB(1,11,111));
 }
-deque<Projectile> Projectile::all_proj = {};
-ObjPool<Projectile> Projectile::pool;
-deque<reference_wrapper<Projectile>> Projectile::all_proj_ref = {};
+int Projectile::get_id() {
+	return _type;
+}
+// deque<Projectile> Projectile::all_proj = {};
+ObjPool<Projectile> Projectile::pool(PROJECTILE);
+vector<reference_wrapper<Projectile>> Projectile::all_proj;
+map <int, Projectile> Projectile::template_proj = {};
