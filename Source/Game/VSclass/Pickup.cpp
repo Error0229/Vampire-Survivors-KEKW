@@ -3,6 +3,7 @@
 #include "../config.h"
 #include "VSObject.h"
 #include "QuadTree.h"
+#include "ObjPool.h"
 #include "Pickup.h"
 #include "Enemy.h"
 
@@ -61,6 +62,9 @@ Xp::Xp(CPoint pos, int xp_value)
 Xp::~Xp()
 {
 }
+void Xp::init_XP() {
+	pool.add_obj(Xp(), 2000);
+}
 void Xp::spawn(CPoint pos, int val)
 {
 	// val: xp_value
@@ -68,18 +72,20 @@ void Xp::spawn(CPoint pos, int val)
 	Pickup::spawn(pos, val);
 }
 void Xp::spawnXP(CPoint pos, int val) {
-	Xp xp = Xp(pos, val);
-	xp._is_enable = true;
+	// Xp xp = Xp(pos, val);
+	Xp* xp = pool.get_obj_ptr(XP);
+	xp-> spawn(pos, val);
+	xp->_speed = 200;
 	xp_all.emplace_back(xp);
 }
 void Xp::update_XP_pos(int player_magnet) {
 	CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
-	for (auto& xp : xp_all) {
-		if (!xp.is_enable())
+	for (auto xp : xp_all) {
+		if (!xp->is_enable())
 			continue;
-		if (xp._is_moving || VSObject::distance(xp._position, player_pos) < player_magnet) {
-			xp.update_pos(player_pos);
-			xp._is_moving = true;
+		if (xp->_is_moving || VSObject::distance(xp->_position, player_pos) < player_magnet) {
+			xp->update_pos(player_pos);
+			xp->_is_moving = true;
 		}
 	}
 }
@@ -99,14 +105,16 @@ void Xp::show_skin(double factor)
 }
 void Xp::show()
 {
-	deque<Xp> tmp;
-	for (auto& xp : xp_all) {
-		if (xp.is_enable()) {
-			xp.show_skin();
-			tmp.emplace_back(xp);
+	for (auto xp : xp_all) {
+		if (xp->is_enable()) {
+			xp->show_skin();
+		}
+		else {
+			pool.free_obj_ptr(xp);
 		}
 	}
-	xp_all = std::move(tmp); // this moght just call copy constructor
+	auto iter = remove_if(xp_all.begin(), xp_all.end(), [](Xp* xp) {return !xp->is_enable(); });
+	xp_all.erase(iter, xp_all.end());
 }
 
 Chest::Chest()
@@ -128,4 +136,5 @@ bool Chest::get_can_evo()
 {
 	return _can_evo;
 }
-deque<Xp> Xp::xp_all = {};
+deque<Xp*> Xp::xp_all = {};
+ObjPool<Xp> Xp::pool(XP);

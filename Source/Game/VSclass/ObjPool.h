@@ -17,7 +17,7 @@ public:
 		}
 	}
 	void add_obj(T obj, int count) {
-		int type = obj.get_id();
+		int type = obj.get_type();
 		int start_index = pool[type].size();
 		for (int i = 0; i < count + 50; i++) {
 			obj.set_pool_id(i + start_index);
@@ -35,9 +35,9 @@ public:
 		return obj;
 	}
 	T* get_obj_ptr(int type) {
-		VS_ASSERT(pool[type].size() > 0, "The pool is empty, please add more object to the pool");
-		VS_ASSERT(free_obj[type].size() > 0, "exceeded pool limit");
-		T* obj = &pool[type][free_vec[type].back()];
+		// VS_ASSERT(pool[type].size() > 0, "The pool is empty, please add more object to the pool");
+		// VS_ASSERT(free_obj[type].size() > 0, "exceeded pool limit");
+		T* obj = std::addressof(pool[type][free_vec[type].back()]);
 		free_vec[type].pop_back();
 		return obj;
 	}
@@ -56,13 +56,13 @@ public:
 		return obj_vec;
 	}
 	void free_obj(T& obj) {
-		int pid = obj.get_pool_id(), type = obj.get_id();
+		int pid = obj.get_pool_id(), type = obj.get_type();
 		free_vec[type].push_back(pid);
 		pool[type][pid] = pool[type][0];
 		pool[type][pid].set_pool_id(pid);
 	}
 	void free_obj_ptr(T* obj) {
-		int pid = obj->get_pool_id(), type = obj->get_id();
+		int pid = obj->get_pool_id(), type = obj->get_type();
 		free_vec[type].push_back(pid);
 		pool[type][pid] = pool[type][0];
 		pool[type][pid].set_pool_id(pid);

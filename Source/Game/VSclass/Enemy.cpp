@@ -178,6 +178,7 @@ Enemy Enemy::load_enemy(int id, char* name, int health, int power, int mspeed, d
 			break;
 		}
 	}
+	enemy._type = id;
 	enemy._id = id;
 	enemy._hp_max = health;
 	enemy._power = power;

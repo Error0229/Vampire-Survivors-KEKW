@@ -23,6 +23,8 @@ public:
 	void set_target_vec(CPoint);
 	void set_target_vec(int, int);
 	void set_pool_id(int);
+	void set_type(int);
+	int get_type();
 	int get_pool_id();
 	virtual void set_speed(int);
 	virtual void set_speed(double);
@@ -57,7 +59,7 @@ protected:
 	bool _is_mirror = 0;
 	int _direct, _default_direct=LEFT;
 	int _speed=0;
-	int _pool_id;
+	int _pool_id, _type;
 	double _fx, _fy;
 };
 

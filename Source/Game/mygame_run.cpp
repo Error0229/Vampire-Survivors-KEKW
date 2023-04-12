@@ -42,7 +42,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	Weapon::load_weapon_stats();
 	Enemy::load_template_enemies();
 	Icon::load_filename();
-
+	Xp::init_XP();
 	_gamerun_status = PLAYING;
 	_next_status = PLAYING;
 
@@ -382,10 +382,10 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		QuadTree::VSPlain.clear();
 		// suck xp
 		Xp::update_XP_pos(player.get_pickup_range());
-		for (Xp& i : Xp::xp_all) {
-			if (is_overlapped(player, i)) {
-				i.despawn();
-				player.pick_up_xp(i.get_xp_value());
+		for (auto i : Xp::xp_all) {
+			if (is_overlapped(player, *i)) {
+				i->despawn();
+				player.pick_up_xp(i->get_xp_value());
 			}
 		}
 		for (auto& i : xp) {
