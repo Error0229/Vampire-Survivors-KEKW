@@ -97,6 +97,12 @@ void VSObject::select_show_animation(int index)
 {
 	this->_selector = index;
 }
+void VSObject::set_type(int type) {
+	_type = type;
+}
+int VSObject::get_type() {
+	return _type;
+}
 void VSObject::update_pos(CPoint target)
 {
 	this->_target = target;

@@ -103,8 +103,11 @@ void Projectile::update_position() {
 }
 void Projectile::show_skin(double factor) {
 	VSObject::show_skin(factor);
+	if (VSObject::distance(this->_position, CPoint{ (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx, (OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy }) > 700) {
+		this->_is_over = true;
+	}
 	if(this->_life_cycle == -1) return;
-	if(this->_skin.IsAnimationDone() || clock() - this->_create_time - this->_delay >= this->_life_cycle || VSObject::distance(this->_position, CPoint{ (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy }) > 500)
+	if(this->_skin.IsAnimationDone() || clock() - this->_create_time - this->_delay >= this->_life_cycle)
 		this->_is_over = true;
 }
 void Projectile::show() {
@@ -209,9 +212,7 @@ void Projectile::set_rotation(double radien) {
 	this->_skin.ResetBitmap();
 	this->_skin.LoadBitmapByString(rotated_filename, RGB(1,11,111));
 }
-int Projectile::get_id() {
-	return _type;
-}
+
 // deque<Projectile> Projectile::all_proj = {};
 ObjPool<Projectile> Projectile::pool(PROJECTILE);
 vector<reference_wrapper<Projectile>> Projectile::all_proj;
