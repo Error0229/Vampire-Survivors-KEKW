@@ -48,7 +48,9 @@ int Enemy::get_power()
 int Enemy::get_id() {
 	return _id;
 }
-
+int Enemy::get_spawn_limit() {
+	return _spawn_limit;
+}
 void Enemy::show_skin(double factor)
 {
 	if ( !_is_enable )
@@ -123,9 +125,13 @@ void Enemy::spawn(CPoint pos, int move_animation_delay, int death_animation_dela
 
 void Enemy::load_template_enemies()
 {
+	static bool is_loaded = false;
+	if (is_loaded)
+		return;
+	is_loaded = true;
 	ifstream file("source/game/VSclass/enemy_stats.csv");
 	string header, line;
-	string number, id, file_name, hp, power, mspeed, kb, kb_max, res_f, res_k, res_d, xp_value, hp_scale;
+	string number, id, file_name, hp, power, mspeed, kb, kb_max, res_f, res_k, res_d, xp_value, hp_scale, spawn_limit;
 	getline(file, header);
 	while (getline(file, line)) {
 		stringstream ss(line);
@@ -142,11 +148,12 @@ void Enemy::load_template_enemies()
 		getline(ss, res_d, ',');
 		getline(ss, xp_value, ',');
 		getline(ss, hp_scale, ',');
-		template_enemies.push_back(load_enemy(stoi(number), (char*)file_name.c_str(), stoi(hp), stoi(power), stoi(mspeed), stod(kb), stoi(kb_max), stod(res_f), stoi(res_k), stoi(res_d), stod(xp_value), stoi(hp_scale)));
+		getline(ss, spawn_limit, ',');
+		template_enemies.push_back(load_enemy(stoi(number), (char*)file_name.c_str(), stoi(hp), stoi(power), stoi(mspeed), stod(kb), stoi(kb_max), stod(res_f), stoi(res_k), stoi(res_d), stod(xp_value), stoi(hp_scale), stoi(spawn_limit)));
 	}
 }
 
-Enemy Enemy::load_enemy(int id, char* name, int health, int power, int mspeed, double kb, int kb_max, double res_f, bool res_k, bool res_d, double xp_value, bool hp_scale)
+Enemy Enemy::load_enemy(int id, char* name, int health, int power, int mspeed, double kb, int kb_max, double res_f, bool res_k, bool res_d, double xp_value, bool hp_scale, int spawn_limit)
 {
 	Enemy enemy;
 	char tmp[100];
@@ -190,12 +197,14 @@ Enemy Enemy::load_enemy(int id, char* name, int health, int power, int mspeed, d
 	enemy._res_d = res_d;
 	enemy._xp_value = xp_value;
 	enemy._hp_scale = hp_scale;
+	enemy._spawn_limit = spawn_limit;
 
 	enemy._is_enable = false;
 	enemy._is_mirror = false;
 	enemy._position = CPoint(0, 0);
-
-	enemy._speed = 50; //this will change later
+	enemy.set_type(id);
+	
+	enemy._speed = 50;
 	return enemy;
 }
 

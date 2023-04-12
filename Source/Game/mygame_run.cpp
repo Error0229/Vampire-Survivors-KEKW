@@ -40,7 +40,8 @@ void CGameStateRun::OnBeginState()
 void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 {
 	Weapon::load_weapon_stats();
-	Enemy::load_template_enemies();
+	//Enemy::load_template_enemies();
+	EnemyFactory::init();
 	Icon::load_filename();
 	Xp::init_XP();
 	_gamerun_status = PLAYING;
@@ -59,14 +60,16 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	map.set_pos(0, 0);
 	QuadTree::VSPlain.clear();
 
-	for (int i = 0; i < 100; i++) {
-		enemy.push_back(Enemy::get_template_enemy(BAT2));
-		xp.push_back(Xp());
-		chest.push_back(Chest());
-	}
-	for ( int i = 0; i < (int)enemy.size(); i++ ) {
-		enemy[i].spawn(CPoint(-300 + 30 * i/10, -400 + 40 * i%10));
-	}
+	//for (int i = 0; i < 100; i++) {
+	//	enemy.push_back(Enemy::get_template_enemy(BAT2));
+	//	xp.push_back(Xp());
+	//	chest.push_back(Chest());
+	//}
+	//for ( int i = 0; i < (int)enemy.size(); i++ ) {
+	//	enemy[i].spawn(CPoint(-300 + 30 * i/10, -400 + 40 * i%10));
+	//}
+
+	enemy_factory.add_enemy(BAT1, 100);
 
 	event_background.load_skin("resources/ui/event_background.bmp");
 	event_background.set_base_pos(0, 0);
@@ -138,10 +141,13 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	static int chest_cnt = 0; //tmp
 	switch (nChar) {
 	case('A'):
-		for (int i = 0; i < (int)enemy.size();i++) {
-			if (enemy[i].hurt(1000000)) {
-				xp[i].spawn(enemy[i].get_pos(), enemy[i].get_xp_value());
-			}
+		//for (int i = 0; i < (int)enemy.size();i++) {
+		//	if (enemy[i].hurt(1000000)) {
+		//		xp[i].spawn(enemy[i].get_pos(), enemy[i].get_xp_value());
+		//	}
+		//}
+		for (auto 😈 : enemy_factory.live_enemy) {
+			😈->hurt(1000);
 		}
 		break;
 	case('B'):
@@ -351,9 +357,14 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 
 		player.update_pos(mouse_pos);
 		QuadTree::VSPlain.set_range(-Player::player_dx - offset, -Player::player_dy - offset, (OPEN_AS_FULLSCREEN ? RESOLUTION_X : SIZE_X) + offset, (OPEN_AS_FULLSCREEN ? RESOLUTION_Y : SIZE_Y) + offset);
-		for (Enemy& i_enemy : enemy) {
-			if (!i_enemy.is_dead() && i_enemy.is_enable()) {
-				QuadTree::VSPlain.insert((VSObject*)(&i_enemy));
+		//for (Enemy& i_enemy : enemy) {
+		//	if (!i_enemy.is_dead() && i_enemy.is_enable()) {
+		//		QuadTree::VSPlain.insert((VSObject*)(&i_enemy));
+		//	}
+		//}
+		for (auto i_enemy : enemy_factory.live_enemy) {
+			if (!i_enemy->is_dead()) {
+				QuadTree::VSPlain.insert((VSObject*)(i_enemy));
 			}
 		}
 		Weapon::attack();
@@ -365,18 +376,32 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 				proj.collide_with_enemy(*((Enemy*)obj));
 			}
 		}
-		for (int i = 0; i < (int)enemy.size(); i++) {
-			enemy[i].update_pos(player.get_pos());
+		//for (int i = 0; i < (int)enemy.size(); i++) {
+		//	enemy[i].update_pos(player.get_pos());
+		//	result = {};
+		//	QuadTree::VSPlain.query_by_type(result, (VSObject*)(&enemy[i]), ENEMY);
+		//	for (VSObject* obj : result) {
+		//		enemy[i].append_collide(*((Enemy*)obj), 0.75, 0.5);
+		//	}
+		//	enemy[i].update_collide();
+		//	if (enemy[i].is_collide_with(player)) {
+		//		enemy[i].append_collide(player, 1, 0.5);
+		//		enemy[i].update_collide();
+		//		player.hurt(enemy[i].get_power());
+		//	}
+		//}
+		for (auto 😈: enemy_factory.live_enemy) {
+			😈->update_pos(player.get_pos());
 			result = {};
-			QuadTree::VSPlain.query_by_type(result, (VSObject*)(&enemy[i]), ENEMY);
+			QuadTree::VSPlain.query_by_type(result, (VSObject*)(😈), ENEMY);
 			for (VSObject* obj : result) {
-				enemy[i].append_collide(*((Enemy*)obj), 0.75, 0.5);
+				😈->append_collide(*((Enemy*)obj), 0.75, 0.5);
 			}
-			enemy[i].update_collide();
-			if (enemy[i].is_collide_with(player)) {
-				enemy[i].append_collide(player, 1, 0.5);
-				enemy[i].update_collide();
-				player.hurt(enemy[i].get_power());
+			😈->update_collide();
+			if (😈->is_collide_with(player)) {
+				😈->append_collide(player, 1, 0.5);
+				😈->update_collide();
+				player.hurt(😈->get_power());
 			}
 		}
 		QuadTree::VSPlain.clear();
@@ -408,6 +433,8 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 
 		if (!player.is_hurt())
 			player.regen();
+		
+		enemy_factory.update(0);
 
 		if(player.get_exp_percent()==100)
 			_next_status = LEVEL_UP;
@@ -470,7 +497,6 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		// poll chest item
 		for (int i = 0; i < chest_item_count; i++) {
 			chest_item[i] = draw_open_chest(can_evo);
-			TRACE(_T("%d\n"), chest_item[i]);
 			if (chest_item[i] > -1) {
 				// -2 means pull empty
 				player.obtain_item(chest_item[i]);
@@ -485,8 +511,11 @@ void CGameStateRun::OnShow()
 	map.show_map();
 	player.show_skin();
 	Weapon::show();
-	for (int i = 0; i < (int)enemy.size(); i++) {
-		enemy[i].show_skin();
+	//for (int i = 0; i < (int)enemy.size(); i++) {
+	//	enemy[i].show_skin();
+	//}
+	for (auto 😈 : enemy_factory.live_enemy) {
+		😈->show_skin();
 	}
 	for (auto& i : xp)
 		i.show_skin();

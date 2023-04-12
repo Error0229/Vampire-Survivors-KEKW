@@ -100,7 +100,8 @@ namespace game_framework {
 		CPoint mouse_pos;								// ·Æ¹«ªº®y¼Ð
 		Map map;
 		Player player;
-		vector<Enemy> enemy;
+		EnemyFactory enemy_factory;
+		//vector<Enemy> enemy;
 		vector<Xp> xp;
 		vector<Chest> chest;
 		int _gamerun_status, _next_status;

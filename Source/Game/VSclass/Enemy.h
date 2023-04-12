@@ -45,24 +45,26 @@ public:
 	int get_id();
 	int get_xp_value();
 	int get_power();
+	int get_spawn_limit();
 	bool hurt(int damage); //this will return true if the enemy die from this damage, otherwise false
 	bool is_collide_with(VSObject&, double overlap_bound=1);
 	bool is_collide_with(Enemy&, double overlap_bound=0.5);
 	static void load_template_enemies();
-	static Enemy load_enemy(int id, char* name, int hp_max, int power, int mspeed, double kb, int kb_max, double res_f, bool res_k, bool res_d, double xp_value, bool hp_scale);
+	static Enemy load_enemy(int id, char* name, int hp_max, int power, int mspeed, double kb, int kb_max, double res_f, bool res_k, bool res_d, double xp_value, bool hp_scale, int spawn_limit);
 	static Enemy get_template_enemy(int id);
+	static vector<Enemy> template_enemies;
 	friend class Projectile;
+	friend class EnemyFactory;
 private:
 	// stats
 	clock_t _last_time_got_hit;
 	vector <clock_t> _last_time_got_hit_by_projectile;
 	int _alt_speed;
-	int _id, _hp, _hp_max, _power, _mspeed, _kb_max;
+	int _id, _hp, _hp_max, _power, _mspeed, _kb_max, _spawn_limit;
 	double _kb, _res_f, _xp_value;
 	bool _res_k, _res_d, _hp_scale, _is_stun = 0;
 	double _stun_speed;
 	int  _level;
 	bool _is_enable; //this name is not good
 	VSObject _death_animation;
-	static vector<Enemy> template_enemies;
 };

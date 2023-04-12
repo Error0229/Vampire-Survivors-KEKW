@@ -69,6 +69,7 @@
     <ClCompile Include="Source\Game\VSclass\QuadTree.cpp" />
     <ClCompile Include="Source\Game\VSclass\VSUtil.cpp" />
     <ClCompile Include="Source\Game\VSclass\ObjPool.cpp" />
+    <ClCompile Include="Source\Game\VSclass\EnemyFactory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Library\audio.h">
@@ -117,6 +118,7 @@
     <ClInclude Include="Source\Game\VSclass\QuadTree.h" />
     <ClInclude Include="Source\Game\VSclass\VSUtil.h" />
     <ClInclude Include="Source\Game\VSclass\ObjPool.h" />
+    <ClInclude Include="Source\Game\VSclass\EnemyFactory.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Source\Core\game.rc">
