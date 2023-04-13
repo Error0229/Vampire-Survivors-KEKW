@@ -76,15 +76,15 @@ void Projectile::set_delay(int delay) {
 	_delay = delay;
 }
 void Projectile::set_create_time(clock_t time) {
-	_create_time = time; 
+	_create_time = time;
 }
 void Projectile::set_life_cycle(clock_t time) {
 	_life_cycle = time;
 }
 void Projectile::update_position() {
-	for (Projectile& proj: Projectile::all_proj) {
+	for (Projectile& proj : Projectile::all_proj) {
 		switch (proj._type) {
-		case(WHIP): 
+		case(WHIP):
 			proj.WHIP_transition();
 			break;
 		case(MAGIC_MISSILE):
@@ -107,8 +107,8 @@ void Projectile::show_skin(double factor) {
 	if (VSObject::distance(this->_position, CPoint{ (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx, (OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy }) > 700) {
 		this->_is_over = true;
 	}
-	if(this->_life_cycle == -1) return;
-	if(this->_skin.IsAnimationDone() || clock() - this->_create_time - this->_delay >= this->_life_cycle)
+	if (this->_life_cycle == -1) return;
+	if (this->_skin.IsAnimationDone() || clock() - this->_create_time - this->_delay >= this->_life_cycle)
 		this->_is_over = true;
 }
 void Projectile::show() {
@@ -201,12 +201,12 @@ void Projectile::set_rotation(double radien) {
 		rotated_filename.emplace_back(s.substr(0, s.find_last_of('.')) + "_r" + std::to_string(regular_angle) + ".bmp");
 	}
 	this->_skin.ResetBitmap();
-	this->_skin.LoadBitmapByString(rotated_filename, RGB(1,11,111));
+	this->_skin.LoadBitmapByString(rotated_filename, RGB(1, 11, 111));
 }
 void Projectile::load_rotation() {
 	vector <string> rotated_filename;
 	for (auto s : _file_name) {
-		for (int i = 0; i <360; i+=10 ){
+		for (int i = 0; i < 360; i += 10) {
 			rotated_filename.emplace_back(s.substr(0, s.find_last_of('.')) + "_r" + std::to_string(i) + ".bmp");
 		}
 	}
