@@ -256,6 +256,7 @@
     <None Include="Resources\item_id.csv" />
     <None Include="RES\GAME.RC2" />
     <None Include="Source\Game\VSclass\enemy_stats.csv" />
+    <None Include="Source\Game\VSclass\stage_event_1.csv" />
     <None Include="Source\Game\VSclass\weapon_stats.csv" />
   </ItemGroup>
   <ItemGroup>

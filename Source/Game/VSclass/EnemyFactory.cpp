@@ -59,21 +59,19 @@ int EnemyFactory::get_number_all()
 void EnemyFactory::show_enemy(int time_sec, CPoint player_pos, int player_lvl)
 {
 	//delete dead enemy, NOT EFFICINT
-	vector<Enemy*> new_live_enemy;
 	for (auto 😈: live_enemy) {
 		if (😈->is_enable()) {
 			😈->show_skin();
-			new_live_enemy.push_back(😈);
 			_number_type[😈->get_id()]--;
 		}
-		else {
+		if (!😈->is_enable()) {
 			_all_enemy.free_obj_ptr(😈);
 		}
 	}
-	live_enemy = new_live_enemy;
-
+	auto itor = std::remove_if(live_enemy.begin(), live_enemy.end(), [](Enemy* e) {return !e->is_enable(); });
+	live_enemy.erase(itor, live_enemy.end());
 	//temporay respawn enemy
-	if (100 - get_number_all()) {
+	if (100 - get_number_all() > 0) {
 		add_enemy(BAT1, player_pos, player_lvl, 100 - get_number_all());
 	}
 }
