@@ -44,11 +44,12 @@ void Projectile::collide_with_enemy(Enemy& 🥵) {
 		this->_is_over = true;
 	🥵.hurt(static_cast<int>(this->_damage));
 }
-void Projectile::create_projectile(Projectile& proj, CPoint position, CPoint target_pos, int type, int delay, double damage, int speed, int duration, int pierce, int proj_interval, int hitbox_delay, double knock_back, int pool_limit, int chance, int criti_multi, int block_by_wall, bool is_mirror) {
+void Projectile::create_projectile(Projectile& proj, CPoint position, CPoint target_pos, int type, int delay, double area, double damage, int speed, int duration, int pierce, int proj_interval, int hitbox_delay, double knock_back, int pool_limit, int chance, int criti_multi, int block_by_wall, bool is_mirror) {
 	proj._type = type;
 	proj._position = position;
 	proj._target = target_pos;
 	proj._delay = delay;
+	proj._area = area;
 	proj._damage = damage;
 	proj._speed = speed;
 	proj._duration = duration;
@@ -102,7 +103,7 @@ void Projectile::update_position() {
 	}
 }
 void Projectile::show_skin(double factor) {
-	VSObject::show_skin(factor);
+	VSObject::show_skin(_area);
 	if (VSObject::distance(this->_position, CPoint{ (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx, (OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy }) > 700) {
 		this->_is_over = true;
 	}
@@ -111,17 +112,6 @@ void Projectile::show_skin(double factor) {
 		this->_is_over = true;
 }
 void Projectile::show() {
-	// int deq_size = static_cast<int> (all_proj.size());
-	/*for (int i = 0; i < deq_size; i++) {
-		if (clock() - all_proj.front()._create_time >= all_proj.front()._delay) {
-			all_proj.front().show_skin();
-			all_proj.front()._is_start = true;
-		}
-		if (!all_proj.front()._is_over) {
-			all_proj.emplace_back(all_proj.front());
-		}
-		all_proj.pop_front();
-	}*/
 	for (Projectile& rf : all_proj) {
 		// Projectile& rf = r;
 		if (clock() - rf._create_time >= rf._delay) {
@@ -201,16 +191,27 @@ void Projectile::HOLY_MISSILE_transition() {
 void Projectile::set_rotation(double radien) {
 	// angle += 2*acos(-1)
 	int angle = static_cast<int>(radien * 180 / acos(-1));
-	angle = (angle + 360) % 360;
-	int regular_angle = 15 * static_cast<int> (angle / 15.0);
+	angle = (-angle + 360) % 360;
+	int regular_angle = 10 * static_cast<int> (angle / 10.0);
 	if (regular_angle == 0) return;
-
+	this->_skin.SelectShowBitmap(regular_angle / 10);
+	return;
 	vector <string> rotated_filename;
 	for (auto s : _file_name) {
 		rotated_filename.emplace_back(s.substr(0, s.find_last_of('.')) + "_r" + std::to_string(regular_angle) + ".bmp");
 	}
 	this->_skin.ResetBitmap();
 	this->_skin.LoadBitmapByString(rotated_filename, RGB(1,11,111));
+}
+void Projectile::load_rotation() {
+	vector <string> rotated_filename;
+	for (auto s : _file_name) {
+		for (int i = 0; i <360; i+=10 ){
+			rotated_filename.emplace_back(s.substr(0, s.find_last_of('.')) + "_r" + std::to_string(i) + ".bmp");
+		}
+	}
+	this->_skin.ResetBitmap();
+	this->_skin.LoadBitmapByString(rotated_filename, RGB(1, 11, 111));
 }
 
 // deque<Projectile> Projectile::all_proj = {};

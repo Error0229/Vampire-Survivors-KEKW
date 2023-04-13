@@ -125,14 +125,17 @@ int VSObject::get_pool_id() {
 void VSObject::update_pos()
 {
 	// have a speed and moving in a 2d plane
-	int dis = distance(_target, this->_position);
-	if (dis < 1) return;
+	_target_vec = _target - _position;
 	this->_direct = (this->_target.x > this->_position.x) ? RIGHT : LEFT;
 	this->_is_mirror = (_direct != _default_direct);
-	int dx = VSOM(this->_speed * ( this->_target.x - this->_position.x ) / dis);
-	int dy = VSOM(this->_speed * ( this->_target.y - this->_position.y ) / dis);
-	_fx += (_speed * (double)(this->_target.x - this->_position.x) / (double)dis / 100) - (double)dx;
-	_fy += (_speed * (double)(this->_target.y - this->_position.y) / (double)dis / 100) - (double)dy;
+	update_pos_by_vec(_target_vec);
+	return;
+	int dis = distance(_target, this->_position);
+	if (dis < 1) return;
+	int dx = VSOM(this->_speed * square( this->_target.x - this->_position.x ) / dis);
+	int dy = VSOM(this->_speed * square( this->_target.y - this->_position.y ) / dis);
+	_fx += (_speed * (double)square(this->_target.x - this->_position.x) / (double)dis / 100) - (double)dx;
+	_fy += (_speed * (double)square(this->_target.y - this->_position.y) / (double)dis / 100) - (double)dy;
 	if (abs(_fx) > 1) {
 		dx += static_cast<int>(_fx);
 		_fx -= static_cast<int>(_fx);
@@ -145,24 +148,25 @@ void VSObject::update_pos()
 	this->_position.y += dy ;
 }
 void VSObject::update_pos_by_vec(CPoint vec) {
+	double speed = static_cast<double>(_speed) / (1000.0 / GAME_CYCLE_TIME);
 	if (_target_vec == CPoint{ 0,0 })
 		return;
 	if (vec != CPoint{ 0,0 })
 		_target_vec = vec;
 	//this->_direct = (this->_target.x > this->_position.x) ? RIGHT : LEFT;
 	//this->_is_mirror = (_direct != _default_direct);
-	double dis = static_cast<double>(square(_target_vec.x) + square(_target_vec.y));
-	double vx = (_target_vec.x > 0 ? 1.0 : -1.0) *_speed * square(_target_vec.x) / dis;
-	double vy = (_target_vec.y > 0 ? 1.0 : -1.0) *_speed * square(_target_vec.y) / dis;
+	double dis = static_cast<double>((square(_target_vec.x) + square(_target_vec.y)));
+	double vx = (_target_vec.x > 0 ? 1.0 : -1.0) *speed * square(_target_vec.x) / dis;
+	double vy = (_target_vec.y > 0 ? 1.0 : -1.0) *speed * square(_target_vec.y) / dis;
 	int dx = static_cast<int> (vx);
 	int dy = static_cast<int> (vy);
 	_fx += vx - (double)dx;
 	_fy += vy - (double)dy;
-	if (abs(_fx) > 1) {
+	if (fabs(_fx) > 1) {
 		dx += static_cast<int>(_fx);
 		_fx -= static_cast<int>(_fx);
 	}
-	if (abs(_fy) > 1) {
+	if (fabs(_fy) > 1) {
 		dy += static_cast<int>(_fy);
 		_fy -= static_cast<int>(_fy);
 	}
