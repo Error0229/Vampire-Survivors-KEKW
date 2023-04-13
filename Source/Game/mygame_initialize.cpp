@@ -1,4 +1,4 @@
-#include "stdafx.h"
+Ôªø#include "stdafx.h"
 #include "../Core/Resource.h"
 #include <mmsystem.h>
 #include <ddraw.h>
@@ -10,7 +10,7 @@
 
 using namespace game_framework;
 /////////////////////////////////////////////////////////////////////////////
-// ≥o≠”class¨∞πC¿∏™∫πC¿∏∂}¿Yµe≠±™´•Û
+// ÈÄôÂÄãclassÁÇ∫ÈÅäÊà≤ÁöÑÈÅäÊà≤ÈñãÈ†≠Áï´Èù¢Áâ©‰ª∂
 /////////////////////////////////////////////////////////////////////////////
 
 CGameStateInit::CGameStateInit(CGame *g) : CGameState(g)
@@ -20,16 +20,16 @@ CGameStateInit::CGameStateInit(CGame *g) : CGameState(g)
 void CGameStateInit::OnInit()
 {
 	//
-	// ∑Ìπœ´‹¶hÆ…°AOnInit∏¸§J©“¶≥™∫πœ≠n™·´‹¶hÆ…∂°°C¨∞¡◊ßK™±πC¿∏™∫§H
-	//     µ•™∫§£≠@∑–°AπC¿∏∑|•X≤{°uLoading ...°v°A≈„•‹Loading™∫∂i´◊°C
+	// Áï∂ÂúñÂæàÂ§öÊôÇÔºåOnInitËºâÂÖ•ÊâÄÊúâÁöÑÂúñË¶ÅËä±ÂæàÂ§öÊôÇÈñì„ÄÇÁÇ∫ÈÅøÂÖçÁé©ÈÅäÊà≤ÁöÑ‰∫∫
+	//     Á≠âÁöÑ‰∏çËÄêÁÖ©ÔºåÈÅäÊà≤ÊúÉÂá∫Áèæ„ÄåLoading ...„ÄçÔºåÈ°ØÁ§∫LoadingÁöÑÈÄ≤Â∫¶„ÄÇ
 	//
-	ShowInitProgress(0, "Start Initialize...");	// §@∂}©l™∫loading∂i´◊¨∞0%
+	ShowInitProgress(0, "Start Initialize...");	// ‰∏ÄÈñãÂßãÁöÑloadingÈÄ≤Â∫¶ÁÇ∫0%
 	//
-	// ∂}©l∏¸§J∏ÍÆ∆
+	// ÈñãÂßãËºâÂÖ•Ë≥áÊñô
 	//
-	//Sleep(1000);				// ©Ò∫C°A•H´K¨›≤M∑°∂i´◊°AπÍª⁄πC¿∏Ω–ßR∞£¶πSleep
+	//Sleep(1000);				// ÊîæÊÖ¢Ôºå‰ª•‰æøÁúãÊ∏ÖÊ•öÈÄ≤Â∫¶ÔºåÂØ¶ÈöõÈÅäÊà≤Ë´ãÂà™Èô§Ê≠§Sleep
 	//
-	// ¶πOnInit∞ ß@∑|±µ®ÏCGameStaterRun::OnInit()°A©“•H∂i´◊¡Ÿ®S®Ï100%
+	// Ê≠§OnInitÂãï‰ΩúÊúÉÊé•Âà∞CGameStaterRun::OnInit()ÔºåÊâÄ‰ª•ÈÄ≤Â∫¶ÈÇÑÊ≤íÂà∞100%
 	//
 	button_start = new Ui();
 	button_start->load_skin({"resources/ui/button_start.bmp"});
@@ -41,7 +41,7 @@ void CGameStateInit::OnInit()
 
 void CGameStateInit::OnBeginState()
 {
-	 // load backgrond (∂}©l≠∂≠±)
+	 // load backgrond (ÈñãÂßãÈ†ÅÈù¢)
 }
 
 void CGameStateInit::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -57,7 +57,7 @@ void CGameStateInit::OnLButtonDown(UINT nFlags, CPoint point)
 	{
 		delete button_start;
 		delete background;
-		GotoGameState(GAME_STATE_RUN);		// §¡¥´¶‹GAME_STATE_RUN
+		GotoGameState(GAME_STATE_RUN);		// ÂàáÊèõËá≥GAME_STATE_RUN
 	}
 }
 
