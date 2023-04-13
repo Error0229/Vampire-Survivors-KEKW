@@ -20,6 +20,8 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="Source\Game\VSclass\weapon_stats.csv" />
+    <None Include="Resources\item_id.csv" />
+    <None Include="Source\Game\VSclass\enemy_stats.csv" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Library\audio.cpp">
@@ -61,10 +63,12 @@
     <ClCompile Include="Source\Game\VSclass\Pickup.cpp" />
     <ClCompile Include="Source\Game\VSclass\Player.cpp" />
     <ClCompile Include="Source\Game\VSclass\Weapon.cpp" />
-    <ClCompile Include="Source\Game\VSclass\Button.cpp" />
-    <ClCompile Include="Source\Game\VSclass\VSMath.cpp" />
+    <ClCompile Include="Source\Game\VSclass\UI.cpp" />
     <ClCompile Include="Source\Game\VSclass\VSObject.cpp" />
     <ClCompile Include="Source\Game\VSclass\Projectile.cpp" />
+    <ClCompile Include="Source\Game\VSclass\QuadTree.cpp" />
+    <ClCompile Include="Source\Game\VSclass\VSUtil.cpp" />
+    <ClCompile Include="Source\Game\VSclass\ObjPool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Library\audio.h">
@@ -106,11 +110,13 @@
     <ClInclude Include="Source\Game\VSclass\Pickup.h" />
     <ClInclude Include="Source\Game\VSclass\Player.h" />
     <ClInclude Include="Source\Game\VSclass\Weapon.h" />
-    <ClInclude Include="Source\Game\VSclass\Button.h" />
+    <ClInclude Include="Source\Game\VSclass\UI.h" />
     <ClInclude Include="Source\Game\VSclass\VS.h" />
-    <ClInclude Include="Source\Game\VSclass\VSMath.h" />
     <ClInclude Include="Source\Game\VSclass\VSObject.h" />
     <ClInclude Include="Source\Game\VSclass\Projectile.h" />
+    <ClInclude Include="Source\Game\VSclass\QuadTree.h" />
+    <ClInclude Include="Source\Game\VSclass\VSUtil.h" />
+    <ClInclude Include="Source\Game\VSclass\ObjPool.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Source\Core\game.rc">

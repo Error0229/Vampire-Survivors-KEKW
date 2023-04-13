@@ -2,11 +2,15 @@
 #include "../../Library/gameutil.h"
 #include "VSObject.h"
 #include "Enemy.h"
-#include "VSMath.h"
+#include "Pickup.h"
+#include "VSUtil.h"
 #include <fstream>
 #include <sstream>
 Enemy::Enemy()
 {
+	obj_type = ENEMY;
+	_last_time_got_hit_by_projectile.resize(100);
+	_last_time_got_hit = -1;
 }
 Enemy::~Enemy() 
 {
@@ -41,6 +45,9 @@ int Enemy::get_power()
 {
 	return _power;
 }
+int Enemy::get_id() {
+	return _id;
+}
 
 void Enemy::show_skin(double factor)
 {
@@ -60,6 +67,19 @@ void Enemy::show_skin(double factor)
 		}
 	}
 }
+void Enemy::update_pos(CPoint pos) {
+	if (_is_stun) {
+		this->_speed = (int)_stun_speed;
+		if (clock() - _last_time_got_hit > 240) { // set to 2x of wiki said (120ms) 
+			_is_stun = false;
+			_speed = _mspeed;
+		}
+	}
+	else {
+		this->_speed = _mspeed;
+	}
+	VSObject::update_pos(pos);
+}
 
 bool Enemy::hurt(int damage) 
 {
@@ -67,6 +87,7 @@ bool Enemy::hurt(int damage)
 		_hp -= damage;
 		if (is_dead()) {
 			unshow_skin();
+			Xp::spawnXP(this->_position, static_cast<int>(_xp_value));
 			_death_animation.set_pos(get_pos());
 			_death_animation.set_animation(100, true);
 			_death_animation.set_is_mirror(_is_mirror);
@@ -75,6 +96,20 @@ bool Enemy::hurt(int damage)
 		}
 	}
 	return false;
+}
+
+bool Enemy::is_collide_with(VSObject& obj, double overlap_bound)
+{
+	if (is_dead() || (!_is_enable))
+		return false;
+	return is_overlapped(*this, obj, overlap_bound);
+}
+
+bool Enemy::is_collide_with(Enemy& obj, double overlap_bound)
+{
+	if (is_dead() || (!_is_enable) || obj.is_dead() || (!obj._is_enable))
+		return false;
+	return is_overlapped(*this, obj, overlap_bound);
 }
 
 void Enemy::spawn(CPoint pos, int move_animation_delay, int death_animation_delay, int player_lvl)
@@ -86,7 +121,7 @@ void Enemy::spawn(CPoint pos, int move_animation_delay, int death_animation_dela
 	_hp = (_hp_scale) ? (_hp_max * player_lvl) : (_hp_max);
 }
 
-void Enemy::load_templete_enemies()
+void Enemy::load_template_enemies()
 {
 	ifstream file("source/game/VSclass/enemy_stats.csv");
 	string header, line;
@@ -107,7 +142,7 @@ void Enemy::load_templete_enemies()
 		getline(ss, res_d, ',');
 		getline(ss, xp_value, ',');
 		getline(ss, hp_scale, ',');
-		templete_enemies.push_back(load_enemy(stoi(number), (char*)file_name.c_str(), stoi(hp), stoi(power), stoi(mspeed), stod(kb), stoi(kb_max), stod(res_f), stoi(res_k), stoi(res_d), stod(xp_value), stoi(hp_scale)));
+		template_enemies.push_back(load_enemy(stoi(number), (char*)file_name.c_str(), stoi(hp), stoi(power), stoi(mspeed), stod(kb), stoi(kb_max), stod(res_f), stoi(res_k), stoi(res_d), stod(xp_value), stoi(hp_scale)));
 	}
 }
 
@@ -121,7 +156,7 @@ Enemy Enemy::load_enemy(int id, char* name, int health, int power, int mspeed, d
 		struct stat buffer;
 		if (stat(tmp, &buffer) == 0) {
 			//the file exist
-			enemy.load_skin(tmp, RGB(255, 255, 255));
+			enemy.load_skin(tmp);
 		}
 		else {
 			//the file doesnt exist
@@ -135,7 +170,7 @@ Enemy Enemy::load_enemy(int id, char* name, int health, int power, int mspeed, d
 		struct stat buffer;
 		if (stat(tmp, &buffer) == 0) {
 			//the file exist
-			enemy._death_animation.load_skin(tmp, RGB(255, 255, 255));
+			enemy._death_animation.load_skin(tmp);
 		}
 		else {
 			//the file doesnt exist
@@ -143,6 +178,7 @@ Enemy Enemy::load_enemy(int id, char* name, int health, int power, int mspeed, d
 			break;
 		}
 	}
+	enemy._type = id;
 	enemy._id = id;
 	enemy._hp_max = health;
 	enemy._power = power;
@@ -159,13 +195,13 @@ Enemy Enemy::load_enemy(int id, char* name, int health, int power, int mspeed, d
 	enemy._is_mirror = false;
 	enemy._position = CPoint(0, 0);
 
-	enemy._speed = 200; //this will change later
+	enemy._speed = 50; //this will change later
 	return enemy;
 }
 
-Enemy Enemy::get_templete_enemy(int id)
+Enemy Enemy::get_template_enemy(int id)
 {
-	return templete_enemies[id];
+	return template_enemies[id];
 }
 
-vector<Enemy> Enemy::templete_enemies;
+vector<Enemy> Enemy::template_enemies;

@@ -2,20 +2,28 @@
 #include "../Core/Resource.h"
 #include <mmsystem.h>
 #include <ddraw.h>
+#include <random>
 #include "../Library/audio.h"
 #include "../Library/gameutil.h"
 #include "../Library/gamecore.h"
 #include "config.h"
 #include "mygame.h"
 #include "VSclass/VS.h"
+#include <string>
 
 using namespace game_framework;
+
+enum gamerun_status {
+	PLAYING,
+	LEVEL_UP,
+	OPEN_CHEST
+};
 
 /////////////////////////////////////////////////////////////////////////////
 // 這個class為遊戲的遊戲執行物件，主要的遊戲程式都在這裡
 /////////////////////////////////////////////////////////////////////////////
 
-CGameStateRun::CGameStateRun(CGame *g) : CGameState(g)
+CGameStateRun::CGameStateRun(CGame* g) : CGameState(g)
 {
 }
 
@@ -25,43 +33,125 @@ CGameStateRun::~CGameStateRun()
 
 void CGameStateRun::OnBeginState()
 {
+	timer.start();
 }
 
 
 void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 {
 	Weapon::load_weapon_stats();
+	Enemy::load_template_enemies();
+	Icon::load_filename();
+	Xp::init_XP();
+	_gamerun_status = PLAYING;
+	_next_status = PLAYING;
+
 	player.load_skin({ "resources/character/Dog_01.bmp", "resources/character/Dog_02.bmp" ,"resources/character/Dog_03.bmp" ,"resources/character/Dog_04.bmp" ,"resources/character/Dog_05.bmp" });
 	player.set_pos(0, 0);
 	player.set_speed(300);
 	player.set_default_direct(RIGHT);
 	player.set_animation(150, false);
 	player.load_bleed();
-	player.acquire_weapon(Weapon::_base_weapon[0]);
-	player.acquire_passive(new Passive(0));
+	player.acquire_weapon(MAGIC_MISSILE);
+	player.acquire_passive(POWER);
+
 	map.load_map({ "resources/map/dummy1.bmp" });
 	map.set_pos(0, 0);
+	QuadTree::VSPlain.clear();
 
-	Enemy::load_templete_enemies();
-	for (int i = 0; i < 10; i++)
-		enemy.push_back(Enemy::get_templete_enemy(GHOST));
-	
+	for (int i = 0; i < 100; i++) {
+		enemy.push_back(Enemy::get_template_enemy(BAT2));
+		xp.push_back(Xp());
+		chest.push_back(Chest());
+	}
 	for ( int i = 0; i < (int)enemy.size(); i++ ) {
-		enemy[i].spawn(CPoint(-300 + 60 * i, -400 + 80 * i));
+		enemy[i].spawn(CPoint(-300 + 30 * i/10, -400 + 40 * i%10));
 	}
 
-	Pickup::load_xp(xp_gem, 10);
+	event_background.load_skin("resources/ui/event_background.bmp");
+	event_background.set_base_pos(0, 0);
+	for (int i = 0; i < 4; i++) {
+		level_up_button[i].load_skin("resources/ui/event_button.bmp");
+		level_up_icon_frame[i].load_skin("resources/ui/frameB.bmp");
+		level_up_button[i].set_base_pos(0, -75 + 75 * i);
+		level_up_icon_frame[i].set_base_pos(-120, -90 + 75*i);
+		level_up_icon[i].set_base_pos(-120, -90 + 75*i);
+		level_up_icon[i].load_icon();
+		level_up_choice[i] = -1;
+	}
+	chest_animation.load_skin({"resources/ui/TreasureIdle_01_big.bmp", "resources/ui/TreasureIdle_02_big.bmp" , "resources/ui/TreasureIdle_03_big.bmp" , "resources/ui/TreasureIdle_04_big.bmp" , "resources/ui/TreasureIdle_05_big.bmp" , "resources/ui/TreasureIdle_06_big.bmp" ,"resources/ui/TreasureIdle_07_big.bmp" ,"resources/ui/TreasureIdle_08_big.bmp", "resources/ui/TreasureOpen_01_big.bmp", "resources/ui/TreasureOpen_02_big.bmp" , "resources/ui/TreasureOpen_03_big.bmp" , "resources/ui/TreasureOpen_04_big.bmp" , "resources/ui/TreasureOpen_05_big.bmp" , "resources/ui/TreasureOpen_06_big.bmp" , "resources/ui/TreasureOpen_07_big.bmp" , "resources/ui/TreasureOpen_08_big.bmp" });
+	chest_animation.set_animation(100, true);
+	chest_animation.set_base_pos(5, 75);
+	CPoint chest_item_pos[] = {CPoint(0,-50), CPoint(-80,-110), CPoint(80,-110), CPoint(-100,-10), CPoint(100,-10)};
+	for (int i = 0; i < 5; i++) {
+		chest_item_icon[i].load_icon();
+		chest_item_icon[i].set_base_pos(chest_item_pos[i]);
+		chest_item_frame[i].load_skin("resources/ui/PrizeBG.bmp");
+		chest_item_frame[i].set_base_pos(chest_item_pos[i]);
+		chest_item[i] = -1;
+	}
+
+	xp_bar_frame.load_skin("resources/ui/xp_bar_frame.bmp");
+	xp_bar_frame.set_base_pos(-8, -300 + (xp_bar_frame.get_height() >> 1));
+	xp_bar_cover.load_skin("resources/ui/xp_bar_cover.bmp");
+	xp_bar_cover.set_base_pos(-8, -300 + (xp_bar_frame.get_height() >> 1));
+	xp_bar.load_skin({ "resources/ui/xp_bar.bmp", "resources/ui/xp_bar_1.bmp", "resources/ui/xp_bar_2.bmp", "resources/ui/xp_bar_3.bmp", "resources/ui/xp_bar_4.bmp", "resources/ui/xp_bar_5.bmp" });
+	xp_bar.set_base_pos(-8, -300 + (xp_bar.get_height() >> 1));
+	xp_bar.set_animation(1, false);
+	xp_bar.disable_animation();
+
+	inv_slot.load_skin("resources/ui/weaponSlots.bmp");
+	inv_slot.set_base_pos(-400 + (inv_slot.get_width()>>1), -300 + 24 + (inv_slot.get_height()>>1));
+	for (int i = 0; i < 12; i++) {
+		inv_icon[i].load_icon();
+		inv_icon[i].set_base_pos(-400 + 8 + i%6*16, -300 + 24 + 8 + i/6*16);
+	}
+
+	inv_detail_frame.load_skin("resources/ui/inv_detail_frame.bmp");
+	inv_detail_frame.set_base_pos(-400+(inv_detail_frame.get_width() >> 1), -300+24+(inv_detail_frame.get_height() >> 1));
+	for (int i = 0; i < 12; i++) {
+		inv_detail_item_icons[i].load_icon();
+		inv_detail_item_icons[i].set_base_pos(-400 + 20 + i%6*26, -300 + 24 + 20 + i/6*58);
+		for (int j = 0; j < 12; j++) {
+			inv_detail_item_knots[i][j][0].load_skin("resources/ui/weaponLevelEmpty.bmp");
+			inv_detail_item_knots[i][j][1].load_skin("resources/ui/weaponLevelFull.bmp");
+			inv_detail_item_knots[i][j][0].set_base_pos(-388 + j % 3 * 8 + i % 6 * 26, -244 + j / 3 * 8 + i / 6 * 58);
+			inv_detail_item_knots[i][j][1].set_base_pos(-388 + j % 3 * 8 + i % 6 * 26, -244 + j / 3 * 8 + i / 6 * 58);
+		}
+	}
+
+	stat_frame.load_skin("resources/ui/stat_frame.bmp");
+	stat_frame.set_base_pos(-400 + (stat_frame.get_width() >> 1), -300 + 154 + (stat_frame.get_height() >> 1));
+	for (int i = 0; i < 16; i++)
+		stat_icon[i].load_icon();
+
+	hp_bar.load_skin({ "resources/ui/hp_bar_0.bmp", "resources/ui/hp_bar_1.bmp", "resources/ui/hp_bar_2.bmp", "resources/ui/hp_bar_3.bmp", "resources/ui/hp_bar_4.bmp", "resources/ui/hp_bar_5.bmp", "resources/ui/hp_bar_6.bmp", "resources/ui/hp_bar_7.bmp", "resources/ui/hp_bar_8.bmp", "resources/ui/hp_bar_9.bmp", "resources/ui/hp_bar_10.bmp", "resources/ui/hp_bar_11.bmp", "resources/ui/hp_bar_12.bmp", "resources/ui/hp_bar_13.bmp", "resources/ui/hp_bar_14.bmp", "resources/ui/hp_bar_15.bmp", "resources/ui/hp_bar_16.bmp", "resources/ui/hp_bar_17.bmp", "resources/ui/hp_bar_18.bmp", "resources/ui/hp_bar_19.bmp" });;
+	hp_bar.set_base_pos(0, 15);
 }
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-
-  player.level_up_passive(0);
-	for (int i = 0; i < (int)enemy.size();i++) {
-		if (enemy[i].hurt(1000000)) {
-			xp_gem[i].spawn_xp(enemy[i].get_pos(), enemy[i].get_xp_value());
+	// A: kill all enemies
+	// B: pick up 10 xp
+	// C: spawn a chest above player
+	
+	static int chest_cnt = 0; //tmp
+	switch (nChar) {
+	case('A'):
+		for (int i = 0; i < (int)enemy.size();i++) {
+			if (enemy[i].hurt(1000000)) {
+				xp[i].spawn(enemy[i].get_pos(), enemy[i].get_xp_value());
+			}
 		}
-
+		break;
+	case('B'):
+		player.pick_up_xp(20);
+		break;
+	case('C'):
+		if (chest_cnt > 99)
+			break;
+		chest[chest_cnt++].spawn(player.get_pos() + CPoint(0, -50), true);
+		break;
 	}
 }
 
@@ -72,6 +162,35 @@ void CGameStateRun::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
 {
+	update_mouse_pos();
+	switch (_gamerun_status) {
+	case(PLAYING):
+		break;
+	case(LEVEL_UP):
+		for (int i = 0; i < 4; i++) {
+			if (level_up_button[i].is_hover(mouse_pos)) {
+				player.obtain_item(level_up_choice[i]);
+				//reset all choice/button
+				for (int j = 0; j < 4; j++) {
+					level_up_choice[j] = -1;
+					level_up_button[j].activate_hover = false;
+				}
+				//switch status
+				if (player.apply_level_up())
+					_next_status = LEVEL_UP;
+				else
+					_next_status = PLAYING;
+				break;
+			}
+			
+		}
+		break;
+	case(OPEN_CHEST):
+		for (int i = 0; i < 5; i++)
+			chest_item[i] = -1;
+		_next_status = PLAYING;
+		break;
+	}
 }
 
 void CGameStateRun::OnLButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動作
@@ -91,7 +210,114 @@ void CGameStateRun::OnRButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動
 {
 }
 
-void CGameStateRun::OnMove()							// 移動遊戲元素
+int CGameStateRun::draw_level_up(bool pull_from_inv)
+{
+	// 0~31: weapon
+	//32~62: evo
+	//63~83: passive
+	if (pull_from_inv) {
+		if (Weapon::weapon_count() + Passive::passive_count() == 1) {
+			return draw_level_up(false);
+		}
+		if (player.all_max()) {
+			if (player.full_inv()) {
+				TRACE("level up: inv full and all max.\n");
+				return -1;
+			}
+			else {
+				return draw_level_up(false);
+			}
+		}
+	}
+	else {
+		if (player.full_inv()) {
+			return draw_level_up(true);
+		}
+	}
+	vector<double> weights(84, 0);
+	bool no_weight = true;
+	int player_items[84];
+	int base_weapon;
+	memset(player_items, 0, sizeof(player_items));
+	// store player's items, 0: not owned, 1: owned, 2: max level
+	for (auto& i : Weapon::all_weapon) {
+		player_items[i.get_type()] = (i.is_max_level()) ? 2 : 1;
+		if (i.is_evo_weapon()) {
+			base_weapon = Weapon::evolution_pair_reverse.find(i.get_type())->second;
+			player_items[base_weapon % 100] = 2;
+			if (base_weapon / 100)
+				player_items[base_weapon / 100] = 2;
+		}
+	}
+	for (auto i : Passive::all_passive) {
+		player_items[i.get_type()] = (i.is_max_level()) ? 2 : 1;
+	}
+	// calc weapon weights
+	// increase this once we made a new weapom.
+	for (int i = 0; i < 2; i++) {
+		if (level_up_choice[0] == i || level_up_choice[1] == i || level_up_choice[2] == i || level_up_choice[3] == i)
+			continue;
+		if ((pull_from_inv && player_items[i] == 1) || (!pull_from_inv && Weapon::weapon_count()<6 && player_items[i] == 0)) {
+			weights[i] = Weapon::_base_weapon[i].get_rarity();
+			no_weight = false;
+		}
+	}
+	// calc passive weights
+	for (int i = 63; i < 84; i++) {
+		if (level_up_choice[0] == i || level_up_choice[1] == i || level_up_choice[2] == i || level_up_choice[3] == i)
+			continue;
+		if ((pull_from_inv && player_items[i] == 1) || (!pull_from_inv && Passive::passive_count()<6 && player_items[i] == 0)) {
+			weights[i] = Passive(i).get_rarity();
+			no_weight = false;
+		}
+	}
+	if (no_weight && pull_from_inv)
+		return draw_level_up(false);
+	return poll(weights, true);
+}
+int CGameStateRun::draw_open_chest(bool pull_evo)
+{
+	// 0~31: weapon
+	//32~62: evo
+	//63~83: passive
+	vector<double> weights;
+	vector<int> index_to_type;
+	
+	bool all_max = true, can_evo = false;
+	for (auto& i : Weapon::all_weapon) {
+		if (i.can_evo())
+			can_evo = true;
+		if (!i.is_max_level())
+			all_max = false;
+	}
+	for (auto& i : Passive::all_passive) {
+		if (!i.is_max_level())
+			all_max = false;
+	}
+	if (all_max && (!can_evo || !pull_evo)) {
+		TRACE("open chest: all max and cant evo.\n");
+		return -2;
+	}
+	for (auto& i : Passive::all_passive) {
+		if (!i.is_max_level()) {
+			weights.push_back(i.get_rarity());
+			index_to_type.push_back(i.get_type());
+		}
+	}
+	for (auto& i : Weapon::all_weapon) {
+		if (!i.is_max_level()) {
+			weights.push_back(i.get_rarity());
+			index_to_type.push_back(i.get_type());
+		}
+		else if (i.can_evo()) {
+			weights.push_back(i.get_rarity());
+			index_to_type.push_back(Weapon::evolution_pair.find(i.get_type())->second);
+		}
+	}
+	return index_to_type[poll(weights)];
+}
+
+void CGameStateRun::update_mouse_pos()
 {
 	CPoint p;
 	GetCursorPos(&p);
@@ -99,34 +325,158 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 	ScreenToClient(targetWindow, &p);
 	mouse_pos.x = p.x - VSObject::player_dx;
 	mouse_pos.y = p.y - VSObject::player_dy;
-	player.update_pos(mouse_pos);
-	player.update_proj_pos();
-	for ( int i = 0; i < (int)enemy.size(); i++ ) {
-		enemy[i].update_pos(player.get_pos());
-		for ( int j = 0; j < (int)enemy.size(); j++ ) {
-			if (i != j && (!enemy[i].is_dead()) && (enemy[i].is_enable()) && is_overlapped(enemy[i], enemy[j])) {
-				enemy[i].resolve_collide(enemy[ j ]);
+}
+
+void CGameStateRun::OnMove()							// 移動遊戲元素
+{
+	update_mouse_pos();
+	vector <VSObject*> result;
+	
+	//polling
+	vector<double> weights(2, 0);
+	
+	//open chest
+	int chest_item_count;
+	static bool can_evo=false;
+
+	_gamerun_status = _next_status;
+	vector <VSObject*> plain_result = {};
+	int offset = 300;
+	switch (_gamerun_status) {
+	case(PLAYING):
+		//--------------------------------------------------------
+		//playing status
+		//--------------------------------------------------------
+		timer.resume();
+
+		player.update_pos(mouse_pos);
+		QuadTree::VSPlain.set_range(-Player::player_dx - offset, -Player::player_dy - offset, (OPEN_AS_FULLSCREEN ? RESOLUTION_X : SIZE_X) + offset, (OPEN_AS_FULLSCREEN ? RESOLUTION_Y : SIZE_Y) + offset);
+		for (Enemy& i_enemy : enemy) {
+			if (!i_enemy.is_dead() && i_enemy.is_enable()) {
+				QuadTree::VSPlain.insert((VSObject*)(&i_enemy));
 			}
 		}
-		if ((!enemy[i].is_dead()) && (enemy[i].is_enable()) && is_overlapped(enemy[i], player)) {
-			enemy[i].resolve_collide(player);
-			player.hurt(enemy[i].get_power());
-			if (enemy[i].hurt(1)) {
-				//when the enemy die from this damage
-				xp_gem[i].spawn_xp(enemy[i].get_pos(), enemy[i].get_xp_value());
+		Weapon::attack();
+		Projectile::update_position();
+		for (Projectile& proj : Projectile::all_proj) {
+			plain_result.clear();
+			QuadTree::VSPlain.query_by_type(plain_result, (VSObject*)(&proj), ENEMY);
+			for (VSObject* obj : plain_result) {
+				proj.collide_with_enemy(*((Enemy*)obj));
 			}
 		}
-	}
-	// suck xp
-	for (auto& i : xp_gem) {
-		if (i.is_enable() && distance(player, i) < player.get_pickup_range()) {
-			i.set_speed(1000);
-			i.update_pos(player.get_pos());
-			if (is_overlapped(player, i)) {
-				i.set_enable(false);
-				player.pick_up_xp(i.get_xp_value());
+		for (int i = 0; i < (int)enemy.size(); i++) {
+			enemy[i].update_pos(player.get_pos());
+			result = {};
+			QuadTree::VSPlain.query_by_type(result, (VSObject*)(&enemy[i]), ENEMY);
+			for (VSObject* obj : result) {
+				enemy[i].append_collide(*((Enemy*)obj), 0.75, 0.5);
+			}
+			enemy[i].update_collide();
+			if (enemy[i].is_collide_with(player)) {
+				enemy[i].append_collide(player, 1, 0.5);
+				enemy[i].update_collide();
+				player.hurt(enemy[i].get_power());
 			}
 		}
+		QuadTree::VSPlain.clear();
+		// suck xp
+		Xp::update_XP_pos(player.get_pickup_range());
+		for (auto i : Xp::xp_all) {
+			if (is_overlapped(player, *i)) {
+				i->despawn();
+				player.pick_up_xp(i->get_xp_value());
+			}
+		}
+		for (auto& i : xp) {
+			if (i.is_enable() && VSObject::distance(player, i) < player.get_magnet()) {
+				i.set_speed(200);
+				i.update_pos(player.get_pos());
+				if (is_overlapped(player, i)) {
+					i.despawn();
+					player.pick_up_xp(i.get_xp_value());
+				}
+			}
+		}
+		for (auto& i : chest) {
+			if (i.is_enable() && is_overlapped(player, i)) {
+				i.despawn();
+				can_evo = i.get_can_evo();
+				_next_status = OPEN_CHEST;
+			}
+		}
+
+		if (!player.is_hurt())
+			player.regen();
+
+		if(player.get_exp_percent()==100)
+			_next_status = LEVEL_UP;
+
+		break;
+	case(LEVEL_UP):
+		//--------------------------------------------------------
+		//level up status
+		//--------------------------------------------------------
+		timer.pause();
+		
+		if (level_up_choice[0] != -1)
+			break;
+
+		// owned_chance
+		weights[1] = 1 + 0.3 * ((player.get_level() & 1) ? 1 : 2) / (double)player.get_luck() * 100;
+		weights[0] = 1 - weights[1];
+
+		// poll new level_up choices
+		level_up_choice[0] = draw_level_up(poll(weights, true));
+		level_up_choice[1] = draw_level_up(poll(weights, true));
+		level_up_choice[2] = draw_level_up(false);
+
+		// 4th_choice
+		weights[1] = 1 - (1 / (double)player.get_luck() * 100);
+		weights[0] = 1 - weights[1];
+		level_up_choice[3] = (poll(weights, true))? draw_level_up(false) : -1;
+
+		// set which choice can be click
+		for (int i = 0; i < 4; i++) {
+			if (level_up_choice[i] != -1)
+				level_up_button[i].activate_hover = true;
+			else
+				level_up_button[i].activate_hover = false;
+		}
+		
+		break;
+	case(OPEN_CHEST):
+		//--------------------------------------------------------
+		// chest status
+		//--------------------------------------------------------
+		if (chest_item[0] != -1)
+			break;
+
+		timer.pause();
+
+		chest_animation.enable_animation();
+		// poll chest item count
+		weights[1] = 0.05 * (double)player.get_luck() / 100;
+		weights[0] = 1 - weights[1];
+		chest_item_count = 1;
+		if (poll(weights, true))
+			chest_item_count = 5;
+		else {
+			weights[1] = 0.2 * (double)player.get_luck() / 100;
+			weights[0] = 1 - weights[1];
+			if (poll(weights, true))
+				chest_item_count = 3;
+		}
+		// poll chest item
+		for (int i = 0; i < chest_item_count; i++) {
+			chest_item[i] = draw_open_chest(can_evo);
+			TRACE(_T("%d\n"), chest_item[i]);
+			if (chest_item[i] > -1) {
+				// -2 means pull empty
+				player.obtain_item(chest_item[i]);
+			}
+		}
+		break;
 	}
 }
 void CGameStateRun::OnShow()
@@ -134,10 +484,130 @@ void CGameStateRun::OnShow()
 	map.map_padding(player.get_pos());
 	map.show_map();
 	player.show_skin();
-	player.show_proj_skin();
-	for ( int i = 0; i < (int)enemy.size(); i++ ) {
-		enemy[ i ].show_skin();
+	Weapon::show();
+	for (int i = 0; i < (int)enemy.size(); i++) {
+		enemy[i].show_skin();
 	}
-	for (auto &i:xp_gem)
+	for (auto& i : xp)
 		i.show_skin();
+	for(auto& i: chest)
+		i.show_skin();
+	Xp::show();
+	
+	xp_bar_cover.show();
+	xp_bar.set_base_pos(-8 - (xp_bar.get_width() * (100 - player.get_exp_percent()) / 100), -300 + (xp_bar.get_height() >> 1));
+	xp_bar.show();
+	xp_bar_frame.show();
+
+	bool is_own;
+	string level_up_desc, level_text, type_text;
+
+	vector<stat_struct> player_stats;
+	int cnt;
+	string 🍆;
+	switch (_gamerun_status) {
+	case(PLAYING):
+		inv_slot.show();
+		xp_bar.disable_animation();
+		for (int i = 0; i < Weapon::weapon_count(); i++)
+			inv_icon[i].show(Weapon::all_weapon[i].get_type());
+		for (int i = 0; i < Passive::passive_count(); i++)
+			inv_icon[i+6].show(Passive::all_passive[i].get_type());
+
+		hp_bar.set_selector((player.get_hp_percent() -1) / 5);
+		hp_bar.show();
+		break;
+	case(LEVEL_UP):
+		xp_bar.enable_animation();
+		event_background.show();
+		inv_detail_frame.show();
+		for (int i = 0; i < 4; i++) {
+			if (level_up_choice[i]>-1) {
+				level_up_button[i].show();
+				level_up_icon_frame[i].show();
+				level_up_icon[i].show(level_up_choice[i]);
+
+				// find the text
+				is_own = false;
+				if (level_up_choice[i] < 63) {
+					for (auto& w : Weapon::all_weapon) {
+						if (w.get_type() == level_up_choice[i]) {
+							type_text = w.get_name();
+							level_text = "level:" + to_string(w.get_level());
+							level_up_desc = w.get_level_up_msg();
+							is_own = true;
+							break;
+						}
+					}
+					if (!is_own) {
+						type_text = Weapon::_base_weapon[level_up_choice[i]].get_name();
+						level_text = "New!";
+						level_up_desc = Weapon::_base_weapon[level_up_choice[i]].get_level_up_msg(true);
+					}
+				}
+				else {
+					for (auto& p : Passive::all_passive) {
+						if (p.get_type() == level_up_choice[i]) {
+							type_text = p.get_name();
+							level_text = "level:" + to_string(p.get_level());
+							level_up_desc = p.get_level_up_msg();
+							is_own = true;
+							break;
+						}
+					}
+					if (!is_own) {
+						type_text = Passive(level_up_choice[i]).get_name();
+						level_text = "New!";
+						level_up_desc = Passive(level_up_choice[i]).get_level_up_msg(true);
+					}
+				}
+				text_device.add_text(type_text, CPoint(-85, -95 + 75 * i) + player.get_pos(), 1, FONT_12x08, ALIGN_LEFT);
+				text_device.add_text(level_text, CPoint(70, -95 + 75 * i) + player.get_pos(), 1, FONT_12x08, ALIGN_LEFT);
+				text_device.add_text(level_up_desc, CPoint(-130, -70 + 75 * i) + player.get_pos(), 1, FONT_12x08, MULTILINE_LEFT);
+			}
+		}
+		text_device.add_text("Level Up!", CPoint(0, -150) + player.get_pos(), 1, FONT_24x18_B, ALIGN_CENTER);
+		if ((level_up_choice[0] > -1) && (level_up_choice[1] > -1) && (level_up_choice[2] > -1) && (level_up_choice[3] == -1)) {
+			text_device.add_text("Increase your luck", CPoint(0, 140) + player.get_pos(), 1, FONT_12x08, ALIGN_CENTER);
+			text_device.add_text("  for a chance to get 4 choices.", CPoint(0, 160) + player.get_pos(), 1, FONT_12x08, ALIGN_CENTER);
+		}
+		//inventory detail 
+		for (int i = 0; i < Weapon::weapon_count(); i++) {
+			inv_detail_item_icons[i].show(Weapon::all_weapon[i].get_type());
+			for(int j = 0; j < Weapon::all_weapon[i].get_max_level(); j++)
+				inv_detail_item_knots[i][j][Weapon::all_weapon[i].get_level() > j].show();
+		}
+		for (int i = 0; i < Passive::passive_count(); i++) {
+			inv_detail_item_icons[i+6].show(Passive::all_passive[i].get_type());
+			for (int j = 0; j < Passive::all_passive[i].get_max_level(); j++)
+				inv_detail_item_knots[i+6][j][Passive::all_passive[i].get_level() > j].show();
+		}
+		// player stat text
+		stat_frame.show();
+		player_stats = player.get_stats_string();
+		cnt = 0;
+		for (int i = 0; i < 16; i++) {
+			text_device.add_text(player_stats[i].name_string, CPoint(-375, -130 + 16 * cnt) + player.get_pos(), 1, FONT_12x08, ALIGN_LEFT);
+			text_device.add_text(player_stats[i].val_string, CPoint(-235, -130 + 16 * cnt) + player.get_pos(), 1, FONT_12x08, ALIGN_RIGHT);
+			stat_icon[i].set_base_pos(-385, -130 + 16 * cnt);
+			stat_icon[i].show(player_stats[i].type);
+			cnt++;
+			cnt += (i % 4 == 3); //empty line
+		}
+		break;
+	case(OPEN_CHEST):
+		event_background.show();
+		chest_animation.show();
+		for (int i = 0; i < 5; i++) {
+			if (chest_item[i] > -1) {
+				chest_item_frame[i].show();
+				chest_item_icon[i].show(chest_item[i]);
+			}
+		}
+		break;
+	}
+	text_device.add_text(timer.get_minute_string() + ":" + timer.get_second_string(), CPoint(0, -265) + player.get_pos(), 1, FONT_24x18_B, ALIGN_CENTER);
+	text_device.add_text("LV " + to_string(player.get_level()), CPoint(380, -287) + player.get_pos(), 1, FONT_24x18_B, ALIGN_RIGHT);
+	text_device.print_all();
 }
+

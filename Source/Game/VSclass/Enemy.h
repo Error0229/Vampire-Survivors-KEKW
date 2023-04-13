@@ -39,21 +39,30 @@ public:
 	void set_level(int);
 	void set_enable(bool enable=true);
 	void spawn(CPoint pos, int move_animation_delay = 100, int death_animation_delay = 100, int player_lvl=1);
+	void update_pos(CPoint) override;
 	bool is_dead();
 	bool is_enable();
+	int get_id();
 	int get_xp_value();
 	int get_power();
 	bool hurt(int damage); //this will return true if the enemy die from this damage, otherwise false
-	static void load_templete_enemies();
+	bool is_collide_with(VSObject&, double overlap_bound=1);
+	bool is_collide_with(Enemy&, double overlap_bound=0.5);
+	static void load_template_enemies();
 	static Enemy load_enemy(int id, char* name, int hp_max, int power, int mspeed, double kb, int kb_max, double res_f, bool res_k, bool res_d, double xp_value, bool hp_scale);
-	static Enemy get_templete_enemy(int id);
+	static Enemy get_template_enemy(int id);
+	friend class Projectile;
 private:
 	// stats
+	clock_t _last_time_got_hit;
+	vector <clock_t> _last_time_got_hit_by_projectile;
+	int _alt_speed;
 	int _id, _hp, _hp_max, _power, _mspeed, _kb_max;
 	double _kb, _res_f, _xp_value;
-	bool _res_k, _res_d, _hp_scale;
+	bool _res_k, _res_d, _hp_scale, _is_stun = 0;
+	double _stun_speed;
 	int  _level;
 	bool _is_enable; //this name is not good
 	VSObject _death_animation;
-	static vector<Enemy> templete_enemies;
+	static vector<Enemy> template_enemies;
 };

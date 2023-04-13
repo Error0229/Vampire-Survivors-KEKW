@@ -69,7 +69,7 @@ namespace game_framework {
 		CMovingBitmap logo;								// csie的logo
 		CMovingBitmap text;
 		CMovingBitmap portrait;
-		Button* button_start;
+		Ui* button_start;
 		VSObject* background;
 	};
 
@@ -92,13 +92,47 @@ namespace game_framework {
 		void OnRButtonDown(UINT nFlags, CPoint point);  // 處理滑鼠的動作
 		void OnRButtonUp(UINT nFlags, CPoint point);	// 處理滑鼠的動作
 	protected:
+		void OnMove();									// 移動遊戲元素
+		void OnShow();									// 顯示這個狀態的遊戲畫面
+		void update_mouse_pos();
+		int draw_level_up(bool);
+		int draw_open_chest(bool pull_evo=true);
 		CPoint mouse_pos;								// 滑鼠的座標
 		Map map;
 		Player player;
-		void OnMove();									// 移動遊戲元素
-		void OnShow();									// 顯示這個狀態的遊戲畫面
 		vector<Enemy> enemy;
-		vector<Pickup> xp_gem;
+		vector<Xp> xp;
+		vector<Chest> chest;
+		int _gamerun_status, _next_status;
+		VSTimer timer;
+
+		Ui event_background;
+		Ui level_up_button[4];
+		int level_up_choice[4];
+		Icon level_up_icon[4];
+		Ui level_up_icon_frame[4];
+
+		int chest_item[5];
+		Icon chest_item_icon[5];
+		Ui chest_animation;
+		Ui chest_item_frame[5];
+
+		Ui xp_bar_frame;
+		Ui xp_bar_cover;
+		Ui xp_bar;
+
+		Ui inv_slot;
+		Icon inv_icon[12];
+
+		Ui inv_detail_frame;
+		Icon inv_detail_item_icons[12];
+		Ui inv_detail_item_knots[12][12][2];
+		
+		Ui stat_frame;
+		Icon stat_icon[16];
+		TextDevice text_device;
+
+		Ui hp_bar;
 	};
 
 	/////////////////////////////////////////////////////////////////////////////

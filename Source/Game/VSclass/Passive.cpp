@@ -4,6 +4,7 @@
 #include "Passive.h"
 Passive::Passive()
 {
+	obj_type = PASSIVE;
 }
 Passive::Passive(int type) {
 	_type = type;
@@ -22,7 +23,7 @@ Passive::Passive(int type) {
 		_name = "Armor";
 		_rarity = 100;
 		_level_up_msg = { "", "Reduces incoming damage by 1. Increases retaliatory damage by 10%", "Reduces incoming damage by 1" };
-		_effect_by_level = { 0, -1, -2, -3, -4, -5 };
+		_effect_by_level = { 0, 1, 2, 3, 4, 5 };
 		_level = 1;
 		_max_level = 5;
 		_stacking = Additive;
@@ -32,7 +33,7 @@ Passive::Passive(int type) {
 		_name = "Hollow Heart";
 		_rarity = 90;
 		_level_up_msg = { "", "Augment max health by 20%", "Max health increases by 20%" };
-		_effect_by_level = { 100, 120, 144, 173, 207, 249 };
+		_effect_by_level = { 0, 20, 40, 60, 80, 100 };
 		_level = 1;
 		_max_level = 5;
 		_stacking = Multiplicative;
@@ -114,7 +115,7 @@ Passive::Passive(int type) {
 		_level_up_msg = { "", "Character picks up items from further away",
 			"Pickup range increased by 33%", "Pickup range increased by 25%",
 			"Pickup range increased by 20%", "Pickup range increased by 33%" };
-		_effect_by_level = { 0, 150, 200, 250, 300, 400 };
+		_effect_by_level = { 0, 50, 100, 150, 200, 300 };
 		_level = 1;
 		_max_level = 5;
 		_stacking = Additive;
@@ -148,17 +149,18 @@ Passive::Passive(int type) {
 		_level = 1;
 		_max_level = 5;
 		_stacking = Additive;
-		this->load_skin("Resources/Passive/Stone Mask.bmp");
+		this->load_skin("Resources/Passive/Mask.bmp");
 		break;
 	case REVIVAL:
-		_name = "Tiragisu";
+		_name = "Tiramisu";
 		_rarity = 40;
 		_level_up_msg = { "", "Revives once with 50% health", "Adds 1 Revival" };
 		_effect_by_level = { 0, 1, 2 };
 		_level = 1;
 		_max_level = 2;
 		_stacking = Additive;
-		this->load_skin("Resources/Passive/Tiragisu.bmp");
+		this->load_skin("Resources/Passive/Tiramisu.bmp");
+		break;
 	case CURSE:
 		_name = "Skull O\'Maniac";
 		_rarity = 40;
@@ -168,6 +170,7 @@ Passive::Passive(int type) {
 		_max_level = 5;
 		_stacking = Additive;
 		this->load_skin("Resources/Passive/Skull OManiac.bmp");
+		break;
 	case SILVER:
 		_name = "Silver Ring";
 		_rarity = 10;
@@ -192,12 +195,12 @@ Passive::Passive(int type) {
 		_name = "Metaglio Left";
 		_rarity = 10;
 		_level_up_msg = {"", "Channels dark powers to protect the bearer", "Health recovery increases by 0.1 HP per second. Max Health increases by 5%" };
-		_effect_by_level = { 0, 0, 105, 110, 116, 122, 128, 134, 140, 148 };
-		_alt_effect = { 0, 0, 10, 20, 30, 40, 50, 60, 70, 80 };
+		_effect_by_level = { 0, 0, 5, 10, 15, 20, 25, 30, 35, 40 };
 		_level = 1;
 		_max_level = 9;
 		_stacking = Additive | Multiplicative;
 		this->load_skin("Resources/Passive/Metaglio Left.bmp");
+		break;
 	case pRIGHT:
 		_name = "Metaglio Right";
 		_rarity = 10;
@@ -230,7 +233,24 @@ void Passive::level_up()
 	if (is_max_level()) {
 		VS_ASSERT(false, "The level already max don\'t keep upgrading :(");
 	}
-	_level += 1;
+	_level++;
+}
+void Passive::upgrade() {
+	for (auto& p : all_passive) {
+		if (p.get_type() == this->_type) {
+			p.level_up();
+			return;
+		}
+	}
+
+}
+void Passive::upgrade(int passive_id) {
+	for (Passive& p : all_passive) {
+		if (p._type == passive_id) {
+			VS_ASSERT(!p.is_max_level(), "The level already max don\'t keep upgrading :(");
+			p.level_up();
+		}
+	}
 }
 int Passive::get_type()
 {
@@ -238,11 +258,15 @@ int Passive::get_type()
 }
 int Passive::get_effect()
 {
-	return _effect_by_level[_level] - _effect_by_level[_level - 1];
+	return (_effect_by_level[_level] - _effect_by_level[_level - 1]);
 }
-int Passive::get_alt_effect()
-{
-	return _alt_effect[_level] - _alt_effect[_level - 1];
+int Passive::get_effect(int type) {
+	for (Passive& p : all_passive) {
+		if (type == p._type) {
+			return p._effect_by_level[p._level];
+		}
+	}
+	return 0;
 }
 int Passive::get_level()
 {
@@ -250,5 +274,32 @@ int Passive::get_level()
 }
 bool Passive::is_max_level()
 {
-	return (_level == _max_level);
+	return (_level >= _max_level);
 }
+int Passive::get_max_level()
+{
+	return _max_level;
+}
+string Passive::get_level_up_msg(bool is_new)
+{
+	if (is_new)
+		return _level_up_msg[1];
+	if (_level + 1 > (int)_level_up_msg.size() - 1)
+		return _level_up_msg[_level_up_msg.size() - 1];
+	else
+		return _level_up_msg[_level + 1];
+}
+int Passive::get_rarity()
+{
+	return _rarity;
+}
+string Passive::get_name()
+{
+	return _name;
+}
+int Passive::passive_count()
+{
+	return all_passive.size();
+}
+
+deque<Passive> Passive::all_passive;

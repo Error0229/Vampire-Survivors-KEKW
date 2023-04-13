@@ -124,6 +124,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <AdditionalIncludeDirectories>$(ProjectDir)Source</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -222,6 +223,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -247,15 +249,20 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="Resources\item_id.csv" />
     <None Include="RES\GAME.RC2" />
+    <None Include="Source\Game\VSclass\enemy_stats.csv" />
     <None Include="Source\Game\VSclass\weapon_stats.csv" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Game\VSclass\ObjPool.cpp" />
+    <ClCompile Include="Source\Game\VSclass\QuadTree.cpp" />
     <ClCompile Include="Source\Game\VSclass\Projectile.cpp" />
-    <ClCompile Include="Source\Game\VSclass\Button.cpp" />
+    <ClCompile Include="Source\Game\VSclass\UI.cpp" />
     <ClCompile Include="Source\Core\game.cpp" />
     <ClCompile Include="Source\Core\gameDoc.cpp" />
     <ClCompile Include="Source\Core\gameView.cpp" />
@@ -271,7 +278,7 @@
     <ClCompile Include="Source\Game\VSclass\Passive.cpp" />
     <ClCompile Include="Source\Game\VSclass\Pickup.cpp" />
     <ClCompile Include="Source\Game\VSclass\Player.cpp" />
-    <ClCompile Include="Source\Game\VSclass\VSMath.cpp" />
+    <ClCompile Include="Source\Game\VSclass\VSUtil.cpp" />
     <ClCompile Include="Source\Game\VSclass\Weapon.cpp" />
     <ClCompile Include="Source\Library\audio.cpp" />
     <ClCompile Include="Source\Library\gamecore.cpp" />
@@ -279,8 +286,10 @@
     <ClCompile Include="Source\Game\VSclass\VSObject.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Game\VSclass\ObjPool.h" />
+    <ClInclude Include="Source\Game\VSclass\QuadTree.h" />
     <ClInclude Include="Source\Game\VSclass\Projectile.h" />
-    <ClInclude Include="Source\Game\VSclass\Button.h" />
+    <ClInclude Include="Source\Game\VSclass\UI.h" />
     <ClInclude Include="Source\Core\Game.h" />
     <ClInclude Include="Source\Core\gameDoc.h" />
     <ClInclude Include="Source\Core\gameView.h" />
@@ -289,7 +298,7 @@
     <ClInclude Include="Source\Core\StdAfx.h" />
     <ClInclude Include="Source\Game\config.h" />
     <ClInclude Include="Source\Game\VSclass\Enemy.h" />
-    <ClInclude Include="Source\Game\VSclass\VSMath.h" />
+    <ClInclude Include="Source\Game\VSclass\VSUtil.h" />
     <ClInclude Include="Source\Game\VSclass\Map.h" />
     <ClInclude Include="Source\Game\mygame.h" />
     <ClInclude Include="Source\Game\VSclass\Passive.h" />
