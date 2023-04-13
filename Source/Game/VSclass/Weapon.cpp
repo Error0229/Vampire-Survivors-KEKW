@@ -17,15 +17,17 @@ Weapon::Weapon()
 Weapon::~Weapon()
 {
 }
-Weapon::Weapon(int type, char* skin, vector<int> stats) {
+Weapon::Weapon(int type, char* skin, vector<double> stats) {
 	this->load_skin(skin);
 	this->_type = type;
-	_level = stats[0], _max_level = stats[1], _damage = (double)stats[2] / 100.0,
-		_speed = stats[3] * 500, _area = (double)(stats[4]) / 100.0, _rarity = stats[5], _amount = stats[6],
-		_duration = stats[7], _pierce = stats[8], _cooldown = stats[9],
-		_proj_interval = stats[10], _hitbox_delay = stats[11], _knock_back = stats[12] / 100.0,
-		_pool_limit = stats[13], _chance = stats[14], _crit_multi = stats[15],
-		_block_by_wall = stats[16], _evolution_type = stats[17], _evolution_require = stats[18];
+	_level = static_cast<int>(stats[0]), _max_level = static_cast<int>(stats[1]), _damage = stats[2],
+		_speed = static_cast<int>(stats[3] * 500), _area = stats[4], _rarity = static_cast<int>(stats[5]),
+		_amount = static_cast<int>(stats[6]), _duration = static_cast<int>(stats[7]), _pierce = static_cast<int>(stats[8]),
+		_cooldown = static_cast<int>(stats[9]), _proj_interval = static_cast<int>(stats[10]),
+		_hitbox_delay = static_cast<int>(stats[11]), _knock_back = stats[12], _pool_limit = static_cast<int>(stats[13]),
+		_chance = static_cast<int>(stats[14]), _crit_multi = static_cast<int>(stats[15]),
+		_block_by_wall = static_cast<int>(stats[16]), _evolution_type = static_cast<int>(stats[17]),
+		_evolution_require = static_cast<int>(stats[18]);
 	_base_stats = {
 		{"level", _level},
 		{"max_level", _max_level},
@@ -103,6 +105,8 @@ Weapon::Weapon(int type, char* skin, vector<int> stats) {
 		_name = "Holy Wand";
 		_level_up_msg = { "", "Fires with no delay." };
 		break;
+	case THOUSAND:
+		_level_up_msg = { "", "Evolved Knife. Fires with no delay." };
 	}
 }
 
@@ -169,7 +173,7 @@ void Weapon::attack() {
 			break;
 		case KNIFE:
 			for (int i = 0; i < w._amount; i++) {
-				Projectile& proj = Projectile::pool.get_obj(WHIP);
+				Projectile& proj = Projectile::pool.get_obj(KNIFE);
 				proj.set_create_time(clock());
 				proj.set_target_vec(mouse_pos - player_pos);
 				double rotate = atan2(mouse_pos.y - player_pos.y, mouse_pos.x - player_pos.x);
@@ -225,6 +229,20 @@ void Weapon::attack() {
 				proj.set_rotation(rad);
 				Projectile::create_projectile(proj, player_pos, (target), w._type, i * w._proj_interval, w._area, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
 					w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, false);
+			}
+			break;
+		case (THOUSAND):
+			for (int i = 0; i < w._amount; i++) {
+				Projectile& proj = Projectile::pool.get_obj(w._type);
+				proj.set_target_vec(mouse_pos - player_pos);
+				double rotate = atan2(mouse_pos.y - player_pos.y, mouse_pos.x - player_pos.x);
+				proj.set_rotation(rotate);
+				int x_factor = (mouse_pos.x > player_pos.x ? 1 : -1);
+				int y_factor = (mouse_pos.y > player_pos.y ? 1 : -1);
+				Projectile::create_projectile(proj, { player_pos.x + x_factor * (2 * i % 4 + i % 2)   , player_pos.y + y_factor * (2 * i % 4 + i % 2) },
+							mouse_pos, w._type, i * w._proj_interval, w._area, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, false);
+
 			}
 			break;
 		}
@@ -368,7 +386,7 @@ void Weapon::load_weapon_stats() {
 	while (getline(file, line)) {
 		vector <string> proj_vec;
 		stringstream ss(line);
-		vector<int> stats;
+		vector<double> stats;
 		getline(ss, skin_file, ',');
 		getline(ss, base_proj, ',');
 		while (token != base_proj) {
@@ -380,9 +398,10 @@ void Weapon::load_weapon_stats() {
 		getline(ss, token, ',');
 		type = stoi(token);
 		while (getline(ss, token, ',')) {
-			stats.push_back(stoi(token));
+			stats.push_back(stod(token));
 		}
 		Weapon w = Weapon(type, const_cast<char*>(skin_file.c_str()), stats);
+		w._name = name;
 		Projectile p(type, proj_vec);
 		switch (type) {
 		case WHIP:
@@ -408,6 +427,11 @@ void Weapon::load_weapon_stats() {
 			p.enable_animation();
 			break;
 		case HOLY_MISSILE:
+			p.set_default_direct(RIGHT);
+			p.set_life_cycle(-1);
+			p.load_rotation();
+			break;
+		case THOUSAND:
 			p.set_default_direct(RIGHT);
 			p.set_life_cycle(-1);
 			p.load_rotation();

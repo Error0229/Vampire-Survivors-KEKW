@@ -4,7 +4,7 @@
 class Weapon : public VSObject {
 public:
 	Weapon();
-	Weapon(int, char*, vector<int>);
+	Weapon(int, char*, vector<double>);
 	~Weapon();
 	void upgrade();
 	static void load_weapon_stats();

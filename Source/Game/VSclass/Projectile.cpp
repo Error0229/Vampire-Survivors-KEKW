@@ -64,6 +64,7 @@ void Projectile::create_projectile(Projectile& proj, CPoint position, CPoint tar
 	proj._is_mirror = is_mirror;
 	proj._is_start = (delay > 0 ? 0 : 1);
 	proj._is_over = false;
+	proj.set_create_time(clock());
 	CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
 	proj._offset = proj._position - player_pos;
 	Projectile::all_proj.push_back(proj);
@@ -90,7 +91,7 @@ void Projectile::update_position() {
 		case(MAGIC_MISSILE):
 			proj.MAGIC_MISSILE_transition();
 			break;
-		case (KNIFE):
+		case (KNIFE): case (THOUSAND):
 			proj.KNIFE_transition();
 			break;
 		case (VAMPIRICA):
