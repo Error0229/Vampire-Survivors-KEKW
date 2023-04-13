@@ -21,7 +21,7 @@ Weapon::Weapon(int type, char* skin, vector<int> stats) {
 	this->load_skin(skin);
 	this->_type = type;
 	_level = stats[0], _max_level = stats[1], _damage = (double)stats[2] / 100.0,
-		_speed = stats[3] * 400, _area = (double)(stats[4])/100.0, _rarity = stats[5], _amount = stats[6],
+		_speed = stats[3] * 500, _area = (double)(stats[4]) / 100.0, _rarity = stats[5], _amount = stats[6],
 		_duration = stats[7], _pierce = stats[8], _cooldown = stats[9],
 		_proj_interval = stats[10], _hitbox_delay = stats[11], _knock_back = stats[12] / 100.0,
 		_pool_limit = stats[13], _chance = stats[14], _crit_multi = stats[15],
@@ -81,6 +81,7 @@ Weapon::Weapon(int type, char* skin, vector<int> stats) {
 			"Passes through 1 more enemy.",
 			"Base damage up by 10.",
 		};
+		break;
 	case KNIFE:
 		_level_up_msg = {
 			"",
@@ -111,7 +112,7 @@ void Weapon::attack() {
 	HWND targetWindow = FindWindow(NULL, GAME_TITLE);
 	ScreenToClient(targetWindow, &mouse_pos);
 	CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
-	mouse_pos += CPoint{- VSObject::player_dx, - VSObject::player_dy}; // transfer into game position
+	mouse_pos += CPoint{-VSObject::player_dx, -VSObject::player_dy}; // transfer into game position
 	// create projectile
 	for (Weapon& w : all_weapon) {
 		if (clock() - w._last_time_attack < w._cooldown) {
@@ -175,7 +176,7 @@ void Weapon::attack() {
 				proj.set_rotation(rotate);
 				int x_factor = (mouse_pos.x > player_pos.x ? 1 : -1);
 				int y_factor = (mouse_pos.y > player_pos.y ? 1 : -1);
-				Projectile::create_projectile(proj, { player_pos.x + x_factor * (2 * i % 4 + i % 2)   , player_pos.y + y_factor * (2 * i % 4 + i % 2)  },
+				Projectile::create_projectile(proj, { player_pos.x + x_factor * (2 * i % 4 + i % 2)   , player_pos.y + y_factor * (2 * i % 4 + i % 2) },
 							mouse_pos, w._type, i * w._proj_interval, w._area, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
 							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, false);
 
@@ -219,7 +220,7 @@ void Weapon::attack() {
 				CPoint target = player_pos;
 				int min_dis = 1000000000;
 				QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(&proj), min_dis);
-				proj.set_target_vec((target != player_pos ? target - player_pos : (mouse_pos.x > player_pos.x ? (100,10) : (-100,10))));
+				proj.set_target_vec((target != player_pos ? target - player_pos : (mouse_pos.x > player_pos.x ? (100, 10) : (-100, 10))));
 				double rad = atan2(target.y - player_pos.y, target.x - player_pos.x);
 				proj.set_rotation(rad);
 				Projectile::create_projectile(proj, player_pos, (target), w._type, i * w._proj_interval, w._area, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
@@ -364,13 +365,13 @@ void Weapon::load_weapon_stats() {
 	string header, line, skin_file, base_proj, name, token;
 	getline(file, header); // no use
 
-	while ( getline(file, line) ) {
+	while (getline(file, line)) {
 		vector <string> proj_vec;
 		stringstream ss(line);
 		vector<int> stats;
 		getline(ss, skin_file, ',');
 		getline(ss, base_proj, ',');
-		while ( token != base_proj ) {
+		while (token != base_proj) {
 			token = base_proj.substr(0, base_proj.find_first_of(" "));
 			base_proj = base_proj.substr(base_proj.find_first_of(" ") + 1);
 			proj_vec.emplace_back(token);
@@ -378,7 +379,7 @@ void Weapon::load_weapon_stats() {
 		getline(ss, name, ',');
 		getline(ss, token, ',');
 		type = stoi(token);
-		while ( getline(ss, token, ',') ) {
+		while (getline(ss, token, ',')) {
 			stats.push_back(stoi(token));
 		}
 		Weapon w = Weapon(type, const_cast<char*>(skin_file.c_str()), stats);
@@ -405,7 +406,7 @@ void Weapon::load_weapon_stats() {
 			p.set_animation(300, true, 0);
 			p.set_life_cycle(300);
 			p.enable_animation();
-			break; 
+			break;
 		case HOLY_MISSILE:
 			p.set_default_direct(RIGHT);
 			p.set_life_cycle(-1);
@@ -415,7 +416,7 @@ void Weapon::load_weapon_stats() {
 		w._base_proj = p;
 		Projectile::template_proj[type] = p;
 		Projectile::pool.add_obj(type, w._pool_limit);
-		Weapon::_base_weapon[ type ] = w;
+		Weapon::_base_weapon[type] = w;
 	}
 }
 double Weapon::get_damage() {
@@ -482,7 +483,7 @@ void Weapon::evolution(int type) {
 }
 map <int, Weapon> Weapon::_base_weapon;
 
-map <int, int> Weapon::evolution_pair = { 
+map <int, int> Weapon::evolution_pair = {
 	{WHIP, VAMPIRICA}, {MAGIC_MISSILE, HOLY_MISSILE},{KNIFE, THOUSAND},
 	{AXE, SCYTHE},{CROSS, HEAVENSWORD},{HOLYBOOK, VESPERS},
 	{FIREBALL, HELLFIRE},{GARLIC, VORTEX},{HOLYWATER, BORA},
@@ -499,7 +500,7 @@ map <int, int> Weapon::evolution_pair_reverse = {
 	{SCYTHE, AXE},{HEAVENSWORD, CROSS},{VESPERS, HOLYBOOK},
 	{HELLFIRE, FIREBALL},{VORTEX, GARLIC},{BORA, HOLYWATER},
 	{ROCHER, DIAMOND},{LOOP, LIGHTNING},{SIRE, PENTAGRAM},
-	{SILF3, SILF*100 + SILF2}, {GUNS3, GUNS*100 + GUNS2},
+	{SILF3, SILF * 100 + SILF2}, {GUNS3, GUNS * 100 + GUNS2},
 	{STIGRANGATTI, GATTI},{MANNAGGIA, SONG},{TRAPANO2, TRAPING},
 	{CORRIDOR, LANCET}, {SHROUD, LAUREL},{VENTO2, VENTO},
 	{CANDYBOX2, CANDYBOX}, {TRIASSO2, TRIASSO1}, {TRIASSO3, TRIASSO2},
