@@ -21,9 +21,9 @@ public:
 	void HOLY_MISSILE_transition();
 	void collide_with_enemy(Enemy&);
 	void set_rotation(double);
-	// int _type, _level, _max_level, _damage, _speed, _rarity,  _amount, _duration, _pierce, _cooldown, _proj_interval, _hitbox_delay, _knock_back, _pool_limit, _chance, _crit_multi, _block_by_wall;
+	void load_rotation();
 	static void init_projectile(int type, int count);
-	static void create_projectile(Projectile& proj, CPoint position, CPoint target_pos, int delay, int type, double damage,int speed, int duration, int pierce, int proj_interval, int hitbox_delay, double knock_back, int pool_limit, int chance, int criti_multi, int block_by_wall, bool is_mirror);
+	static void create_projectile(Projectile& proj, CPoint position, CPoint target_pos, int delay, int type, double area, double damage,int speed, int duration, int pierce, int proj_interval, int hitbox_delay, double knock_back, int pool_limit, int chance, int criti_multi, int block_by_wall, bool is_mirror);
 	static void create_projectile(Projectile p);
 	static void update_position();
 	static void show();
@@ -32,10 +32,9 @@ public:
 	static ObjPool<Projectile> pool;
 	static std::map<int, Projectile> template_proj;
 protected:
-	int _level, _max_level, _rarity,
-		_amount, _duration, _pierce, _proj_interval,
+	int _amount, _duration, _pierce, _proj_interval,
 		_hitbox_delay, _pool_limit, _chance,
-		_crit_multi, _block_by_wall ; 
+		_crit_multi, _block_by_wall; 
 	int _delay;
 	std::vector<std::string> _file_name;
 	std::map<int, game_framework::CMovingBitmap> _rotation_skin;
