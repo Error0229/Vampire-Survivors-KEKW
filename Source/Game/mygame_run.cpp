@@ -69,7 +69,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	//	enemy[i].spawn(CPoint(-300 + 30 * i/10, -400 + 40 * i%10));
 	//}
 
-	enemy_factory.add_enemy(BAT1, 100);
+	enemy_factory.add_enemy(BAT1, player.get_pos(),1, 100);
 
 	event_background.load_skin("resources/ui/event_background.bmp");
 	event_background.set_base_pos(0, 0);
@@ -434,7 +434,6 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		if (!player.is_hurt())
 			player.regen();
 		
-		enemy_factory.update(0);
 
 		if(player.get_exp_percent()==100)
 			_next_status = LEVEL_UP;
@@ -514,9 +513,7 @@ void CGameStateRun::OnShow()
 	//for (int i = 0; i < (int)enemy.size(); i++) {
 	//	enemy[i].show_skin();
 	//}
-	for (auto 😈 : enemy_factory.live_enemy) {
-		😈->show_skin();
-	}
+	enemy_factory.show_enemy(0, player.get_pos(), player.get_level());
 	for (auto& i : xp)
 		i.show_skin();
 	for(auto& i: chest)

@@ -6,10 +6,10 @@ public:
 	~EnemyFactory();
 	static void init();
 	
-	void add_enemy(int type, int count=1, bool random_pos=true);
+	void add_enemy(int type, CPoint player_pos, int player_lvl, int count=1, bool random_pos=true);
 	int get_number_type(int);
 	int get_number_all();
-	void update(int time_sec);
+	void show_enemy(int time_sec, CPoint player_pos, int player_lvl);
 	static vector<Enemy*> live_enemy;
 private:
 	static ObjPool<Enemy> _all_enemy;

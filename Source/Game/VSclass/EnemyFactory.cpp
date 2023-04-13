@@ -28,15 +28,18 @@ void EnemyFactory::init()
 	}
 }
 
-void EnemyFactory::add_enemy(int type, int count, bool random_pos)
+void EnemyFactory::add_enemy(int type, CPoint player_pos, int player_lvl, int count, bool random_pos)
 {
-	
+	static int pos_loop_cnt = 0;
 	Enemy* 👿;
 	CPoint pos;
+	vector<CPoint> pos_offset = { CPoint(-424,  320),CPoint(-424,  240),CPoint(-424,  160),CPoint(-424,   80),CPoint(-424,    0),CPoint(-424,  -80),CPoint(-424, -160),CPoint(-424, -240),CPoint(-424, -320),CPoint(-318, -320),CPoint(-212, -320),CPoint(-106, -320),CPoint(0, -320),CPoint(106, -320),CPoint(212, -320),CPoint(318, -320),CPoint(424, -320),CPoint(424, -240),CPoint(424, -160),CPoint(424,  -80),CPoint(424,    0),CPoint(424,   80),CPoint(424,  160),CPoint(424,  240),CPoint(424,  320),CPoint(318,  320),CPoint(212,  320),CPoint(106,  320),CPoint(0,  320),CPoint(-106,  320),CPoint(-212,  320),CPoint(-318,  320)};
 	for (int i = 0; i < count; i++) {
 		👿 = _all_enemy.get_obj_ptr(type);
 		if (random_pos) {
-			pos = (0, i*10);
+			pos = player_pos + pos_offset[pos_loop_cnt];
+			if (++pos_loop_cnt == 32)
+				pos_loop_cnt = 0;
 		}
 		👿->spawn(pos, 100, 100, 1);
 		live_enemy.push_back(👿);
@@ -53,19 +56,25 @@ int EnemyFactory::get_number_all()
 	return live_enemy.size();
 }
 
-void EnemyFactory::update(int time_sec)
+void EnemyFactory::show_enemy(int time_sec, CPoint player_pos, int player_lvl)
 {
 	//delete dead enemy, NOT EFFICINT
-	for (auto 😈 : live_enemy) {
-		if (!😈->is_enable()) {
-			live_enemy.erase(find(live_enemy.begin(), live_enemy.end(), 😈));
+	vector<Enemy*> new_live_enemy;
+	for (auto 😈: live_enemy) {
+		if (😈->is_enable()) {
+			😈->show_skin();
+			new_live_enemy.push_back(😈);
+			_number_type[😈->get_id()]--;
+		}
+		else {
 			_all_enemy.free_obj_ptr(😈);
 		}
 	}
+	live_enemy = new_live_enemy;
 
 	//temporay respawn enemy
 	if (100 - get_number_all()) {
-		add_enemy(BAT1, 100 - get_number_all());
+		add_enemy(BAT1, player_pos, player_lvl, 100 - get_number_all());
 	}
 }
 
