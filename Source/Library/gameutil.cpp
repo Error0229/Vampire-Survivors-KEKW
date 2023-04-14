@@ -265,7 +265,7 @@ namespace game_framework {
 	void CMovingBitmap::EnableAnimation() {
 		if (isPause) {
 			isPause = false;
-			selector = 0;
+			// selector = 0;
 			isAnimation = true;
 			isAnimationDone = false;
 		}
@@ -273,7 +273,7 @@ namespace game_framework {
 	void CMovingBitmap::DisableAnimation() {
 		if (!isPause) {
 			isPause = true;
-			selector = 0;
+			// selector = 0;
 			isAnimation = false;
 			isAnimationDone = true;
 		}

@@ -189,7 +189,7 @@ void Weapon::attack() {
 			}
 			break;
 
-		case MAGIC_MISSILE: case HOLY_MISSILE: case CROSS: // reducing workload
+		case MAGIC_MISSILE: case HOLY_MISSILE: case CROSS: case HEAVENSWORD: // reducing workload
 			for (int i = 0; i < w._amount; i++) {
 				Projectile& proj = Projectile::pool.get_obj(w._type);
 				CPoint target = player_pos;
@@ -509,6 +509,8 @@ void Weapon::load_weapon_stats() {
 			break;
 		case HEAVENSWORD:
 			p.load_rotation();
+			p.set_animation(30, false, 0);
+			p.disable_animation();
 			break;
 		}
 		w._base_proj = p;

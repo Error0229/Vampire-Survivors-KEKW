@@ -45,7 +45,7 @@ protected:
 	std::map<int, game_framework::CMovingBitmap> _rotation_skin;
 	// int _speed; hide it then VSObject could see it
 	double _area, _damage, _knock_back, _angle;
-	bool _is_over = 0, _is_start = 0;
+	bool _is_over = 0, _is_start = 0, _is_top = 0;
 	clock_t _create_time;
 	// life cycle means after how many frames the projectile will be destroyed -1 means infinite or until it hits something
 	CPoint _offset;

@@ -104,7 +104,7 @@ void Projectile::update_position() {
 		case (AXE):
 			proj.AXE_transition();
 			break;
-		case CROSS:
+		case CROSS: case HEAVENSWORD:
 			proj.CROSS_transition();
 			break;
 		case (SCYTHE):
@@ -240,8 +240,11 @@ void Projectile::CROSS_transition() {
 			x = - par.x * cos(angle) + par.y * sin(angle);
 			y = - par.x * sin(angle) - par.y * cos(angle);
 		}
-		this->set_pos(CPoint(static_cast<int>( x), static_cast<int>(y)) + _target);
-		TRACE(_T("angle :%f\n"), angle);
+		this->set_pos(CPoint(static_cast<int>(x), static_cast<int>(y)) + _target);
+		if (_is_top) {
+			enable_animation();
+			_is_top = false;
+		}
 	}
 }
 void Projectile::set_rotation(double radien) {
@@ -264,10 +267,15 @@ void Projectile::load_rotation() {
 }
 CPoint Projectile::get_parabola(double angle, double speed, int time) {
 	double dt = static_cast<double>(time) / 1000.0;
+	static double pre_y = 100000000;
 	speed = speed / (1000.0 / GAME_CYCLE_TIME) * 50; // 100 depends on game cycle time
 	// since projectile using this function don't need target so we use it as a tmp
 	double x = _target.x + speed * dt * cos(angle);
 	double y = _target.y - speed * dt * sin(angle) + 0.5 * 980 * dt * dt;
+	if (y > pre_y) {
+		_is_top = true;
+	}
+	pre_y = y;
 	return CPoint(static_cast<int>(x), static_cast<int>(y));
 }
 
