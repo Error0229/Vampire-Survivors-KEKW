@@ -31,6 +31,9 @@ void Projectile::set_offset(CPoint os) {
 void Projectile::init_projectile(int type, int count) {
 	pool.add_obj(type, count);
 }
+void Projectile::set_angle(double angle) {
+	_angle = angle;
+}
 void Projectile::collide_with_enemy(Enemy& 🥵) {
 	clock_t now = clock();
 	if (_is_over || !is_overlapped((*this), 🥵) || now - 🥵._last_time_got_hit_by_projectile[this->_type] < this->_hitbox_delay)
@@ -79,9 +82,7 @@ void Projectile::set_delay(int delay) {
 void Projectile::set_create_time(clock_t time) {
 	_create_time = time;
 }
-void Projectile::set_life_cycle(clock_t time) {
-	_life_cycle = time;
-}
+
 void Projectile::update_position() {
 	for (Projectile& proj : Projectile::all_proj) {
 		switch (proj._type) {
@@ -100,6 +101,11 @@ void Projectile::update_position() {
 		case (HOLY_MISSILE):
 			proj.HOLY_MISSILE_transition();
 			break;
+		case (AXE): case (SCYTHE):
+			proj.AXE_transition();
+			break;
+		default :
+			break;
 		}
 	}
 }
@@ -108,8 +114,8 @@ void Projectile::show_skin(double factor) {
 	if (VSObject::distance(this->_position, CPoint{ (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx, (OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy }) > 700) {
 		this->_is_over = true;
 	}
-	if (this->_life_cycle == -1) return;
-	if (this->_skin.IsAnimationDone() || clock() - this->_create_time - this->_delay >= this->_life_cycle)
+	if (this->_duration == -1) return;
+	if (this->_skin.IsAnimationDone() || clock() - this->_create_time - this->_delay >= this->_duration)
 		this->_is_over = true;
 }
 void Projectile::show() {
@@ -189,6 +195,14 @@ void Projectile::HOLY_MISSILE_transition() {
 		this->update_pos_by_vec();
 	}
 }
+void Projectile::AXE_transition() {
+	int dt = clock() - _create_time - _delay;
+	if (_is_start &&  dt >= 0) {
+		CPoint res = get_parabola(_angle, _speed, dt);
+		TRACE(_T("%d %d\n"), res.x, res.y);
+		this->set_pos(res);
+	}
+}
 void Projectile::set_rotation(double radien) {
 	// angle += 2*acos(-1)
 	int angle = static_cast<int>(radien * 180 / acos(-1));
@@ -213,6 +227,17 @@ void Projectile::load_rotation() {
 	}
 	this->_skin.ResetBitmap();
 	this->_skin.LoadBitmapByString(rotated_filename, RGB(1, 11, 111));
+}
+CPoint Projectile::get_parabola(double angle, double speed, int time) {
+	// VS_ASSERT(false, "are we here?");
+	double dt = time / 1000.0;
+	speed = static_cast<double>(_speed) / (1000.0 / GAME_CYCLE_TIME) ;
+	CPoint player_pos = get_player_pos();
+	CPoint player_pos = _target;
+	double x = player_pos.x + speed * dt * cos(angle);
+	double y = player_pos.y + speed * dt * sin(angle) - 0.5 * 9.8 * dt * dt;
+	
+	return CPoint(static_cast<int>(x), static_cast<int>(- y));
 }
 
 // deque<Projectile> Projectile::all_proj = {};

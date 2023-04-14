@@ -2,12 +2,14 @@
 #include "../../Library/gameutil.h"
 #include "../config.h"
 #include "VSObject.h"
+#include "VSUtil.h"
 #include "QuadTree.h"
 #include "Projectile.h"
 #include "Weapon.h"
 #include "Passive.h"
 #include <fstream>
 #include <sstream>
+#include <random>
 using namespace game_framework;
 #define var_name(var) (#var)
 Weapon::Weapon()
@@ -97,6 +99,19 @@ Weapon::Weapon(int type, char* skin, vector<double> stats) {
 			"Passes through 1 more enemy."
 		};
 		break;
+	case AXE:
+		_level_up_msg = {
+			"",
+			"High damage, high Area scaling.",
+			"Fires 1 more projectile.",
+			"Base Damage up by 20.",
+			"Passes through 2 more enemies.",
+			"Fires 1 more projectile.",
+			"Base Damage up by 20.",
+			"Passes through 2 more enemies.",
+			"Base Damage up by 20."
+		};
+		break;
 	case VAMPIRICA:
 		_name = "Bloody Tear";
 		_level_up_msg = { "", "Can deal critical damage and absorb HP." };
@@ -125,10 +140,9 @@ void Weapon::attack() {
 		w._last_time_attack = clock();
 
 		switch (w._type) {
-		case (WHIP):
+		case (WHIP): case (VAMPIRICA):
 			for (int i = 0; i < w._amount; i++) {
 				Projectile& proj = Projectile::pool.get_obj(WHIP);
-				proj.set_create_time(clock());
 				if (mouse_pos.x > player_pos.x) {
 					if (!(i & 1)) {
 						Projectile::create_projectile(proj, { player_pos.x + (proj.get_width() >> 1) - (16) , player_pos.y - (i * 16) },
@@ -156,11 +170,10 @@ void Weapon::attack() {
 			}
 			break;
 
-		case MAGIC_MISSILE:
+		case MAGIC_MISSILE: case HOLY_MISSILE:
 			for (int i = 0; i < w._amount; i++) {
 				Projectile& proj = Projectile::pool.get_obj(MAGIC_MISSILE);
 				proj.set_pos(player_pos);
-				proj.set_create_time(clock());
 				CPoint target = player_pos;
 				int min_dis = 1000000000;
 				QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(&proj), min_dis);
@@ -171,10 +184,9 @@ void Weapon::attack() {
 					w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, false);
 			}
 			break;
-		case KNIFE:
+		case KNIFE: case (THOUSAND):
 			for (int i = 0; i < w._amount; i++) {
 				Projectile& proj = Projectile::pool.get_obj(KNIFE);
-				proj.set_create_time(clock());
 				proj.set_target_vec(mouse_pos - player_pos);
 				double rotate = atan2(mouse_pos.y - player_pos.y, mouse_pos.x - player_pos.x);
 				proj.set_rotation(rotate);
@@ -186,66 +198,19 @@ void Weapon::attack() {
 
 			}
 			break;
-		case (VAMPIRICA):
+		case AXE:
 			for (int i = 0; i < w._amount; i++) {
-				Projectile& proj = Projectile::pool.get_obj(VAMPIRICA);
-				proj.set_create_time(clock());
-				if (mouse_pos.x > player_pos.x) {
-					if (!(i & 1)) {
-						Projectile::create_projectile(proj, { player_pos.x + (proj.get_width() >> 1) - (16) , player_pos.y - (i * 16) },
-							mouse_pos, w._type, i * 2 * w._proj_interval, w._area, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
-							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, RIGHT != proj.get_direct());
-					}
-					else {
-						Projectile::create_projectile(proj, { player_pos.x - (proj.get_width() >> 1) + (16) , player_pos.y - ((i - 1) * 16) },
-							mouse_pos, w._type, w._proj_interval + (i - 1) * 2 * w._proj_interval, w._area, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
-							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, LEFT != proj.get_direct());
-					}
-				}
-				else {
-					if (!(i & 1)) {
-						Projectile::create_projectile(proj, { player_pos.x - (proj.get_width() >> 1) + (16) , player_pos.y - (i * 16) },
-							mouse_pos, w._type, i * 2 * w._proj_interval, w._area, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
-							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, LEFT != proj.get_direct());
-					}
-					else {
-						Projectile::create_projectile(proj, { player_pos.x + (proj.get_width() >> 1) - (16) , player_pos.y - ((i - 1) * 16) },
-							mouse_pos, w._type, w._proj_interval + (i - 1) * 2 * w._proj_interval, w._area, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
-							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, RIGHT != proj.get_direct());
-					}
-				}
-			}
-			break;
-		case HOLY_MISSILE:
-			for (int i = 0; i < w._amount; i++) {
-				Projectile& proj = Projectile::pool.get_obj(HOLY_MISSILE);
-				proj.set_pos(player_pos);
-				proj.set_create_time(clock());
-				CPoint target = player_pos;
-				int min_dis = 1000000000;
-				QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(&proj), min_dis);
-				proj.set_target_vec((target != player_pos ? target - player_pos : (mouse_pos.x > player_pos.x ? (100, 10) : (-100, 10))));
-				double rad = atan2(target.y - player_pos.y, target.x - player_pos.x);
-				proj.set_rotation(rad);
-				Projectile::create_projectile(proj, player_pos, (target), w._type, i * w._proj_interval, w._area, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
-					w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, false);
-			}
-			break;
-		case (THOUSAND):
-			for (int i = 0; i < w._amount; i++) {
-				Projectile& proj = Projectile::pool.get_obj(w._type);
-				proj.set_target_vec(mouse_pos - player_pos);
-				double rotate = atan2(mouse_pos.y - player_pos.y, mouse_pos.x - player_pos.x);
-				proj.set_rotation(rotate);
-				int x_factor = (mouse_pos.x > player_pos.x ? 1 : -1);
-				int y_factor = (mouse_pos.y > player_pos.y ? 1 : -1);
-				Projectile::create_projectile(proj, { player_pos.x + x_factor * (2 * i % 4 + i % 2)   , player_pos.y + y_factor * (2 * i % 4 + i % 2) },
-							mouse_pos, w._type, i * w._proj_interval, w._area, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+				Projectile& proj = Projectile::pool.get_obj(AXE);
+				static std::random_device rnd;
+				static std::mt19937 e2(rnd());
+				static std::uniform_real_distribution<> dist(0.4 * MATH_PI, 0.6 * MATH_PI);
+				double angle = dist(e2);
+				proj.set_angle(angle);
+				Projectile::create_projectile(proj, player_pos, CPoint(69,69), w._type, i * w._proj_interval, w._area, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
 							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, false);
-
 			}
-			break;
 		}
+		break;
 	}
 }
 void Weapon::show() {
@@ -371,7 +336,31 @@ void Weapon::upgrade()
 		case 8:
 			modify_base("pierce", 1);
 			break;
-
+		}
+		break;
+	case AXE:
+		switch (_level) {
+		case 2:
+			modify_base("amount", 1);
+			break;
+		case 3:
+			modify_base("damage", 20);
+			break;
+		case 4:
+			modify_base("pierce", 2);
+			break;
+		case 5:
+			modify_base("amount", 1);
+			break;
+		case 6:
+			modify_base("damage", 20);
+			break;
+		case 7:
+			modify_base("pierce", 2);
+			break;
+		case 8:
+			modify_base("damage", 20);
+			break;
 		}
 		break;
 	}
@@ -407,34 +396,38 @@ void Weapon::load_weapon_stats() {
 		case WHIP:
 			p.set_default_direct(RIGHT);
 			p.set_animation(300, true, 0);
-			p.set_life_cycle(300);
 			p.enable_animation();
 			break;
 		case MAGIC_MISSILE:
 			p.set_default_direct(RIGHT);
-			p.set_life_cycle(-1);
 			p.load_rotation();
 			break;
 		case KNIFE:
 			p.set_default_direct(RIGHT);
-			p.set_life_cycle(-1);
 			p.load_rotation();
+			break;
+		case AXE:
+			p.load_rotation();
+			p.set_animation(100, false, 0);
+			p.enable_animation();
 			break;
 		case VAMPIRICA:
 			p.set_default_direct(RIGHT);
 			p.set_animation(300, true, 0);
-			p.set_life_cycle(300);
 			p.enable_animation();
 			break;
 		case HOLY_MISSILE:
 			p.set_default_direct(RIGHT);
-			p.set_life_cycle(-1);
 			p.load_rotation();
 			break;
 		case THOUSAND:
 			p.set_default_direct(RIGHT);
-			p.set_life_cycle(-1);
 			p.load_rotation();
+			break;
+		case SCYTHE:
+			p.load_rotation();
+			p.set_animation(100, false, 0);
+			p.enable_animation();
 			break;
 		}
 		w._base_proj = p;

@@ -118,5 +118,3 @@ string VSTimer::get_second_string()
         s = "0" + s;
     return s;
 }
-constexpr int w_size_x = (OPEN_AS_FULLSCREEN ? RESOLUTION_X : SIZE_X);
-constexpr int w_size_y = (OPEN_AS_FULLSCREEN ? RESOLUTION_Y : SIZE_Y);

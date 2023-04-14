@@ -1,4 +1,5 @@
 #pragma once
+#include "../config.h"
 #define VSOM(x) ((x * 10) >> 10) 
 // VS oprimizer
 int square(int x);
@@ -82,3 +83,6 @@ enum pickup_types {
 };
 #define BLACK (RGB(0,0,0))
 #define WHITE (RGB(255,255,255))
+const double MATH_PI = 3.1415926;
+constexpr int w_size_x = (OPEN_AS_FULLSCREEN ? RESOLUTION_X : SIZE_X);
+constexpr int w_size_y = (OPEN_AS_FULLSCREEN ? RESOLUTION_Y : SIZE_Y);

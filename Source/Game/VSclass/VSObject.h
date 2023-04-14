@@ -62,4 +62,4 @@ protected:
 	int _pool_id, _type;
 	double _fx, _fy;
 };
-
+CPoint get_player_pos();
