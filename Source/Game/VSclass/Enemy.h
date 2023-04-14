@@ -28,7 +28,8 @@ enum enemy_names {
 	BOSS_XLBAT,
 	BOSS_WEREWOLF,
 	BOSS_XLMUMMY,
-	BOSS_XLFLOWER
+	BOSS_XLFLOWER,
+	DEATH
 };
 
 class Enemy : public VSObject{

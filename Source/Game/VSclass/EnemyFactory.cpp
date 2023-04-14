@@ -6,6 +6,9 @@
 #include "VSUtil.h"
 #include "ObjPool.h"
 #include "EnemyFactory.h"
+#include <fstream>
+#include <sstream>
+#include <string>
 
 EnemyFactory::EnemyFactory()
 {
@@ -25,6 +28,62 @@ void EnemyFactory::init()
 		😈 = Enemy::get_template_enemy(i);
 		_all_enemy.add_obj(😈, 😈.get_spawn_limit());
 		_number_type.push_back(0);
+	}
+	load_wave();
+}
+
+void EnemyFactory::load_wave()
+{
+	ifstream file("source/game/VSclass/stage_event_1.csv");
+	string header, line;
+	string 👀; // 👀: string for reading
+	int cnt = 0;
+	getline(file, header);
+	memset(_wave, 0, sizeof(_wave));
+	while(getline(file, line)){
+		stringstream ss(line);
+		// time_min
+		getline(ss, 👀, ',');
+		_wave[cnt].time_min = stoi(👀);
+		// 3 enemy
+		for(int i=0; i<3; i++){
+			getline(ss, 👀, ',');
+			_wave[cnt].type[i] = stoi(👀);
+			getline(ss, 👀, ',');
+			_wave[cnt].weight[i] = stod(👀);
+		}
+		// amount
+		getline(ss, 👀, ',');
+		_wave[cnt].amount = stoi(👀);
+		// interval
+		getline(ss, 👀, ',');
+		_wave[cnt].interval_msec = stoi(👀);
+		// 2 boss
+		for(int i=0; i<2; i++){
+			getline(ss, 👀, ',');
+			_wave[cnt].boss_type[i] = stoi(👀);
+			getline(ss, 👀, ',');
+			_wave[cnt].chest_evo[i] = stoi(👀);
+		}
+		// 2 swarm
+		for(int i=0; i<2; i++){
+			getline(ss, 👀, ',');
+			if(👀=="Flower Wall") // WIP
+				_wave[cnt].swarm_type[i] = -1;
+			else
+				_wave[cnt].swarm_type[i] = stoi(👀);
+			getline(ss, 👀, ',');
+			_wave[cnt].swarm_amount[i] = stoi(👀);
+			getline(ss, 👀, ',');
+			_wave[cnt].swarm_delay_msec[i] = stoi(👀);
+			getline(ss, 👀, ',');
+			_wave[cnt].swarm_duration_sec[i] = stoi(👀);
+			getline(ss, 👀, ',');
+			_wave[cnt].swarm_repeat[i] = stoi(👀);
+			getline(ss, 👀, ',');
+			_wave[cnt].swarm_chance[i] = stoi(👀);
+		}
+		cnt++;
 	}
 }
 
@@ -56,23 +115,28 @@ int EnemyFactory::get_number_all()
 	return live_enemy.size();
 }
 
-void EnemyFactory::show_enemy(int time_sec, CPoint player_pos, int player_lvl)
+void EnemyFactory::show_enemy(clock_t tick, CPoint player_pos, int player_lvl)
 {
-	//delete dead enemy, NOT EFFICINT
+	static clock_t last_tick = -1;
+	int min = tick/1000/60;
+	if(tick - last_tick >= _wave[min].interval_msec)
+		last_tick = tick;
+	else
+		return;
+	//delete disable enemy
 	for (auto 😈: live_enemy) {
-		if (😈->is_enable()) {
-			😈->show_skin();
+		if (😈->is_enable())
 			_number_type[😈->get_id()]--;
-		}
-		if (!😈->is_enable()) {
+		else
 			_all_enemy.free_obj_ptr(😈);
-		}
 	}
 	auto itor = std::remove_if(live_enemy.begin(), live_enemy.end(), [](Enemy* e) {return !e->is_enable(); });
 	live_enemy.erase(itor, live_enemy.end());
-	//temporay respawn enemy
-	if (100 - get_number_all() > 0) {
-		add_enemy(BAT1, player_pos, player_lvl, 100 - get_number_all());
+	// spawn enemy
+	vector<double> weights = { _wave[min].weight[0], _wave[min].weight[1], _wave[min].weight[2]};
+	if(get_number_all() < 300){
+		for(int i=0; i<((300 - get_number_all() > _wave[min].amount)?(_wave[min].amount):(300-get_number_all())); i++)
+			add_enemy(_wave[min].type[poll(weights)], player_pos, player_lvl);
 	}
 }
 
