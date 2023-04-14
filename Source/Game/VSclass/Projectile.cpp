@@ -104,6 +104,9 @@ void Projectile::update_position() {
 		case (AXE):
 			proj.AXE_transition();
 			break;
+		case CROSS:
+			proj.CROSS_transition();
+			break;
 		case (SCYTHE):
 			proj.SCYTHE_transition();
 			break;
@@ -147,7 +150,8 @@ void Projectile::WHIP_transition() {
 	_position = player_pos + _offset;
 }
 void Projectile::MAGIC_MISSILE_transition() {
-	if (!_is_start && clock() - _create_time - _delay < 0) {
+	int dt = clock() - _create_time - _delay;
+	if (!_is_start && (dt < 0 && dt > -100)) {
 		CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
 		int min_dis = 1000000000;
 		this->set_pos(player_pos);
@@ -162,7 +166,8 @@ void Projectile::MAGIC_MISSILE_transition() {
 	}
 }
 void Projectile::KNIFE_transition() {
-	if (!_is_start && clock() - _create_time - _delay < 0) {
+	int dt = clock() - _create_time - _delay;
+	if (!_is_start && (dt < 0 && dt > -100)) {
 		CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
 		CPoint p;
 		GetCursorPos(&p);
@@ -184,7 +189,8 @@ void Projectile::VAMPIRICA_transition() {
 	_position = player_pos + _offset;
 }
 void Projectile::HOLY_MISSILE_transition() {
-	if (!_is_start && clock() - _create_time - _delay < 0) {
+	int dt = clock() - _create_time - _delay;
+	if (!_is_start && (dt < 0 && dt > -100)) {
 		CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
 		int min_dis = 1000000000;
 		this->set_pos(player_pos);
@@ -209,24 +215,42 @@ void Projectile::SCYTHE_transition() {
 	if (_is_start && dt >= 0) {
 		update_pos_by_vec();
 	}
+}
+void Projectile::CROSS_transition() {
+	int dt = clock() - _create_time - _delay;
+	const double vertical = MATH_PI / 2;
+	if (!_is_start && (dt < 0 && dt > -100)) {
+		int min_dis = 1000000000;
+		CPoint target ;
+		QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(this), min_dis);
+		this->set_target_vec(target-_position);
+	}
 	else {
-		set_pos(get_player_pos());
+		CPoint par = get_parabola(vertical, static_cast<double>(_speed), dt);
+		double vlen1 = sqrt(_target_vec.x * _target_vec.x + _target_vec.y * _target_vec.y);
+		double angle = acos(_target_vec.y / vlen1);
+		par.x -= _target.x;
+		par.y -= _target.y;
+		double x, y;
+		if (_target_vec.x > 0) {
+			x = par.x * cos(angle) - par.y * sin(angle);
+			y = - par.x * sin(angle) - par.y * cos(angle);
+		}
+		else {
+			x = - par.x * cos(angle) + par.y * sin(angle);
+			y = - par.x * sin(angle) - par.y * cos(angle);
+		}
+		this->set_pos(CPoint(static_cast<int>( x), static_cast<int>(y)) + _target);
+		TRACE(_T("angle :%f\n"), angle);
 	}
 }
 void Projectile::set_rotation(double radien) {
-	// angle += 2*acos(-1)
+	_angle = radien;
 	int angle = static_cast<int>(radien * 180 / acos(-1));
 	angle = (-angle + 360) % 360;
 	int regular_angle = 10 * static_cast<int> (angle / 10.0);
 	if (regular_angle == 0) return;
 	this->_skin.SelectShowBitmap(regular_angle / 10);
-	return;
-	vector <string> rotated_filename;
-	for (auto s : _file_name) {
-		rotated_filename.emplace_back(s.substr(0, s.find_last_of('.')) + "_r" + std::to_string(regular_angle) + ".bmp");
-	}
-	this->_skin.ResetBitmap();
-	this->_skin.LoadBitmapByString(rotated_filename, RGB(1, 11, 111));
 }
 void Projectile::load_rotation() {
 	vector <string> rotated_filename;
@@ -240,10 +264,10 @@ void Projectile::load_rotation() {
 }
 CPoint Projectile::get_parabola(double angle, double speed, int time) {
 	double dt = static_cast<double>(time) / 1000.0;
-	speed = speed / (1000.0 / GAME_CYCLE_TIME) * 100; // 100 depends on game cycle time
-	CPoint player_pos = get_player_pos();
-	double x = player_pos.x + speed * dt * cos(angle);
-	double y = player_pos.y - speed * dt * sin(angle) + 0.5 * 980 * dt * dt;
+	speed = speed / (1000.0 / GAME_CYCLE_TIME) * 50; // 100 depends on game cycle time
+	// since projectile using this function don't need target so we use it as a tmp
+	double x = _target.x + speed * dt * cos(angle);
+	double y = _target.y - speed * dt * sin(angle) + 0.5 * 980 * dt * dt;
 	return CPoint(static_cast<int>(x), static_cast<int>(y));
 }
 

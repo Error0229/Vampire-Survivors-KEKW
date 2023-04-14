@@ -112,6 +112,19 @@ Weapon::Weapon(int type, char* skin, vector<double> stats) {
 			"Base Damage up by 20."
 		};
 		break;
+	case CROSS:
+		_level_up_msg = {
+			"",
+			"Aims at nearest enemy, has boomerang effect.",
+			"Base Damage up by 10.",
+			"Base Area up by 10%. Base Speed up by 25%.",
+			"Fires 1 more projectile.",
+			"Base Damage up by 10.",
+			"Base Area up by 10%. Base Speed up by 25%.",
+			"Fires 1 more projectile.",
+			"Base Damage up by 10."
+		};
+		break;
 	case VAMPIRICA:
 		_name = "Bloody Tear";
 		_level_up_msg = { "", "Can deal critical damage and absorb HP." };
@@ -126,7 +139,8 @@ Weapon::Weapon(int type, char* skin, vector<double> stats) {
 	case SCYTHE:
 		_level_up_msg = { "", "Evolved Axe. Passes through enemies." };
 		break;
-
+	case HEAVENSWORD:
+		_level_up_msg = { "", "Evolved Cross. Can do critical damage." };
 	}
 }
 
@@ -147,7 +161,7 @@ void Weapon::attack() {
 		switch (w._type) {
 		case (WHIP): case (VAMPIRICA):
 			for (int i = 0; i < w._amount; i++) {
-				Projectile& proj = Projectile::pool.get_obj(WHIP);
+				Projectile& proj = Projectile::pool.get_obj(w._type);
 				if (mouse_pos.x > player_pos.x) {
 					if (!(i & 1)) {
 						Projectile::create_projectile(proj, { player_pos.x + (proj.get_width() >> 1) - (16) , player_pos.y - (i * 16) },
@@ -175,32 +189,35 @@ void Weapon::attack() {
 			}
 			break;
 
-		case MAGIC_MISSILE: case HOLY_MISSILE:
+		case MAGIC_MISSILE: case HOLY_MISSILE: case CROSS: // reducing workload
 			for (int i = 0; i < w._amount; i++) {
-				Projectile& proj = Projectile::pool.get_obj(MAGIC_MISSILE);
-				proj.set_pos(player_pos);
+				Projectile& proj = Projectile::pool.get_obj(w._type);
 				CPoint target = player_pos;
-				int min_dis = 1000000000;
-				QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(&proj), min_dis);
-				double rad = atan2(target.y - player_pos.y, target.x - player_pos.x);
-				proj.set_rotation(rad);
-				proj.set_target_vec((target != player_pos ? target - player_pos : (mouse_pos.x > player_pos.x ? (1000, 1000) : (-1000, 1000))));
-				Projectile::create_projectile(proj, player_pos, (target), w._type, i * w._proj_interval, w._area, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+				if (i == 0) {
+					proj.set_pos(player_pos);
+					int min_dis = 1000000000;
+					QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(&proj), min_dis);
+					double rad = atan2(target.y - player_pos.y, target.x - player_pos.x);
+					proj.set_rotation(rad);
+					proj.set_target_vec((target != player_pos ? target - player_pos : (mouse_pos.x > player_pos.x ? (1000, 1000) : (-1000, 1000))));
+				}
+				Projectile::create_projectile(proj, player_pos, player_pos, w._type, i * w._proj_interval, w._area, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
 					w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, false);
 			}
 			break;
-		case KNIFE: case (THOUSAND):
+		case KNIFE: case THOUSAND:
 			for (int i = 0; i < w._amount; i++) {
-				Projectile& proj = Projectile::pool.get_obj(KNIFE);
-				proj.set_target_vec(mouse_pos - player_pos);
-				double rotate = atan2(mouse_pos.y - player_pos.y, mouse_pos.x - player_pos.x);
-				proj.set_rotation(rotate);
+				Projectile& proj = Projectile::pool.get_obj(w._type);
+				if (i == 0) {
+					proj.set_target_vec(mouse_pos - player_pos);
+					double rotate = atan2(mouse_pos.y - player_pos.y, mouse_pos.x - player_pos.x);
+					proj.set_rotation(rotate);
+				}
 				int x_factor = (mouse_pos.x > player_pos.x ? 1 : -1);
 				int y_factor = (mouse_pos.y > player_pos.y ? 1 : -1);
-				Projectile::create_projectile(proj, { player_pos.x + x_factor * (2 * i % 4 + i % 2)   , player_pos.y + y_factor * (2 * i % 4 + i % 2) },
+				Projectile::create_projectile(proj, { player_pos.x + x_factor * (rand()%9)   , player_pos.y + y_factor * (2 * rand()%9) },
 							mouse_pos, w._type, i * w._proj_interval, w._area, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
 							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, false);
-
 			}
 			break;
 		case AXE:
@@ -211,10 +228,11 @@ void Weapon::attack() {
 				static std::uniform_real_distribution<> dist(0.4 * MATH_PI, 0.6 * MATH_PI);
 				double angle = dist(e2);
 				proj.set_angle(angle);
-				Projectile::create_projectile(proj, player_pos, CPoint(69,69), w._type, i * w._proj_interval, w._area, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+				Projectile::create_projectile(proj, player_pos, player_pos, w._type, i * w._proj_interval, w._area, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
 							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, false);
 			}
 			break;
+
 		case SCYTHE:
 			double angle = 2 * MATH_PI / w._amount, current, x, y;
 			double initial = -MATH_PI / 2; 
@@ -226,7 +244,7 @@ void Weapon::attack() {
 				y = sin(current) * 1000;
 				target = { static_cast<int>(x), static_cast<int>(y) };
 				proj.set_target_vec(target);
-				Projectile::create_projectile(proj, player_pos, target, w._type, i * w._proj_interval, w._area, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+				Projectile::create_projectile(proj, player_pos, player_pos, w._type, i * w._proj_interval, w._area, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
 							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, false);
 			}
 			break;
@@ -261,11 +279,17 @@ void Weapon::update_all_weapon_stats(int might, int cooldown, int proj_speed, in
 	}
 }
 void Weapon::modify_base(string type, double effect) {
-	if (type != "damage" && type != "area") {
-		_base_stats[type] = any_cast<int>(_base_stats[type]) + static_cast<int>(effect);
+	if (type == "damage") {
+		_base_stats[type] = any_cast<double>(_base_stats[type]) + effect;
+	}
+	else if (type == "speed" || type == "duration" ) {
+		_base_stats[type] = static_cast<int>(static_cast<double>(any_cast<int>(_base_stats[type])) * (100.0+effect)/100.0);
+	}
+	else if (type == "area") {
+		_base_stats[type] = any_cast<double>(_base_stats[type]) * (100.0 + effect) / 100.0;
 	}
 	else {
-		_base_stats[type] = any_cast<double>(_base_stats[type]) + effect;
+		_base_stats[type] = any_cast<int>(_base_stats[type]) + static_cast<int>(effect);
 	}
 }
 void Weapon::upgrade(int weapon_type) {
@@ -384,7 +408,35 @@ void Weapon::upgrade()
 			break;
 		}
 		break;
+	case CROSS:
+		switch (_level) {
+		case 2:
+			modify_base("damage", 10);
+			break;
+		case 3:
+			modify_base("area", 10);
+			modify_base("speed", 25);
+			break;
+		case  4:
+			modify_base("amount", 1);
+			break;
+		case 5:
+			modify_base("damage", 10);
+			break;
+		case 6:
+			modify_base("area", 10);
+			modify_base("speed", 25);
+			break;
+		case 7:
+			modify_base("amount", 1);
+			break;
+		case 8:
+			modify_base("damage", 10);
+			break;
+		}
+		break;
 	}
+	
 	recalaulte_stat();
 }
 void Weapon::load_weapon_stats() {
@@ -432,6 +484,11 @@ void Weapon::load_weapon_stats() {
 			p.set_animation(50, false, 0);
 			p.enable_animation();
 			break;
+		case CROSS:
+			p.load_rotation();
+			p.set_animation(30, false, 0);
+			p.enable_animation();
+			break;
 		case VAMPIRICA:
 			p.set_default_direct(RIGHT);
 			p.set_animation(300, true, 0);
@@ -449,6 +506,9 @@ void Weapon::load_weapon_stats() {
 			p.load_rotation();
 			p.set_animation(10, false, 0);
 			p.enable_animation();
+			break;
+		case HEAVENSWORD:
+			p.load_rotation();
 			break;
 		}
 		w._base_proj = p;

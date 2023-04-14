@@ -20,6 +20,8 @@ public:
 	void HOLY_MISSILE_transition();
 	void AXE_transition();
 	void SCYTHE_transition();
+	void CROSS_transition();
+	void HEAVENSWORD_transition();
 	void collide_with_enemy(Enemy&);
 	void set_rotation(double);
 	void set_angle(double angle);
@@ -35,10 +37,10 @@ public:
 	static ObjPool<Projectile> pool;
 	static std::map<int, Projectile> template_proj;
 protected:
-	int _amount, _duration, _pierce, _proj_interval,
+	int _duration, _pierce, _proj_interval,
 		_hitbox_delay, _pool_limit, _chance,
 		_crit_multi, _block_by_wall;
-	int _delay;
+	int _delay = 0;
 	std::vector<std::string> _file_name;
 	std::map<int, game_framework::CMovingBitmap> _rotation_skin;
 	// int _speed; hide it then VSObject could see it
