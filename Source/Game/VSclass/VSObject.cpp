@@ -242,7 +242,7 @@ void VSObject::update_collide()
 	_collision = (0, 0);
 }
 CPoint get_player_pos() {
-	return CPoint(w_size_x - VSObject::player_dx, w_size_y - VSObject::player_dy);
+	return CPoint((w_size_x >> 1) - VSObject::player_dx, (w_size_y >> 1) - VSObject::player_dy);
 }
 
 int VSObject::player_dx = (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1);

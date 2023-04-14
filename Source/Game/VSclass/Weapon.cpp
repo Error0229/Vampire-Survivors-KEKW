@@ -426,7 +426,7 @@ void Weapon::load_weapon_stats() {
 			break;
 		case SCYTHE:
 			p.load_rotation();
-			p.set_animation(100, false, 0);
+			p.set_animation(50, false, 0);
 			p.enable_animation();
 			break;
 		}

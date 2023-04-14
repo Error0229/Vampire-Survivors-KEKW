@@ -198,9 +198,7 @@ void Projectile::HOLY_MISSILE_transition() {
 void Projectile::AXE_transition() {
 	int dt = clock() - _create_time - _delay;
 	if (_is_start &&  dt >= 0) {
-		CPoint res = get_parabola(_angle, _speed, dt);
-		TRACE(_T("%d %d\n"), res.x, res.y);
-		this->set_pos(res);
+		this->set_pos(get_parabola(_angle, static_cast<double>(_speed), dt));
 	}
 }
 void Projectile::set_rotation(double radien) {
@@ -229,16 +227,14 @@ void Projectile::load_rotation() {
 	this->_skin.LoadBitmapByString(rotated_filename, RGB(1, 11, 111));
 }
 CPoint Projectile::get_parabola(double angle, double speed, int time) {
-	// VS_ASSERT(false, "are we here?");
-	double dt = time / 1000.0;
-	speed = static_cast<double>(_speed) / (1000.0 / GAME_CYCLE_TIME) ;
+	double dt = static_cast<double>(time) / 1000.0;
+	speed = speed / (1000.0 / GAME_CYCLE_TIME) * 100; // 100 depends on game cycle time
 	CPoint player_pos = get_player_pos();
-	CPoint player_pos = _target;
 	double x = player_pos.x + speed * dt * cos(angle);
-	double y = player_pos.y + speed * dt * sin(angle) - 0.5 * 9.8 * dt * dt;
-	
-	return CPoint(static_cast<int>(x), static_cast<int>(- y));
+	double y = player_pos.y - speed * dt * sin(angle) + 0.5 * 980 * dt * dt;
+	return CPoint(static_cast<int>(x), static_cast<int>(y));
 }
+
 
 // deque<Projectile> Projectile::all_proj = {};
 ObjPool<Projectile> Projectile::pool(PROJECTILE);
