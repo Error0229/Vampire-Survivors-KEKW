@@ -122,6 +122,11 @@ Weapon::Weapon(int type, char* skin, vector<double> stats) {
 		break;
 	case THOUSAND:
 		_level_up_msg = { "", "Evolved Knife. Fires with no delay." };
+		break;
+	case SCYTHE:
+		_level_up_msg = { "", "Evolved Axe. Passes through enemies." };
+		break;
+
 	}
 }
 
@@ -209,8 +214,24 @@ void Weapon::attack() {
 				Projectile::create_projectile(proj, player_pos, CPoint(69,69), w._type, i * w._proj_interval, w._area, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
 							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, false);
 			}
+			break;
+		case SCYTHE:
+			double angle = 2 * MATH_PI / w._amount, current, x, y;
+			double initial = -MATH_PI / 2; 
+			CPoint target;
+			for (int i = 0; i < w._amount; i++) {
+				Projectile& proj = Projectile::pool.get_obj(SCYTHE);
+				current = initial + angle * i;
+				x = cos(current) * 1000;
+				y = sin(current) * 1000;
+				target = { static_cast<int>(x), static_cast<int>(y) };
+				proj.set_target_vec(target);
+				Projectile::create_projectile(proj, player_pos, target, w._type, i * w._proj_interval, w._area, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, false);
+			}
+			break;
 		}
-		break;
+
 	}
 }
 void Weapon::show() {
@@ -408,7 +429,7 @@ void Weapon::load_weapon_stats() {
 			break;
 		case AXE:
 			p.load_rotation();
-			p.set_animation(100, false, 0);
+			p.set_animation(50, false, 0);
 			p.enable_animation();
 			break;
 		case VAMPIRICA:
@@ -426,7 +447,7 @@ void Weapon::load_weapon_stats() {
 			break;
 		case SCYTHE:
 			p.load_rotation();
-			p.set_animation(50, false, 0);
+			p.set_animation(10, false, 0);
 			p.enable_animation();
 			break;
 		}

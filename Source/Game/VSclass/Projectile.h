@@ -19,6 +19,7 @@ public:
 	void KNIFE_transition();
 	void HOLY_MISSILE_transition();
 	void AXE_transition();
+	void SCYTHE_transition();
 	void collide_with_enemy(Enemy&);
 	void set_rotation(double);
 	void set_angle(double angle);

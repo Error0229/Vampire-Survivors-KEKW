@@ -101,8 +101,11 @@ void Projectile::update_position() {
 		case (HOLY_MISSILE):
 			proj.HOLY_MISSILE_transition();
 			break;
-		case (AXE): case (SCYTHE):
+		case (AXE):
 			proj.AXE_transition();
+			break;
+		case (SCYTHE):
+			proj.SCYTHE_transition();
 			break;
 		default :
 			break;
@@ -199,6 +202,15 @@ void Projectile::AXE_transition() {
 	int dt = clock() - _create_time - _delay;
 	if (_is_start &&  dt >= 0) {
 		this->set_pos(get_parabola(_angle, static_cast<double>(_speed), dt));
+	}
+}
+void Projectile::SCYTHE_transition() {
+	int dt = clock() - _create_time - _delay;
+	if (_is_start && dt >= 0) {
+		update_pos_by_vec();
+	}
+	else {
+		set_pos(get_player_pos());
 	}
 }
 void Projectile::set_rotation(double radien) {
