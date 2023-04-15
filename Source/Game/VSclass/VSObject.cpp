@@ -35,7 +35,9 @@ void VSObject::load_animation(vector<char*> filename, COLORREF color)
 }
 void VSObject::show_skin(double factor)
 {
-	this->_skin.SetTopLeft(this->_position.x - (this->_skin.Width() >> 1) + player_dx, this->_position.y - (this->_skin.Height() >> 1) + player_dy);
+	int xf = static_cast<int>(static_cast<double>(this->_skin.Width() >> 1) * factor);
+	int yf = static_cast<int>(static_cast<double>(this->_skin.Height() >> 1) * factor);
+	this->_skin.SetTopLeft(this->_position.x - xf + player_dx, this->_position.y - yf + player_dy);
 	this->_skin.ShowBitmap(factor, _is_mirror);
 }
 void VSObject::show_animation(double factor)
@@ -196,7 +198,9 @@ int VSObject::get_width()
 {
 	return this->_skin.Width();
 }
-
+bool VSObject::is_animation() {
+	return this->_skin.IsAnimation();
+}
 bool VSObject::is_animation_done()
 {
 	return this->_skin.IsAnimationDone();

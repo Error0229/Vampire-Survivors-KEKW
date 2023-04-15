@@ -281,6 +281,9 @@ namespace game_framework {
 	bool CMovingBitmap::IsAnimationDone() {
 		return isAnimationDone;
 	}
+	bool CMovingBitmap::IsAnimation() {
+		return isAnimation;
+	}
 
 	int CMovingBitmap::GetMovingBitmapFrame() {
 		return ( int ) SurfaceID.size();

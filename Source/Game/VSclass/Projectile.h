@@ -13,15 +13,6 @@ public:
 	bool operator < (const Projectile& rhs) const;
 	void show_skin(double factor = 1.0) override;
 	void set_offset(CPoint);
-	void WHIP_transition();
-	void VAMPIRICA_transition();
-	void MAGIC_MISSILE_transition();
-	void KNIFE_transition();
-	void HOLY_MISSILE_transition();
-	void AXE_transition();
-	void SCYTHE_transition();
-	void CROSS_transition();
-	void HEAVENSWORD_transition();
 	void collide_with_enemy(Enemy&);
 	void set_rotation(double);
 	void set_angle(double angle);

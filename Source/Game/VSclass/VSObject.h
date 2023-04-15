@@ -35,6 +35,7 @@ public:
 	virtual void update_pos_by_vec(CPoint vec = {0,0});
 	void set_is_mirror(bool);
 	bool is_animation_done();
+	bool is_animation();
 	int get_direct();
 	int get_height();
 	int get_width();

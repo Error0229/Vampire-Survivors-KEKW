@@ -20,8 +20,8 @@ Projectile::Projectile(int type, vector<string> filename, COLORREF color) : Proj
 Projectile::Projectile(int type) {
 	*this = template_proj[type];
 }
-Projectile::~Projectile() {};
-
+Projectile::~Projectile() {
+}
 bool Projectile::operator < (const Projectile& rhs) const {
 	return this->_type < rhs._type;
 }
@@ -84,32 +84,94 @@ void Projectile::set_create_time(clock_t time) {
 }
 
 void Projectile::update_position() {
+	CPoint player_pos = get_player_pos();
+	CPoint p;
+	GetCursorPos(&p);
+	HWND targetWindow = FindWindow(NULL, GAME_TITLE);
+	ScreenToClient(targetWindow, &p);
 	for (Projectile& proj : Projectile::all_proj) {
+		int dt = clock() - proj._create_time - proj._delay;
 		switch (proj._type) {
-		case(WHIP):
-			proj.WHIP_transition();
+		case(WHIP): case (VAMPIRICA):
+			proj.set_pos(player_pos + proj._offset);
 			break;
-		case(MAGIC_MISSILE):
-			proj.MAGIC_MISSILE_transition();
+		case(MAGIC_MISSILE): case(HOLY_MISSILE):
+			if (!proj._is_start && (dt < 0 && dt > -100)) {
+				int min_dis = 1000000000;
+				proj.set_pos(player_pos);
+				CPoint target = player_pos;
+				QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(&proj), min_dis);
+				proj.set_target_vec((target != player_pos ? target - player_pos : CPoint(420, 69)));
+				double rad = atan2(target.y - player_pos.y, target.x - player_pos.x);
+				proj.set_rotation(rad);
+			}
+			else {
+				proj.update_pos_by_vec();
+			}
 			break;
 		case (KNIFE): case (THOUSAND):
-			proj.KNIFE_transition();
-			break;
-		case (VAMPIRICA):
-			proj.VAMPIRICA_transition();
-			break;
-		case (HOLY_MISSILE):
-			proj.HOLY_MISSILE_transition();
+			if (!proj._is_start && (dt < 0 && dt > -100)) {
+				p.x = p.x - VSObject::player_dx;
+				p.y = p.y - VSObject::player_dy;
+				proj.set_target_vec(p - player_pos);
+				proj.set_pos(player_pos + proj._offset);
+				double rad = atan2(p.y - player_pos.y, p.x - player_pos.x);
+				proj.set_rotation(rad);
+			}
+			else {
+				proj.update_pos_by_vec();
+			}
 			break;
 		case (AXE):
-			proj.AXE_transition();
+			if (proj._is_start && dt >= 0) {
+				proj.set_pos(proj.get_parabola(proj._angle, static_cast<double>(proj._speed), dt));
+			}
 			break;
-		case CROSS: case HEAVENSWORD:
-			proj.CROSS_transition();
-			break;
-		case (SCYTHE):
-			proj.SCYTHE_transition();
-			break;
+		case CROSS: case HEAVENSWORD: {
+			const double vertical = MATH_PI / 2;
+			if (!proj._is_start && (dt < 0 && dt > -100)) {
+				int min_dis = 1000000000;
+				CPoint target;
+				QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(&proj), min_dis);
+				proj.set_target_vec(target - proj._position);
+			}
+			else {
+				CPoint par = proj.get_parabola(vertical, static_cast<double>(proj._speed), dt);
+				double vlen1 = sqrt(proj._target_vec.x * proj._target_vec.x + proj._target_vec.y * proj._target_vec.y);
+				double angle = acos(proj._target_vec.y / vlen1);
+				par.x -= proj._target.x;
+				par.y -= proj._target.y;
+				double x, y;
+				if (proj._target_vec.x > 0) {
+					x = par.x * cos(angle) - par.y * sin(angle);
+					y = -par.x * sin(angle) - par.y * cos(angle);
+				}
+				else {
+					x = -par.x * cos(angle) + par.y * sin(angle);
+					y = -par.x * sin(angle) - par.y * cos(angle);
+				}
+				proj.set_pos(CPoint(static_cast<int>(x), static_cast<int>(y)) + proj._target);
+				if (proj._is_top && !proj.is_animation()) {
+					proj.enable_animation();
+				}
+			}
+		}	break;
+		case (HOLYBOOK): case (VESPERS): {
+			double radius = proj._angle;
+			double speed = proj._speed / (1000.0 / GAME_CYCLE_TIME);
+			CPoint origin_pos = player_pos + proj._offset;
+			double angular_velocity = speed / radius / 20;
+			double initial_angle = atan2(origin_pos.y - player_pos.y, origin_pos.x - player_pos.x);
+			double final_angle = initial_angle + dt * angular_velocity;
+			double x = player_pos.x + radius * cos(final_angle);
+			double y = player_pos.y + radius * sin(final_angle);
+			proj.set_pos(CPoint(static_cast<int>(x), static_cast<int>(y)));
+		}	break;
+		case (SCYTHE): {
+			if (proj._is_start && dt >= 0) {
+				proj.update_pos_by_vec();
+			}
+		}	break;
 		default :
 			break;
 		}
@@ -145,108 +207,7 @@ void Projectile::show() {
 		all_proj.shrink_to_fit(); // release memory
 	}
 }
-void Projectile::WHIP_transition() {
-	CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
-	_position = player_pos + _offset;
-}
-void Projectile::MAGIC_MISSILE_transition() {
-	int dt = clock() - _create_time - _delay;
-	if (!_is_start && (dt < 0 && dt > -100)) {
-		CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
-		int min_dis = 1000000000;
-		this->set_pos(player_pos);
-		CPoint target = player_pos;
-		QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(this), min_dis);
-		this->set_target_vec((target != player_pos ? target - player_pos : CPoint(420, 69)));
-		double rad = atan2(target.y - player_pos.y, target.x - player_pos.x);
-		this->set_rotation(rad);
-	}
-	else {
-		this->update_pos_by_vec();
-	}
-}
-void Projectile::KNIFE_transition() {
-	int dt = clock() - _create_time - _delay;
-	if (!_is_start && (dt < 0 && dt > -100)) {
-		CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
-		CPoint p;
-		GetCursorPos(&p);
-		HWND targetWindow = FindWindow(NULL, GAME_TITLE);
-		ScreenToClient(targetWindow, &p);
-		p.x = p.x - VSObject::player_dx;
-		p.y = p.y - VSObject::player_dy;
-		this->set_target_vec(p - player_pos);
-		_position = player_pos + _offset;
-		double rad = atan2(p.y - player_pos.y, p.x - player_pos.x);
-		this->set_rotation(rad);
-	}
-	else {
-		this->update_pos_by_vec();
-	}
-}
-void Projectile::VAMPIRICA_transition() {
-	CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
-	_position = player_pos + _offset;
-}
-void Projectile::HOLY_MISSILE_transition() {
-	int dt = clock() - _create_time - _delay;
-	if (!_is_start && (dt < 0 && dt > -100)) {
-		CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
-		int min_dis = 1000000000;
-		this->set_pos(player_pos);
-		CPoint target = (player_pos);
-		QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(this), min_dis);
-		this->set_target_vec((target != player_pos ? target - player_pos : _target_vec));
-		double rad = atan2(target.y - player_pos.y, target.x - player_pos.x);
-		this->set_rotation(rad);
-	}
-	else {
-		this->update_pos_by_vec();
-	}
-}
-void Projectile::AXE_transition() {
-	int dt = clock() - _create_time - _delay;
-	if (_is_start &&  dt >= 0) {
-		this->set_pos(get_parabola(_angle, static_cast<double>(_speed), dt));
-	}
-}
-void Projectile::SCYTHE_transition() {
-	int dt = clock() - _create_time - _delay;
-	if (_is_start && dt >= 0) {
-		update_pos_by_vec();
-	}
-}
-void Projectile::CROSS_transition() {
-	int dt = clock() - _create_time - _delay;
-	const double vertical = MATH_PI / 2;
-	if (!_is_start && (dt < 0 && dt > -100)) {
-		int min_dis = 1000000000;
-		CPoint target ;
-		QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(this), min_dis);
-		this->set_target_vec(target-_position);
-	}
-	else {
-		CPoint par = get_parabola(vertical, static_cast<double>(_speed), dt);
-		double vlen1 = sqrt(_target_vec.x * _target_vec.x + _target_vec.y * _target_vec.y);
-		double angle = acos(_target_vec.y / vlen1);
-		par.x -= _target.x;
-		par.y -= _target.y;
-		double x, y;
-		if (_target_vec.x > 0) {
-			x = par.x * cos(angle) - par.y * sin(angle);
-			y = - par.x * sin(angle) - par.y * cos(angle);
-		}
-		else {
-			x = - par.x * cos(angle) + par.y * sin(angle);
-			y = - par.x * sin(angle) - par.y * cos(angle);
-		}
-		this->set_pos(CPoint(static_cast<int>(x), static_cast<int>(y)) + _target);
-		if (_is_top) {
-			enable_animation();
-			_is_top = false;
-		}
-	}
-}
+
 void Projectile::set_rotation(double radien) {
 	_angle = radien;
 	int angle = static_cast<int>(radien * 180 / acos(-1));
@@ -268,11 +229,11 @@ void Projectile::load_rotation() {
 CPoint Projectile::get_parabola(double angle, double speed, int time) {
 	double dt = static_cast<double>(time) / 1000.0;
 	static double pre_y = 100000000;
-	speed = speed / (1000.0 / GAME_CYCLE_TIME) * 50; // 100 depends on game cycle time
+	speed = speed / (1000.0 / GAME_CYCLE_TIME) * 50; // 50 depends on game cycle time
 	// since projectile using this function don't need target so we use it as a tmp
 	double x = _target.x + speed * dt * cos(angle);
 	double y = _target.y - speed * dt * sin(angle) + 0.5 * 980 * dt * dt;
-	if (y > pre_y) {
+	if (!_is_top && y > pre_y) {
 		_is_top = true;
 	}
 	pre_y = y;
