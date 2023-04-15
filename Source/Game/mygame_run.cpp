@@ -97,7 +97,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	xp_bar_cover.set_base_pos(-8, -300 + (xp_bar_frame.get_height() >> 1));
 	xp_bar.load_skin({ "resources/ui/xp_bar.bmp", "resources/ui/xp_bar_1.bmp", "resources/ui/xp_bar_2.bmp", "resources/ui/xp_bar_3.bmp", "resources/ui/xp_bar_4.bmp", "resources/ui/xp_bar_5.bmp" });
 	xp_bar.set_base_pos(-8, -300 + (xp_bar.get_height() >> 1));
-	xp_bar.set_animation(1, false);
+	xp_bar.set_animation(1, false);;
 	xp_bar.disable_animation();
 
 	inv_slot.load_skin("resources/ui/weaponSlots.bmp");
@@ -508,6 +508,7 @@ void CGameStateRun::OnShow()
 	switch (_gamerun_status) {
 	case(PLAYING):
 		inv_slot.show();
+		xp_bar.set_selector(0);
 		xp_bar.disable_animation();
 		for (int i = 0; i < Weapon::weapon_count(); i++)
 			inv_icon[i].show(Weapon::all_weapon[i].get_type());
