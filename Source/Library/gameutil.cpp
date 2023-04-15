@@ -32,6 +32,9 @@ namespace game_framework {
 	CMovingBitmap::CMovingBitmap()
 	{
 		isBitmapLoaded = false;
+		if (ENABLE_FEATURE) {
+			scaler = FIX_SCALE;
+		}
 	}
 
 
@@ -161,7 +164,7 @@ namespace game_framework {
 		if (last_time == -1) {
 			last_time = clock();
 		}
-		CDDraw::BltBitmapToBack(SurfaceID[ selector ], location.left, location.top, factor);
+		CDDraw::BltBitmapToBack(SurfaceID[ selector ], location.left, location.top, factor + scaler);
 		clock_t now = clock();
 		if ( animation_cooldown != 0 && ( ( now - last_animation_done ) > animation_cooldown ) && ( isAnimation == false ) ) {
 			isAnimation = true;
@@ -192,7 +195,7 @@ namespace game_framework {
 	void CMovingBitmap::ShowBitmap(double factor, bool is_mirror) //important msg!! it only work on my laptop for now
 	{
 		GAME_ASSERT(isBitmapLoaded, "A bitmap must be loaded before ShowBitmap() is called !!!");
-		CDDraw::BltBitmapToBack(SurfaceID[ selector ], location.left, location.top, factor, is_mirror);
+		CDDraw::BltBitmapToBack(SurfaceID[ selector ], location.left, location.top, factor + scaler, is_mirror);
 		if (last_time == -1) {
 			last_time = clock();
 		}
@@ -243,13 +246,13 @@ namespace game_framework {
 	int CMovingBitmap::Width()
 	{
 		GAME_ASSERT(isBitmapLoaded, "A bitmap must be loaded before Width() is called !!!");
-		return _bitmap_size[ selector ].cx;
+		return static_cast<int>(_bitmap_size[ selector ].cx * (1.0 + scaler));
 	}
 
 	int CMovingBitmap::Height()
 	{
 		GAME_ASSERT(isBitmapLoaded, "A bitmap must be loaded before Height() is called !!!");
-		return _bitmap_size[selector].cy;
+		return static_cast<int>(_bitmap_size[selector].cy * (1.0 + scaler));
 	}
 
 	int CMovingBitmap::Left()
