@@ -168,9 +168,15 @@ void Projectile::update_position() {
 			double y = player_pos.y + radius * sin(final_angle);
 			proj.set_pos(CPoint(static_cast<int>(x), static_cast<int>(y)));
 		}	break;
-		case FIREBALL: case HELLFIRE: {
-			proj.update_pos_by_vec();
+		case FIREBALL:case HELLFIRE: {
+			if (!proj._is_start && (dt < 0 && dt > -100)) {
+				proj.set_pos(player_pos);
+			}
+			else {
+				proj.update_pos_by_vec();
+			}
 		}	break;
+		
 
 		case (SCYTHE): {
 			if (proj._is_start && dt >= 0) {

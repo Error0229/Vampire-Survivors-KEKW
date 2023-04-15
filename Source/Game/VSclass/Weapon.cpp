@@ -23,7 +23,7 @@ Weapon::Weapon(int type, char* skin, vector<double> stats) {
 	this->load_skin(skin);
 	this->_type = type;
 	_level = static_cast<int>(stats[0]), _max_level = static_cast<int>(stats[1]), _damage = stats[2],
-		_speed = static_cast<int>(stats[3] * 500), _area = stats[4], _rarity = static_cast<int>(stats[5]),
+		_speed = static_cast<int>(stats[3] * 400), _area = stats[4], _rarity = static_cast<int>(stats[5]),
 		_amount = static_cast<int>(stats[6]), _duration = static_cast<int>(stats[7]), _pierce = static_cast<int>(stats[8]),
 		_cooldown = static_cast<int>(stats[9]), _proj_interval = static_cast<int>(stats[10]),
 		_hitbox_delay = static_cast<int>(stats[11]), _knock_back = stats[12], _pool_limit = static_cast<int>(stats[13]),
@@ -578,17 +578,12 @@ void Weapon::load_weapon_stats() {
 		w._name = name;
 		Projectile p(type, proj_vec);
 		switch (type) {
-		case WHIP:
+		case WHIP: case VAMPIRICA:
 			p.set_default_direct(RIGHT);
 			p.set_animation(300, true, 0);
 			p.enable_animation();
 			break;
-		case MAGIC_MISSILE:
-			p.set_default_direct(RIGHT);
-			p.load_rotation();
-			break;
-		case KNIFE:
-			p.set_default_direct(RIGHT);
+		case MAGIC_MISSILE:	case HOLY_MISSILE: case KNIFE: case THOUSAND: case FIREBALL: case HELLFIRE:
 			p.load_rotation();
 			break;
 		case AXE:
@@ -603,25 +598,9 @@ void Weapon::load_weapon_stats() {
 			break;
 		case HOLYBOOK: 
 			break;
-		case FIREBALL:
-			p.load_rotation();
-			break;
 		case VESPERS:
 			p.set_animation(100,false, 0);
 			p.enable_animation();
-			break;
-		case VAMPIRICA:
-			p.set_default_direct(RIGHT);
-			p.set_animation(300, true, 0);
-			p.enable_animation();
-			break;
-		case HOLY_MISSILE:
-			p.set_default_direct(RIGHT);
-			p.load_rotation();
-			break;
-		case THOUSAND:
-			p.set_default_direct(RIGHT);
-			p.load_rotation();
 			break;
 		case SCYTHE:
 			p.load_rotation();
