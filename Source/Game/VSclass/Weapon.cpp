@@ -135,6 +135,20 @@ Weapon::Weapon(int type, char* skin, vector<double> stats) {
 			"Effect lasts 0.5 seconds longer. Base Damage up by 10.",
 			"Fires 1 more projectile."
 		};
+		break;
+	case FIREBALL:
+		_level_up_msg = {
+			"",
+			"Fires at a random enemy, deals heavy damage.",
+			"Base Damage up by 10.",
+			"Base Damage up by 10. Base Speed up by 20%.",
+			"Base Damage up by 10.",
+			"Base Damage up by 10. Base Speed up by 20%.",
+			"Base Damage up by 10.",
+			"Base Damage up by 10. Base Speed up by 20%.",
+			"Base Damage up by 10."
+		};
+		break;
 	case VAMPIRICA:
 		_level_up_msg = { "", "Can deal critical damage and absorb HP." };
 		break;
@@ -149,8 +163,12 @@ Weapon::Weapon(int type, char* skin, vector<double> stats) {
 		break;
 	case HEAVENSWORD:
 		_level_up_msg = { "", "Evolved Cross. Can do critical damage." };
+		break;
 	case VESPERS:
 		_level_up_msg = { "", "Evolved King Bible. Never Ends." };
+		break;
+	case HELLFIRE:
+		_level_up_msg = { "", "Evolved Fire Wand. Passes through enemies." };
 		break;
 	}
 }
@@ -163,6 +181,10 @@ void Weapon::attack() {
 	CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
 	mouse_pos += CPoint{-VSObject::player_dx, -VSObject::player_dy}; 
 	static bool VESPER_attack = false;
+	static std::random_device rnd;
+	static std::mt19937 e2(rnd());
+	static std::uniform_real_distribution<> dist(0.4 * MATH_PI, 0.6 * MATH_PI);
+	static std::uniform_real_distribution<> dist2(0, 2 * MATH_PI);
 	// create projectile
 	for (Weapon& w : all_weapon) {
 		int factor = 0;
@@ -239,9 +261,6 @@ void Weapon::attack() {
 		case AXE:
 			for (int i = 0; i < w._amount; i++) {
 				Projectile& proj = Projectile::pool.get_obj(AXE);
-				static std::random_device rnd;
-				static std::mt19937 e2(rnd());
-				static std::uniform_real_distribution<> dist(0.4 * MATH_PI, 0.6 * MATH_PI);
 				double angle = dist(e2);
 				proj.set_angle(angle);
 				Projectile::create_projectile(proj, player_pos, player_pos, w._type, i * w._proj_interval, w._area, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
@@ -264,6 +283,21 @@ void Weapon::attack() {
 			}
 
 		}	break;
+		case FIREBALL: case HELLFIRE:{
+			double mid = dist2(e2);
+			double da = MATH_PI / 5 / w._amount, angle, x, y;
+			for (int i = 0; i < w._amount; i++) {
+				Projectile& proj = Projectile::pool.get_obj(w._type);
+				angle = mid + da * ((i & 1) ? ((i + 1) >> 1) : -((i + 1) >> 1));
+				x = cos(angle) * 1000;
+				y = sin(angle) * 1000;
+				proj.set_target_vec({static_cast<int>(x), static_cast<int>(y)});
+				proj.set_rotation(atan2(y , x ));
+				Projectile::create_projectile(proj, player_pos, player_pos, w._type, i * w._proj_interval, w._area, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, false);
+			}
+		}break;
+
 		case VESPERS: {
 			if (VESPER_attack)
 				break;
@@ -485,6 +519,34 @@ void Weapon::upgrade()
 			break;
 		}
 		break;
+	case FIREBALL:
+		switch(_level) {
+		case 2:
+			modify_base("damage", 10);
+			break;
+		case 3:
+			modify_base("damage", 10);
+			modify_base("speed", 20);
+			break;
+		case 4:
+			modify_base("damage", 10);
+			break;
+		case 5:
+			modify_base("damage", 10);
+			modify_base("speed", 20);
+			break;
+		case 6:
+			modify_base("damage", 10);
+			break;
+		case 7 :
+			modify_base("damage", 10);
+			modify_base("speed", 20);
+			break;
+		case 8:
+			modify_base("damage", 10);
+			break;
+		}
+		break;
 	}
 	
 	recalaulte_stat();
@@ -540,6 +602,9 @@ void Weapon::load_weapon_stats() {
 			p.enable_animation();
 			break;
 		case HOLYBOOK: 
+			break;
+		case FIREBALL:
+			p.load_rotation();
 			break;
 		case VESPERS:
 			p.set_animation(100,false, 0);

@@ -36,7 +36,6 @@ void Projectile::set_angle(double angle) {
 }
 void Projectile::collide_with_enemy(Enemy& 🥵, int player_duration) {
 	clock_t now = clock();
-	TRACE(_T("hitbox_delay: %d, dt: %d\n"), this->_hitbox_delay, now - 🥵._last_time_got_hit_by_projectile[this->_type]);
 	if (_is_over || !is_overlapped((*this), 🥵) || now - 🥵._last_time_got_hit_by_projectile[this->_type] < this->_hitbox_delay) {
 		return;
 	}
@@ -60,7 +59,7 @@ void Projectile::create_projectile(Projectile& proj, CPoint position, CPoint tar
 	proj._duration = duration;
 	proj._pierce = pierce;
 	proj._proj_interval = proj_interval;
-	proj._hitbox_delay = hitbox_delay;
+	proj._hitbox_delay = hitbox_delay > 0 ? hitbox_delay : 100000;
 	proj._knock_back = knock_back;
 	proj._pool_limit = pool_limit;
 	proj._chance = chance;
@@ -169,6 +168,10 @@ void Projectile::update_position() {
 			double y = player_pos.y + radius * sin(final_angle);
 			proj.set_pos(CPoint(static_cast<int>(x), static_cast<int>(y)));
 		}	break;
+		case FIREBALL: case HELLFIRE: {
+			proj.update_pos_by_vec();
+		}	break;
+
 		case (SCYTHE): {
 			if (proj._is_start && dt >= 0) {
 				proj.update_pos_by_vec();

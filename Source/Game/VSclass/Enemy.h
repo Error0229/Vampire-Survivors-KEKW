@@ -54,7 +54,7 @@ public:
 	friend class Projectile;
 private:
 	// stats
-	clock_t _last_time_got_hit;
+	clock_t _last_time_got_hit = -100000;
 	vector <clock_t> _last_time_got_hit_by_projectile;
 	int _alt_speed;
 	int _id, _hp, _hp_max, _power, _mspeed, _kb_max;
