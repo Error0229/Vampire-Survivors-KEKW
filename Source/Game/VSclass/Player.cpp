@@ -204,6 +204,9 @@ int Player::get_luck()
 {
 	return _coef_luck;
 }
+int Player::get_duration() {
+	return _coef_duration;
+}
 vector<stat_struct> Player::get_stats_string()
 {
 	vector<stat_struct> stats;

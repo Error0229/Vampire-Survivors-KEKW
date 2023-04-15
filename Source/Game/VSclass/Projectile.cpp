@@ -34,12 +34,14 @@ void Projectile::init_projectile(int type, int count) {
 void Projectile::set_angle(double angle) {
 	_angle = angle;
 }
-void Projectile::collide_with_enemy(Enemy& 🥵) {
+void Projectile::collide_with_enemy(Enemy& 🥵, int player_duration) {
 	clock_t now = clock();
-	if (_is_over || !is_overlapped((*this), 🥵) || now - 🥵._last_time_got_hit_by_projectile[this->_type] < this->_hitbox_delay)
+	TRACE(_T("hitbox_delay: %d, dt: %d\n"), this->_hitbox_delay, now - 🥵._last_time_got_hit_by_projectile[this->_type]);
+	if (_is_over || !is_overlapped((*this), 🥵) || now - 🥵._last_time_got_hit_by_projectile[this->_type] < this->_hitbox_delay) {
 		return;
+	}
 	🥵._is_stun = true;
-	🥵._stun_speed = -1.0 * 🥵._speed * 🥵._kb * (this->_duration <= 0 ? 1 : this->_duration) * this->_knock_back;
+	🥵._stun_speed = -1.0 * static_cast<double>(🥵._speed) * 🥵._kb * static_cast<double>(player_duration) * this->_knock_back / 100.0;
 	🥵._last_time_got_hit = now;
 	🥵._last_time_got_hit_by_projectile[this->_type] = now;
 	this->_pierce -= 1;

@@ -13,7 +13,7 @@ public:
 	bool operator < (const Projectile& rhs) const;
 	void show_skin(double factor = 1.0) override;
 	void set_offset(CPoint);
-	void collide_with_enemy(Enemy&);
+	void collide_with_enemy(Enemy&, int duration);
 	void set_rotation(double);
 	void set_angle(double angle);
 	CPoint get_parabola(double angle, double speed, int time);

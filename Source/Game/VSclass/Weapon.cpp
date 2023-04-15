@@ -161,11 +161,12 @@ void Weapon::attack() {
 	HWND targetWindow = FindWindow(NULL, GAME_TITLE);
 	ScreenToClient(targetWindow, &mouse_pos);
 	CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
-	mouse_pos += CPoint{-VSObject::player_dx, -VSObject::player_dy}; // transfer into game position
+	mouse_pos += CPoint{-VSObject::player_dx, -VSObject::player_dy}; 
+	static bool VESPER_attack = false;
 	// create projectile
 	for (Weapon& w : all_weapon) {
 		int factor = 0;
-		if (w._type == HOLYBOOK || w._type == VESPERS) {
+		if (w._type == HOLYBOOK) {
 			factor = w._duration;
 		}
 		if (clock() - w._last_time_attack < w._cooldown + factor) {
@@ -204,7 +205,7 @@ void Weapon::attack() {
 			}
 			break;
 
-		case MAGIC_MISSILE: case HOLY_MISSILE: case CROSS: case HEAVENSWORD: // reducing workload
+		case MAGIC_MISSILE: case HOLY_MISSILE: case CROSS: case HEAVENSWORD: // reducing work
 			for (int i = 0; i < w._amount; i++) {
 				Projectile& proj = Projectile::pool.get_obj(w._type);
 				CPoint target = player_pos;
@@ -247,15 +248,15 @@ void Weapon::attack() {
 							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, false);
 			}
 			break;
-		case HOLYBOOK: case VESPERS: {
+		case HOLYBOOK: {
 			double angle = 2 * MATH_PI / w._amount, current, x, y;
 			double initial = -MATH_PI / 2;
 			CPoint origin;
 			for (int i = 0; i < w._amount; i++) {
 				Projectile& proj = Projectile::pool.get_obj(w._type);
 				current = initial + angle * i;
-				x = cos(current) * w._area * 100;
-				y = sin(current) * w._area * 100;
+				x = cos(current) * w._area * 50;
+				y = sin(current) * w._area * 50;
 				origin = { player_pos.x + static_cast<int>(x), player_pos.y + static_cast<int>(y) };
 				proj.set_angle(sqrt(x * x + y * y));
 				Projectile::create_projectile(proj, origin, origin, w._type, i * w._proj_interval, w._area, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
@@ -263,6 +264,25 @@ void Weapon::attack() {
 			}
 
 		}	break;
+		case VESPERS: {
+			if (VESPER_attack)
+				break;
+			double angle = 2 * MATH_PI / 26, current, x, y;
+			double initial = -MATH_PI / 2;
+			CPoint origin;
+			for (int i = 0; i < 26; i++) {
+				Projectile& proj = Projectile::pool.get_obj(w._type);
+				current = initial + angle * i;
+				x = cos(current) * w._area * 80;
+				y = sin(current) * w._area * 80;
+				origin = { player_pos.x + static_cast<int>(x), player_pos.y + static_cast<int>(y) };
+				proj.set_angle(sqrt(x * x + y * y));
+				proj.set_selector(i);
+				Projectile::create_projectile(proj, origin, origin, w._type, i * w._proj_interval, w._area, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, false);
+			}
+			VESPER_attack = true;
+		}break;
 		case SCYTHE: {
 			double angle = 2 * MATH_PI / w._amount, current, x, y;
 			double initial = -MATH_PI / 2; 
@@ -519,7 +539,11 @@ void Weapon::load_weapon_stats() {
 			p.set_animation(30, false, 0);
 			p.enable_animation();
 			break;
-		case HOLYBOOK: case VESPERS:
+		case HOLYBOOK: 
+			break;
+		case VESPERS:
+			p.set_animation(100,false, 0);
+			p.enable_animation();
 			break;
 		case VAMPIRICA:
 			p.set_default_direct(RIGHT);
