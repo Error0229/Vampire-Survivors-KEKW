@@ -269,6 +269,7 @@
     <ClCompile Include="Source\Core\MainFrm.cpp" />
     <ClCompile Include="Source\Core\StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Source\Game\VSclass\Enemy.cpp" />
     <ClCompile Include="Source\Game\VSclass\Map.cpp" />

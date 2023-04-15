@@ -124,7 +124,7 @@ namespace game_framework {
 		bool isAnimationDone = false;
 		bool once = false;
 		bool isPause = false;
-		double scaler;
+		double scaler = 0.0;
 		vector<unsigned> SurfaceID;
 		bool     isBitmapLoaded = false;	// whether a bitmap has been loaded
 		CRect    location;			// location of the bitmap
