@@ -52,7 +52,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	player.set_default_direct(RIGHT);
 	player.set_animation(150, false);
 	player.load_bleed();
-	player.acquire_weapon(HELLFIRE);
+	player.acquire_weapon(VORTEX);
 	player.acquire_passive(POWER);
 
 	map.load_map({ "resources/map/dummy1.bmp" });
@@ -60,7 +60,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	QuadTree::VSPlain.clear();
 
 	for (int i = 0; i < 100; i++) {
-		enemy.push_back(Enemy::get_template_enemy(BAT5));
+		enemy.push_back(Enemy::get_template_enemy(BAT1));
 		xp.push_back(Xp());
 		chest.push_back(Chest());
 	}
@@ -390,7 +390,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		}
 		for (auto& i : xp) {
 			if (i.is_enable() && VSObject::distance(player, i) < player.get_magnet()) {
-				i.set_speed(200);
+				i.set_speed(500);
 				i.update_pos(player.get_pos());
 				if (is_overlapped(player, i)) {
 					i.despawn();

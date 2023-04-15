@@ -61,6 +61,7 @@ protected:
 	int _direct, _default_direct=LEFT;
 	int _speed=0;
 	int _pool_id, _type;
+	double _scaler = 1;
 	double _fx, _fy;
 };
 CPoint get_player_pos();

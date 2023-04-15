@@ -149,6 +149,19 @@ Weapon::Weapon(int type, char* skin, vector<double> stats) {
 			"Base Damage up by 10."
 		};
 		break;
+	case GARLIC:
+		_level_up_msg = {
+			"",
+			"Damages nearby enemies. Reduces resistance to knockback and freeze.",
+			"Base Area up by 40%. Base Damage up by 2.",
+			"Cooldown reduced by 0.1 seconds. Base Damage up by 1.",
+			"Base Area up by 20%. Base Damage up by 1.",
+			"Cooldown reduced by 0.1 seconds. Base Damage up by 2.",
+			"Base Area up by 20%. Base Damage up by 1.",
+			"Cooldown reduced by 0.1 seconds. Base Damage up by 1.",
+			"Base Area up by 20%. Base Damage up by 1."
+		};
+		break;
 	case VAMPIRICA:
 		_level_up_msg = { "", "Can deal critical damage and absorb HP." };
 		break;
@@ -170,6 +183,8 @@ Weapon::Weapon(int type, char* skin, vector<double> stats) {
 	case HELLFIRE:
 		_level_up_msg = { "", "Evolved Fire Wand. Passes through enemies." };
 		break;
+	case VORTEX:
+		_level_up_msg = { "", "Evolved Garlic. Steals hearts. Power increases when recovering HP."};
 	}
 }
 
@@ -297,7 +312,12 @@ void Weapon::attack() {
 							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, false);
 			}
 		}break;
-
+		case GARLIC: case VORTEX: {
+			Projectile& proj = Projectile::pool.get_obj(w._type);
+			Projectile::create_projectile(proj, player_pos,
+							player_pos, w._type,  w._proj_interval, w._area + 2, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, false);
+		}break;
 		case VESPERS: {
 			if (VESPER_attack)
 				break;
@@ -363,10 +383,10 @@ void Weapon::update_all_weapon_stats(int might, int cooldown, int proj_speed, in
 	}
 }
 void Weapon::modify_base(string type, double effect) {
-	if (type == "damage") {
+	if (type == "damage" || type == "duration") {
 		_base_stats[type] = any_cast<double>(_base_stats[type]) + effect;
 	}
-	else if (type == "speed" || type == "duration" ) {
+	else if (type == "speed" ) {
 		_base_stats[type] = static_cast<int>(static_cast<double>(any_cast<int>(_base_stats[type])) * (100.0+effect)/100.0);
 	}
 	else if (type == "area") {
@@ -519,6 +539,35 @@ void Weapon::upgrade()
 			break;
 		}
 		break;
+	case HOLYBOOK:
+		switch (_level) {
+		case 2:
+			modify_base("amount", 1);
+			break;
+		case 3:
+			modify_base("area", 25);
+			modify_base("speed", 30);
+			break;
+		case 4:
+			modify_base("duration", 500);
+			modify_base("damage", 10);
+			break;
+		case 5:
+			modify_base("amount", 1);
+			break;
+		case 6:
+			modify_base("area", 25);
+			modify_base("speed", 30);
+			break;
+		case 7:
+			modify_base("duration", 500);
+			modify_base("damage", 10);
+			break;
+		case 8:
+			modify_base("amount", 1);
+			break;
+		}
+		break;
 	case FIREBALL:
 		switch(_level) {
 		case 2:
@@ -544,6 +593,26 @@ void Weapon::upgrade()
 			break;
 		case 8:
 			modify_base("damage", 10);
+			break;
+		}
+		break;
+	case GARLIC:
+		switch (_level) {
+		case 2:
+			modify_base("area", 40);
+			modify_base("damage", 2);
+			break;
+		case 3: case 7:
+			modify_base("cooldown", -100);
+			modify_base("damage", 1);
+			break;
+		case 4: case 6: case 8:
+			modify_base("area", 20);
+			modify_base("damage", 2);
+			break;
+		case 5:
+			modify_base("cooldown", -100);
+			modify_base("damage", 2);
 			break;
 		}
 		break;
@@ -583,7 +652,7 @@ void Weapon::load_weapon_stats() {
 			p.set_animation(300, true, 0);
 			p.enable_animation();
 			break;
-		case MAGIC_MISSILE:	case HOLY_MISSILE: case KNIFE: case THOUSAND: case FIREBALL: case HELLFIRE:
+		case MAGIC_MISSILE:	case HOLY_MISSILE: case KNIFE: case THOUSAND: case FIREBALL: case HELLFIRE: 
 			p.load_rotation();
 			break;
 		case AXE:
@@ -591,11 +660,15 @@ void Weapon::load_weapon_stats() {
 			p.set_animation(50, false, 0);
 			p.enable_animation();
 			break;
-		case CROSS:
+		case CROSS: 
 			p.load_rotation();
 			p.set_animation(30, false, 0);
 			p.enable_animation();
 			break;
+		case GARLIC: case VORTEX:
+			p.load_rotation();
+			p.set_animation(250, false, 0);
+			p.enable_animation();
 		case HOLYBOOK: 
 			break;
 		case VESPERS:

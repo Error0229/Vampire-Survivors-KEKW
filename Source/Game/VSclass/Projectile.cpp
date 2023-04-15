@@ -36,7 +36,7 @@ void Projectile::set_angle(double angle) {
 }
 void Projectile::collide_with_enemy(Enemy& 🥵, int player_duration) {
 	clock_t now = clock();
-	if (_is_over || !is_overlapped((*this), 🥵) || now - 🥵._last_time_got_hit_by_projectile[this->_type] < this->_hitbox_delay) {
+	if (_is_over || !is_overlapped((*this), 🥵, 1 - _area * 0.04) || now - 🥵._last_time_got_hit_by_projectile[this->_type] < this->_hitbox_delay) {
 		return;
 	}
 	🥵._is_stun = true;
@@ -93,7 +93,7 @@ void Projectile::update_position() {
 	for (Projectile& proj : Projectile::all_proj) {
 		int dt = clock() - proj._create_time - proj._delay;
 		switch (proj._type) {
-		case(WHIP): case (VAMPIRICA):
+		case(WHIP): case (VAMPIRICA): case (GARLIC): case (VORTEX):
 			proj.set_pos(player_pos + proj._offset);
 			break;
 		case(MAGIC_MISSILE): case(HOLY_MISSILE):

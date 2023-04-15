@@ -35,9 +35,8 @@ void VSObject::load_animation(vector<char*> filename, COLORREF color)
 }
 void VSObject::show_skin(double factor)
 {
-	int xf = static_cast<int>(static_cast<double>(this->_skin.Width() >> 1) * factor);
-	int yf = static_cast<int>(static_cast<double>(this->_skin.Height() >> 1) * factor);
-	this->_skin.SetTopLeft(this->_position.x - xf + player_dx, this->_position.y - yf + player_dy);
+	_scaler = factor;
+	this->_skin.SetTopLeft(this->_position.x - (get_width() >> 1) + player_dx, this->_position.y - (this->get_height() >> 1) + player_dy);
 	this->_skin.ShowBitmap(factor, _is_mirror);
 }
 void VSObject::show_animation(double factor)
@@ -192,11 +191,11 @@ bool is_overlapped(VSObject& obj1, VSObject& obj2, double overlap_bound)
 }
 int VSObject::get_height()
 {
-	return this->_skin.Height();
+	return static_cast<int>(static_cast<double>(this->_skin.Height()) * _scaler);
 }
 int VSObject::get_width()
 {
-	return this->_skin.Width();
+	return static_cast<int>(static_cast<double>(this->_skin.Width()) * _scaler);
 }
 bool VSObject::is_animation() {
 	return this->_skin.IsAnimation();
