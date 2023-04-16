@@ -207,7 +207,7 @@ void Projectile::update_position() {
 			}
 		}	break;
 
-		case (SCYTHE): {
+		case (SCYTHE): case (DIAMOND): case (ROCHER): {
 			if (proj._is_start && dt >= 0) {
 				proj.update_pos_by_vec();
 			}

@@ -52,7 +52,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	player.set_default_direct(RIGHT);
 	player.set_animation(150, false);
 	player.load_bleed();
-	player.acquire_weapon(HOLYWATER);
+	player.acquire_weapon(ROCHER);
 	player.acquire_passive(POWER);
 
 	map.load_map({ "resources/map/dummy1.bmp" });
@@ -60,7 +60,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	QuadTree::VSPlain.clear();
 
 	for (int i = 0; i < 100; i++) {
-		enemy.push_back(Enemy::get_template_enemy(BAT1));
+		enemy.push_back(Enemy::get_template_enemy(BAT5));
 		xp.push_back(Xp());
 		chest.push_back(Chest());
 	}

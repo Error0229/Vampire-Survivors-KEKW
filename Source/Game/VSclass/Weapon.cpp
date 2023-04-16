@@ -175,6 +175,19 @@ Weapon::Weapon(int type, char* skin, vector<double> stats) {
 			"Base Area up by 20%. Base Damage up by 5."
 		};
 		break;
+	case DIAMOND:
+		_level_up_msg = {
+			"",
+			"Passes through enemies, bounces around.",
+			"Base Damage up by 5. Base Speed up by 20%.",
+			"Effect lasts 0.3 seconds longer. Base Damage up by 5.",
+			"Fires 1 more projectile.",
+			"Base Damage up by 5. Base Speed up by 20%.",
+			"Effect lasts 0.3 seconds longer. Base Damage up by 5.",
+			"Fires 1 more projectile.",
+			"Effect lasts 0.5 seconds longer."
+		};
+		break;
 	case VAMPIRICA:
 		_level_up_msg = { "", "Can deal critical damage and absorb HP." };
 		break;
@@ -202,6 +215,9 @@ Weapon::Weapon(int type, char* skin, vector<double> stats) {
 	case BORA:
 		_level_up_msg = { "", "Evolved Santa water. Damaging zones follow you and grow when they move." };
 		break;
+	case ROCHER:
+		_level_up_msg = { "", "Evolved Runetracer. Explodes when bouncing and in retaliation." };
+		break;
 	}
 }
 
@@ -220,7 +236,7 @@ void Weapon::attack() {
 	// create projectile
 	for (Weapon& w : all_weapon) {
 		int factor = 0;
-		if (w._type == HOLYBOOK) {
+		if (w._type == HOLYBOOK || w._type == ROCHER) {
 			factor = w._duration;
 		}
 		if (clock() - w._last_time_attack < w._cooldown + factor) {
@@ -348,6 +364,19 @@ void Weapon::attack() {
 				}
 				Projectile::create_projectile(proj, player_pos, target, w._type, i * w._proj_interval, w._area, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
 					w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, false);
+			}
+		}break;
+		case DIAMOND: case ROCHER: {
+			double angle;
+			for (int i = 0; i < w._amount; i++) {
+				angle = dist2(e2);
+				Projectile& proj = Projectile::pool.get_obj(w._type);
+				proj.set_rotation(angle);
+				int x = static_cast<int>(cos(angle) * 1000);
+				int y = static_cast<int>(sin(angle) * 1000);
+				proj.set_target_vec({ x, y });
+				Projectile::create_projectile(proj, player_pos, player_pos + CPoint{ x,y }, w._type, i * w._proj_interval, w._area, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+										w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, false);
 			}
 		}break;
 		case VESPERS: {
@@ -668,6 +697,23 @@ void Weapon::upgrade()
 			break;
 		}
 		break;
+	case DIAMOND:
+		switch (_level) {
+		case 2: case 5:
+			modify_base("damage", 5);
+			modify_base("speed", 20);
+			break;
+		case 3: case 6:
+			modify_base("duration", 300);
+			modify_base("damage", 5);
+			break;
+		case 4: case 7:
+			modify_base("amount", 1);
+			break;
+		case 8:
+			modify_base("duration", 500);
+			break;
+		}
 	}
 	
 	recalaulte_stat();
@@ -704,7 +750,7 @@ void Weapon::load_weapon_stats() {
 			p.set_animation(300, true, 0);
 			p.enable_animation();
 			break;
-		case MAGIC_MISSILE:	case HOLY_MISSILE: case KNIFE: case THOUSAND: case FIREBALL: case HELLFIRE: 
+		case MAGIC_MISSILE:	case HOLY_MISSILE: case KNIFE: case THOUSAND: case FIREBALL: case HELLFIRE: case DIAMOND: case ROCHER:
 			p.load_rotation();
 			break;
 		case AXE: 
