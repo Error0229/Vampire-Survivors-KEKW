@@ -29,6 +29,7 @@ public:
 	virtual void set_speed(int);
 	virtual void set_speed(double);
 	void select_show_animation(int);
+	void set_animation_frame(int);
 	CPoint get_pos();
 	virtual void update_pos(CPoint);
 	virtual void update_pos();
@@ -39,6 +40,7 @@ public:
 	int get_direct();
 	int get_height();
 	int get_width();
+	int get_animation_frame();
 	void append_collide(VSObject&, double overlap_bound, double factor);
 	void update_collide();
 	void is_collide_with(VSObject* other);

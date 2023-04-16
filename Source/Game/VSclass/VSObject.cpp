@@ -101,6 +101,9 @@ void VSObject::select_show_animation(int index)
 void VSObject::set_type(int type) {
 	_type = type;
 }
+void VSObject::set_animation_frame(int i) {
+	_skin.SelectShowBitmap(i);
+}
 int VSObject::get_type() {
 	return _type;
 }
@@ -212,6 +215,10 @@ void VSObject::set_is_mirror(bool is_mirror)
 int VSObject::get_direct()
 {
 	return this->_default_direct;
+}
+int VSObject::get_animation_frame()
+{
+	return this->_skin.GetSelectShowBitmap();
 }
 
 void VSObject::append_collide(VSObject& other, double overlap_bound, double factor) {

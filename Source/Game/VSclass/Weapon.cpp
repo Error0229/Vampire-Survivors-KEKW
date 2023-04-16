@@ -162,6 +162,19 @@ Weapon::Weapon(int type, char* skin, vector<double> stats) {
 			"Base Area up by 20%. Base Damage up by 1."
 		};
 		break;
+	case HOLYWATER:
+		_level_up_msg = {
+			"",
+			"Generates damaging zones.",
+			"Fires 1 more projectile. Base Area up by 20%.",
+			"Effect lasts 0.5 seconds longer. Base Damage up by 10.",
+			"Fires 1 more projectile. Base Area up by 20%.",
+			"Effect lasts 0.3 seconds longer. Base Damage up by 10.",
+			"Fires 1 more projectile. Base Area up by 20%.",
+			"Effect lasts 0.3 seconds longer. Base Damage up by 10.",
+			"Base Area up by 20%. Base Damage up by 5."
+		};
+		break;
 	case VAMPIRICA:
 		_level_up_msg = { "", "Can deal critical damage and absorb HP." };
 		break;
@@ -185,6 +198,10 @@ Weapon::Weapon(int type, char* skin, vector<double> stats) {
 		break;
 	case VORTEX:
 		_level_up_msg = { "", "Evolved Garlic. Steals hearts. Power increases when recovering HP."};
+		break;
+	case BORA:
+		_level_up_msg = { "", "Evolved Santa water. Damaging zones follow you and grow when they move." };
+		break;
 	}
 }
 
@@ -242,7 +259,7 @@ void Weapon::attack() {
 			}
 			break;
 
-		case MAGIC_MISSILE: case HOLY_MISSILE: case CROSS: case HEAVENSWORD: // reducing work
+		case MAGIC_MISSILE: case HOLY_MISSILE: case CROSS: case HEAVENSWORD:  // reducing work
 			for (int i = 0; i < w._amount; i++) {
 				Projectile& proj = Projectile::pool.get_obj(w._type);
 				CPoint target = player_pos;
@@ -254,7 +271,7 @@ void Weapon::attack() {
 					proj.set_rotation(rad);
 					proj.set_target_vec((target != player_pos ? target - player_pos : (mouse_pos.x > player_pos.x ? (1000, 1000) : (-1000, 1000))));
 				}
-				Projectile::create_projectile(proj, player_pos, player_pos, w._type, i * w._proj_interval, w._area, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+				Projectile::create_projectile(proj, player_pos, target, w._type, i * w._proj_interval, w._area, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
 					w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, false);
 			}
 			break;
@@ -317,6 +334,21 @@ void Weapon::attack() {
 			Projectile::create_projectile(proj, player_pos,
 							player_pos, w._type,  w._proj_interval, w._area + 2, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
 							w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, false);
+		}break;
+		case HOLYWATER: case BORA: {
+			for (int i = 0; i < w._amount; i++) {
+				Projectile& proj = Projectile::pool.get_obj(w._type);
+				CPoint target = player_pos;
+				if (i == 0) {
+					proj.set_pos(player_pos);
+					int min_dis = 1000000000;
+					QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(&proj), min_dis);
+					target = ((target != player_pos) ? (target) : (player_pos + CPoint(rand() % 400 - 200, rand() % 400 - 200)));
+					proj.set_target_vec(target - player_pos);
+				}
+				Projectile::create_projectile(proj, player_pos, target, w._type, i * w._proj_interval, w._area, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
+					w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, false);
+			}
 		}break;
 		case VESPERS: {
 			if (VESPER_attack)
@@ -616,6 +648,26 @@ void Weapon::upgrade()
 			break;
 		}
 		break;
+	case HOLYWATER:
+		switch (_level) {
+		case 2: case 4: case 6:
+			modify_base("amount", 1);
+			modify_base("area", 20);
+			break;
+		case 3:
+			modify_base("duration", 500);
+			modify_base("damage", 10);
+			break;
+		case 5: case 7:
+			modify_base("duration", 300);
+			modify_base("damage", 10);
+			break;
+		case 8:
+			modify_base("area", 20);
+			modify_base("damage", 5);
+			break;
+		}
+		break;
 	}
 	
 	recalaulte_stat();
@@ -655,12 +707,12 @@ void Weapon::load_weapon_stats() {
 		case MAGIC_MISSILE:	case HOLY_MISSILE: case KNIFE: case THOUSAND: case FIREBALL: case HELLFIRE: 
 			p.load_rotation();
 			break;
-		case AXE:
+		case AXE: 
 			p.load_rotation();
 			p.set_animation(50, false, 0);
 			p.enable_animation();
 			break;
-		case CROSS: 
+		case CROSS: case HOLYWATER: case BORA:
 			p.load_rotation();
 			p.set_animation(30, false, 0);
 			p.enable_animation();

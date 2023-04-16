@@ -35,6 +35,9 @@ void Projectile::set_angle(double angle) {
 	_angle = angle;
 }
 void Projectile::collide_with_enemy(Enemy& 🥵, int player_duration) {
+	if ((_type == HOLYWATER || _type == BORA) && is_animation()) {
+		return;
+	}
 	clock_t now = clock();
 	if (_is_over || !is_overlapped((*this), 🥵, 1 - _area * 0.04) || now - 🥵._last_time_got_hit_by_projectile[this->_type] < this->_hitbox_delay) {
 		return;
@@ -106,7 +109,7 @@ void Projectile::update_position() {
 				double rad = atan2(target.y - player_pos.y, target.x - player_pos.x);
 				proj.set_rotation(rad);
 			}
-			else {
+			else if (proj._is_start) {
 				proj.update_pos_by_vec();
 			}
 			break;
@@ -119,7 +122,7 @@ void Projectile::update_position() {
 				double rad = atan2(p.y - player_pos.y, p.x - player_pos.x);
 				proj.set_rotation(rad);
 			}
-			else {
+			else if (proj._is_start) {
 				proj.update_pos_by_vec();
 			}
 			break;
@@ -136,7 +139,7 @@ void Projectile::update_position() {
 				QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(&proj), min_dis);
 				proj.set_target_vec(target - proj._position);
 			}
-			else {
+			else if (proj._is_start) {
 				CPoint par = proj.get_parabola(vertical, static_cast<double>(proj._speed), dt);
 				double vlen1 = sqrt(proj._target_vec.x * proj._target_vec.x + proj._target_vec.y * proj._target_vec.y);
 				double angle = acos(proj._target_vec.y / vlen1);
@@ -172,11 +175,37 @@ void Projectile::update_position() {
 			if (!proj._is_start && (dt < 0 && dt > -100)) {
 				proj.set_pos(player_pos);
 			}
-			else {
+			else if(proj._is_start){
 				proj.update_pos_by_vec();
 			}
 		}	break;
-		
+		case HOLYWATER: case BORA: {
+			if (!proj._is_start && (dt < 0 && dt > -50)) {
+				int min_dis = 1000000000;
+				proj.set_pos(player_pos);
+				CPoint target = player_pos;
+				QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(&proj), min_dis);
+				target = (target != player_pos) ? (target) : (player_pos + CPoint(rand() % 400 - 200, rand() % 400 - 200));
+				proj.set_target_vec(target - player_pos);
+				proj._target = target;
+			}
+			else if (proj._is_start) {
+				if (proj.is_animation() && ( distance(proj._target, proj._position) < 50 * proj._area)) {
+					proj.set_animation_frame(36);
+					proj.disable_animation();
+					proj.set_create_time(clock());
+					proj._delay = 0;
+					proj._area += 0.5;
+					proj._speed /= 10;
+				}
+				else if (proj.is_animation()) {
+					proj.update_pos_by_vec();
+				}
+				else if(proj._type == BORA){
+					proj.update_pos(get_player_pos());
+				}
+			}
+		}	break;
 
 		case (SCYTHE): {
 			if (proj._is_start && dt >= 0) {
@@ -189,12 +218,15 @@ void Projectile::update_position() {
 	}
 }
 void Projectile::show_skin(double factor) {
+	if (is_animation() && get_animation_frame() == 36 && (_type == HOLYWATER || _type == BORA)) {
+		set_animation_frame(0);
+	}
 	VSObject::show_skin(_area);
-	if (VSObject::distance(this->_position, CPoint{ (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx, (OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy }) > 700) {
+	if (VSObject::distance(this->_position, get_player_pos()) > 700) {
 		this->_is_over = true;
 	}
 	if (this->_duration == -1) return;
-	if (this->_skin.IsAnimationDone() || clock() - this->_create_time - this->_delay >= this->_duration)
+	if ( clock() - this->_create_time - this->_delay >= this->_duration)
 		this->_is_over = true;
 }
 void Projectile::show() {
@@ -227,13 +259,17 @@ void Projectile::set_rotation(double radien) {
 	if (regular_angle == 0) return;
 	this->_skin.SelectShowBitmap(regular_angle / 10);
 }
-void Projectile::load_rotation() {
+void Projectile::load_rotation() { // only rotate first for some secret reason
 	vector <string> rotated_filename;
-	for (auto s : _file_name) {
-		for (int i = 0; i < 360; i += 10) {
-			rotated_filename.emplace_back(s.substr(0, s.find_last_of('.')) + "_r" + std::to_string(i) + ".bmp");
-		}
+	auto s = _file_name[0];
+	for (int i = 0; i < 360; i += 10) {
+		rotated_filename.emplace_back(s.substr(0, s.find_last_of('.')) + "_r" + std::to_string(i) + ".bmp");
 	}
+
+	for (int i = 1; i < static_cast<int>(_file_name.size()); ++i) {
+		rotated_filename.push_back(_file_name[i]);
+	}
+	
 	this->_skin.ResetBitmap();
 	this->_skin.LoadBitmapByString(rotated_filename, RGB(1, 11, 111));
 }
