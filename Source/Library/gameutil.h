@@ -1,5 +1,5 @@
-/*
- * gamelib.h: ¥»ÀÉ®×Àx¹CÀ¸¬ÛÃöªºclassªºinterface
+ï»¿/*
+ * gamelib.h: æœ¬æª”æ¡ˆå„²éŠæˆ²ç›¸é—œçš„classçš„interface
  * Copyright (C) 2002-2008 Woei-Kae Chen <wkc@csie.ntut.edu.tw>
  *
  * This file is part of game, a free game development framework for windows.
@@ -77,40 +77,42 @@
 #include <list>
 #include <vector>
 #include <map>
+#include <random>
 using namespace std;
 
 namespace game_framework {
 
 	/////////////////////////////////////////////////////////////////////////////
-	// ³o­Óclass´£¨Ñ°ÊºA(¥i¥H²¾°Ê)ªº¹Ï§Î
-	// ¨C­ÓPublic Interfaceªº¥Îªk³£­nÀ´¡AImplementation¥i¥H¤£À´
+	// é€™å€‹classæä¾›å‹•æ…‹(å¯ä»¥ç§»å‹•)çš„åœ–å½¢
+	// æ¯å€‹Public Interfaceçš„ç”¨æ³•éƒ½è¦æ‡‚ï¼ŒImplementationå¯ä»¥ä¸æ‡‚
 	/////////////////////////////////////////////////////////////////////////////
 
 	class CMovingBitmap {
 	public:
 		CMovingBitmap();
-		int   Height();						// ¨ú±o¹Ï§Îªº°ª«×
-		int   Left();						// ¨ú±o¹Ï§Îªº¥ª¤W¨¤ªº x ®y¼Ğ
+		int   Height();						// å–å¾—åœ–å½¢çš„é«˜åº¦
+		int   Left();						// å–å¾—åœ–å½¢çš„å·¦ä¸Šè§’çš„ x åº§æ¨™
 		void  SetAnimation(int delay, bool _once, int cooldown = 0);
-		void  LoadBitmap(int, COLORREF = CLR_INVALID);		// ¸ü¤J¹Ï¡A«ü©w¹Ïªº½s¸¹(resource)¤Î³z©ú¦â
-		void  LoadBitmap(char*, COLORREF = CLR_INVALID);	// ¸ü¤J¹Ï¡A«ü©w¹ÏªºÀÉ¦W¤Î³z©ú¦â
-		void  LoadBitmap(vector<char*>, COLORREF = CLR_INVALID);	// ¸ü¤J¹Ï¡A«ü©w¹ÏªºÀÉ¦W¤Î³z©ú¦â
-		void  LoadBitmapByString(vector<string>, COLORREF = CLR_INVALID);	// ¸ü¤J¹Ï¡A«ü©w¹ÏªºÀÉ¦W¤Î³z©ú¦â
+		void  LoadBitmap(int, COLORREF = CLR_INVALID);		// è¼‰å…¥åœ–ï¼ŒæŒ‡å®šåœ–çš„ç·¨è™Ÿ(resource)åŠé€æ˜è‰²
+		void  LoadBitmap(char*, COLORREF = CLR_INVALID);	// è¼‰å…¥åœ–ï¼ŒæŒ‡å®šåœ–çš„æª”ååŠé€æ˜è‰²
+		void  LoadBitmap(vector<char*>, COLORREF = CLR_INVALID);	// è¼‰å…¥åœ–ï¼ŒæŒ‡å®šåœ–çš„æª”ååŠé€æ˜è‰²
+		void  LoadBitmapByString(vector<string>, COLORREF = CLR_INVALID);	// è¼‰å…¥åœ–ï¼ŒæŒ‡å®šåœ–çš„æª”ååŠé€æ˜è‰²
 		void  UnshowBitmap();
 		void  ResetBitmap();				// clear all bitmap
-		void  SetTopLeft(int, int);			// ±N¹Ïªº¥ª¤W¨¤®y¼Ğ²¾¦Ü (x,y)
-		void  ShowBitmap();					// ±N¹Ï¶K¨ì¿Ã¹õ
-		void  ShowBitmap(double factor);	// ±N¹Ï¶K¨ì¿Ã¹õ factor < 1®ÉÁY¤p¡A>1®É©ñ¤j¡Cª`·N¡G»İ­nVGA¥dµwÅéªº¤ä´©¡A§_«h·|«ÜºC
+		void  SetTopLeft(int, int);			// å°‡åœ–çš„å·¦ä¸Šè§’åº§æ¨™ç§»è‡³ (x,y)
+		void  ShowBitmap();					// å°‡åœ–è²¼åˆ°è¢å¹•
+		void  ShowBitmap(double factor);	// å°‡åœ–è²¼åˆ°è¢å¹• factor < 1æ™‚ç¸®å°ï¼Œ>1æ™‚æ”¾å¤§ã€‚æ³¨æ„ï¼šéœ€è¦VGAå¡ç¡¬é«”çš„æ”¯æ´ï¼Œå¦å‰‡æœƒå¾ˆæ…¢
 		void  ShowBitmap(double factor, bool is_mirror);	
 		void  SelectShowBitmap(int select);
 		int   GetSelectShowBitmap();
 		void  ToggleAnimation();
 		void  EnableAnimation();
 		void  DisableAnimation();
-		int   Top();						// ¨ú±o¹Ï§Îªº¥ª¤W¨¤ªº y ®y¼Ğ
-		int   Width();						// ¨ú±o¹Ï§Îªº¼e«×
+		int   Top();						// å–å¾—åœ–å½¢çš„å·¦ä¸Šè§’çš„ y åº§æ¨™
+		int   Width();						// å–å¾—åœ–å½¢çš„å¯¬åº¦
 		bool  IsAnimationDone();
 		int   GetMovingBitmapFrame();
+		bool  IsAnimation();
 	protected:
 		int selector = 0;
 		int delayCount = 10;
@@ -122,6 +124,7 @@ namespace game_framework {
 		bool isAnimationDone = false;
 		bool once = false;
 		bool isPause = false;
+		double scaler = 0.0;
 		vector<unsigned> SurfaceID;
 		bool     isBitmapLoaded = false;	// whether a bitmap has been loaded
 		CRect    location;			// location of the bitmap

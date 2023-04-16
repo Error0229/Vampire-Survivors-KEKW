@@ -102,6 +102,7 @@ void Player::set_speed(double s) {
 };
 void Player::acquire_weapon(Weapon& weapon) {
 	Weapon::all_weapon.push_back(weapon);
+	Weapon::update_all_weapon_stats(_coef_might, _coef_cooldown, _coef_proj_speed, _coef_duration, _amount, _coef_area);
 }
 void Player::acquire_weapon(int weapon_id) {
 	Weapon::all_weapon.push_back(Weapon::_base_weapon[weapon_id]);
@@ -109,9 +110,11 @@ void Player::acquire_weapon(int weapon_id) {
 }
 void Player::acquire_passive(Passive& passive) {
 	Passive::all_passive.push_back(passive);
+	update_all_passive_effect();
 }
 void Player::acquire_passive(int passive_id) {
 	Passive::all_passive.push_back(Passive(passive_id));
+	update_all_passive_effect();
 }
 void Player::update_all_passive_effect() {
 	_coef_might = any_cast<int>(_base_stats["might"]) + Passive::get_effect(POWER) + Passive::get_effect(PANDORA);
@@ -200,6 +203,9 @@ int Player::get_magnet()
 int Player::get_luck()
 {
 	return _coef_luck;
+}
+int Player::get_duration() {
+	return _coef_duration;
 }
 vector<stat_struct> Player::get_stats_string()
 {

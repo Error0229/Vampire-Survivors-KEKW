@@ -9,8 +9,8 @@
 Enemy::Enemy()
 {
 	obj_type = ENEMY;
-	_last_time_got_hit_by_projectile.resize(100);
-	_last_time_got_hit = -1;
+	_last_time_got_hit_by_projectile.resize(100, -1000000);
+	_last_time_got_hit = -1000000;
 }
 Enemy::~Enemy() 
 {
@@ -54,7 +54,7 @@ void Enemy::show_skin(double factor)
 	if ( !_is_enable )
 		return;
 	if ( !is_dead() ) {
-		this->_skin.SetTopLeft(this->_position.x - ( this->_skin.Width() >> 1 ) + player_dx, this->_position.y - ( this->_skin.Height() >> 1 ) + player_dy);
+		this->_skin.SetTopLeft(this->_position.x - ( get_width() >> 1 ) + player_dx, this->_position.y - ( get_height() >> 1 ) + player_dy);
 		this->_skin.ShowBitmap(factor, _is_mirror);
 	}
 	else {
@@ -63,6 +63,7 @@ void Enemy::show_skin(double factor)
 			_is_enable = false;
 		}
 		else {
+			_death_animation.set_pos(_position);
 			_death_animation.show_skin(factor);
 		}
 	}
