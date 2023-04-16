@@ -63,6 +63,7 @@ void Enemy::show_skin(double factor)
 			_is_enable = false;
 		}
 		else {
+			_death_animation.set_pos(_position);
 			_death_animation.show_skin(factor);
 		}
 	}
