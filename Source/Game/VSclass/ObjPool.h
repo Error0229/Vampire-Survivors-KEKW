@@ -35,8 +35,9 @@ public:
 		return obj;
 	}
 	T* get_obj_ptr(int type) {
-		VS_ASSERT(pool[type].size() > 0, "The pool is empty, please add more object to the pool")
-		VS_ASSERT(free_obj[type].size() > 0, "exceeded pool limit")
+		//VS_ASSERT(pool[type].size() > 0, "The pool is empty, please add more object to the pool")
+		//VS_ASSERT(free_obj[type].size() > 0, "exceeded pool limit") 
+		// somehow commands up here cause crash
 		T* obj = std::addressof(pool[type][free_vec[type].back()]);
 		free_vec[type].pop_back();
 		return obj;

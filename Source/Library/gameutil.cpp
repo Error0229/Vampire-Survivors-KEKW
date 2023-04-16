@@ -229,7 +229,7 @@ namespace game_framework {
 
 
 	void CMovingBitmap::SelectShowBitmap(int _select) {
-		GAME_ASSERT(_select < ( int ) SurfaceID.size(), "選擇圖片時索引出界");
+		GAME_ASSERT(_select < ( int ) SurfaceID.size(), "choosing image out of range")
 		selector = _select;
 	}
 
