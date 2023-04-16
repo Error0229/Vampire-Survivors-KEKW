@@ -15,6 +15,7 @@ public:
 	void set_default_direct(int dir);
 	void set_animation(int delay, bool _once, int cooldown = 0);
 	void set_selector(int);
+	void set_scaler(double);
 	void enable_animation();
 	void disable_animation();
 	void set_pos(CPoint);

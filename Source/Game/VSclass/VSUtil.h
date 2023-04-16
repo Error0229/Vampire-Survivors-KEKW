@@ -6,6 +6,7 @@ int square(int x);
 int fast_sqrt(int x);
 bool is_overlapped_pure(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 int poll(vector<double>& weights, bool handle_negtive = false);
+int hit_border(int bx, int by, int w, int h, int obj_x, int obj_y);
 class VSTimer{
 public:
 	VSTimer();

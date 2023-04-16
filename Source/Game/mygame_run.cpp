@@ -52,7 +52,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	player.set_default_direct(RIGHT);
 	player.set_animation(150, false);
 	player.load_bleed();
-	player.acquire_weapon(ROCHER);
+	player.acquire_weapon(DIAMOND);
 	player.acquire_passive(POWER);
 
 	map.load_map({ "resources/map/dummy1.bmp" });

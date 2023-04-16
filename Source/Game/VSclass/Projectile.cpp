@@ -206,8 +206,41 @@ void Projectile::update_position() {
 				}
 			}
 		}	break;
+		case (DIAMOND): case (ROCHER): {
+			proj.set_scaler(proj._area);
+			static int border = 0;
+			border = hit_border(player_pos.x, player_pos.y, w_size_x - proj.get_width(), w_size_y - proj.get_height(), proj._position.x, proj._position.y);
+			if (proj._is_start && dt >=0) {
+				if (border == 0) {
+					proj.update_pos_by_vec();
+					break;
+				}
+				while (border != 0) {
+					border = hit_border(player_pos.x, player_pos.y, w_size_x - proj.get_width() + 2, w_size_y -  proj.get_height() + 2, proj._position.x, proj._position.y);
+					if (border == 1) {
+						proj._target_vec.x = -proj._target_vec.x;
+						proj._position.x = player_pos.x - (w_size_x >> 1) +  (proj.get_width() >> 1);
+					}
+					else if (border == 2) {
+						proj._target_vec.x = -proj._target_vec.x;
+						proj._position.x = player_pos.x + (w_size_x >> 1) - (proj.get_width() >> 1);
+					}
+					else if (border == 3) {
+						proj._target_vec.y = -proj._target_vec.y;
+						proj._position.y = player_pos.y - (w_size_y >> 1) + (proj.get_height() >> 1);
+					}
+					else if (border == 4) {
+						proj._target_vec.y = -proj._target_vec.y;
+						proj._position.y = player_pos.y + (w_size_y >> 1) -   (proj.get_height() >> 1);
+					}
 
-		case (SCYTHE): case (DIAMOND): case (ROCHER): {
+				}
+				
+				
+			}
+
+		}break;
+		case (SCYTHE):  {
 			if (proj._is_start && dt >= 0) {
 				proj.update_pos_by_vec();
 			}

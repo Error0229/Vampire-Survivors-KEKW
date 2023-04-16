@@ -212,6 +212,10 @@ void VSObject::set_is_mirror(bool is_mirror)
 {
 	this->_is_mirror = is_mirror;
 }
+void VSObject::set_scaler(double scaler)
+{
+	this->_scaler = scaler;
+}
 int VSObject::get_direct()
 {
 	return this->_default_direct;

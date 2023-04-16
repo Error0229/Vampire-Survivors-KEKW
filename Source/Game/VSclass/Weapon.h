@@ -40,7 +40,7 @@ protected:
 	unordered_map<string, any> _base_stats;
 	unordered_map<string, int> _modifier;
 	string _name;
-	int _type, _level, _max_level, _speed, _rarity,
+	int _level, _max_level, _rarity,
 		_amount, _duration, _pierce, _cooldown, _proj_interval,
 		_hitbox_delay, _pool_limit, _chance,
 		_crit_multi, _block_by_wall, _evolution_type, _evolution_require;
