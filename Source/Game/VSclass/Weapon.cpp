@@ -665,11 +665,12 @@ void Weapon::load_weapon_stats() {
 			p.set_animation(30, false, 0);
 			p.enable_animation();
 			break;
+		case HOLYBOOK: 
+			break;
 		case GARLIC: case VORTEX:
 			p.load_rotation();
 			p.set_animation(250, false, 0);
 			p.enable_animation();
-		case HOLYBOOK: 
 			break;
 		case VESPERS:
 			p.set_animation(100,false, 0);
