@@ -10,7 +10,7 @@ public:
 	~ObjPool() = default;
 	void add_obj(int type, int count) { // this should be only execute once or not?
 		int start_index = pool[type].size();
-		for (int i = 0; i < count + 50; i++) { // for safety, its ok to remove it
+		for (int i = 0; i < count + 50; i++) { // for safety, its ok to remove 50
 			pool[type].push_back(T(type));
 			pool[type].back().set_pool_id(i + start_index);
 			free_vec[type].push_back(i + start_index);
@@ -27,16 +27,16 @@ public:
 	}
 
 	T& get_obj(int type) {
-		VS_ASSERT(pool[type].size() > 0, "The pool is empty, please add more object to the pool");
+		VS_ASSERT(pool[type].size() > 0, "The pool is empty, please add more object to the pool")
+		VS_ASSERT(free_vec[type].size() > 0, "exceeded pool limit")
 		// keep first for reseting
-		VS_ASSERT(free_vec[type].size() > 0, "exceeded pool limit");
 		T& obj = pool[type][free_vec[type].back()];
 		free_vec[type].pop_back();
 		return obj;
 	}
 	T* get_obj_ptr(int type) {
-		// VS_ASSERT(pool[type].size() > 0, "The pool is empty, please add more object to the pool");
-		// VS_ASSERT(free_obj[type].size() > 0, "exceeded pool limit");
+		VS_ASSERT(pool[type].size() > 0, "The pool is empty, please add more object to the pool")
+		VS_ASSERT(free_obj[type].size() > 0, "exceeded pool limit")
 		T* obj = std::addressof(pool[type][free_vec[type].back()]);
 		free_vec[type].pop_back();
 		return obj;

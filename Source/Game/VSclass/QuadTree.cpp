@@ -92,8 +92,6 @@ void QuadTree::split()
 void QuadTree::query(vector<VSObject*>& result, VSObject* q)
 {
     int index = this->get_quadrant(q);
-    // cout << "range: x:" << this->_x << '~' << this->_x + this->w << " y:" << this->_y << '~' << this->_y + this->h << endl;
-    // cout << "index: " << index << '\n';
     if (index != -1 && this->children[0] != NULL) {
         this->children[index]->query(result, q);
     }
@@ -116,8 +114,6 @@ void QuadTree::query(vector<VSObject*>& result, VSObject* q)
 void QuadTree::query_by_type(vector<VSObject*>& result, VSObject* q, int type)
 {
     int index = this->get_quadrant(q);
-    // cout << "range: x:" << this->_x << '~' << this->_x + this->w << " y:" << this->_y << '~' << this->_y + this->h << endl;
-    // cout << "index: " << index << '\n';
     if (index != -1 && this->children[0] != NULL) {
         this->children[index]->query(result, q);
     }

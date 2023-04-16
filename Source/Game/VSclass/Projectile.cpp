@@ -233,10 +233,7 @@ void Projectile::update_position() {
 						proj._target_vec.y = -proj._target_vec.y;
 						proj._position.y = player_pos.y + (w_size_y >> 1) -   (proj.get_height() );
 					}
-
 				}
-				
-				
 			}
 
 		}break;
@@ -319,9 +316,6 @@ CPoint Projectile::get_parabola(double angle, double speed, int time) {
 	pre_y = y;
 	return CPoint(static_cast<int>(x), static_cast<int>(y));
 }
-
-
-// deque<Projectile> Projectile::all_proj = {};
 ObjPool<Projectile> Projectile::pool(PROJECTILE);
 vector<reference_wrapper<Projectile>> Projectile::all_proj;
 map <int, Projectile> Projectile::template_proj = {};
