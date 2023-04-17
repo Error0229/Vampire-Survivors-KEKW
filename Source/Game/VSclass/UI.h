@@ -10,13 +10,17 @@ public:
 	bool is_hover(CPoint);
 	void set_base_pos(CPoint);
 	void set_base_pos(int, int);
+	void start();
+	bool done();
 	CPoint get_base_pos();
 	virtual void show(double factor=1.0);				// show on "fixed" pos on the screen
 	virtual void show(CPoint, double factor=1.0);			// show on real pos on the map
 	
 	bool activate_hover;
 protected:
+	clock_t _animation_start_time = -1;
 	CPoint _base_pos;
+	bool _is_start = false;
 };
 
 class Icon : public Ui

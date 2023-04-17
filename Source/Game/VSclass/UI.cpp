@@ -59,7 +59,16 @@ void Ui::show(CPoint pos, double factor)
 	_position = pos;
 	VSObject::show_skin(factor);
 }
-
+void Ui::start() {
+	if (!_is_start) {
+		_animation_start_time = clock();
+		_is_start = true;
+	}
+}
+bool Ui::done()
+{
+	return ((clock() - _animation_start_time) > _animation_cycle_time);
+}
 Icon::Icon(CPoint base_pos) :Ui(base_pos)
 {
 }

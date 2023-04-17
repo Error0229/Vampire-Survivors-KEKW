@@ -22,11 +22,17 @@ VSObject::~VSObject()
 }
 void VSObject::load_skin(char* filename, COLORREF color)
 {
+	_file_size = 1;
 	this->_skin.LoadBitmap(filename, color);
 }
 void VSObject::load_skin(vector<char*> filename, COLORREF color)
 {
+	_file_size = static_cast<int> (filename.size());
 	this->_skin.LoadBitmap(filename, color);
+}
+void VSObject::load_skin(vector<string>& filename, COLORREF color) {
+	_file_size = static_cast<int> (filename.size());
+	_skin.LoadBitmapByString(filename, color);
 }
 void VSObject::load_animation(vector<char*> filename, COLORREF color)
 {
@@ -55,6 +61,7 @@ void VSObject::set_default_direct(int dir)
 void VSObject::set_animation(int delay, bool _once, int cooldown)
 {
 	this->_skin.SetAnimation(delay, _once, cooldown);
+	_animation_cycle_time = delay * (_file_size+2) ;
 }
 void VSObject::set_selector(int selector)
 {

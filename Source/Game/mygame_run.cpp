@@ -71,9 +71,17 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 		level_up_icon[i].load_icon();
 		level_up_choice[i] = -1;
 	}
-	chest_animation.load_skin({ "resources/ui/TreasureIdle_01_big.bmp", "resources/ui/TreasureIdle_02_big.bmp" , "resources/ui/TreasureIdle_03_big.bmp" , "resources/ui/TreasureIdle_04_big.bmp" , "resources/ui/TreasureIdle_05_big.bmp" , "resources/ui/TreasureIdle_06_big.bmp" ,"resources/ui/TreasureIdle_07_big.bmp" ,"resources/ui/TreasureIdle_08_big.bmp", "resources/ui/TreasureOpen_01_big.bmp", "resources/ui/TreasureOpen_02_big.bmp" , "resources/ui/TreasureOpen_03_big.bmp" , "resources/ui/TreasureOpen_04_big.bmp" , "resources/ui/TreasureOpen_05_big.bmp" , "resources/ui/TreasureOpen_06_big.bmp" , "resources/ui/TreasureOpen_07_big.bmp" , "resources/ui/TreasureOpen_08_big.bmp" });
-	chest_animation.set_animation(100, true);
-	chest_animation.set_base_pos(5, 75);
+	// chest_animation.load_skin({ "resources/ui/TreasureIdle_01_big.bmp", "resources/ui/TreasureIdle_02_big.bmp" , "resources/ui/TreasureIdle_03_big.bmp" , "resources/ui/TreasureIdle_04_big.bmp" , "resources/ui/TreasureIdle_05_big.bmp" , "resources/ui/TreasureIdle_06_big.bmp" ,"resources/ui/TreasureIdle_07_big.bmp" ,"resources/ui/TreasureIdle_08_big.bmp", "resources/ui/TreasureOpen_01_big.bmp", "resources/ui/TreasureOpen_02_big.bmp" , "resources/ui/TreasureOpen_03_big.bmp" , "resources/ui/TreasureOpen_04_big.bmp" , "resources/ui/TreasureOpen_05_big.bmp" , "resources/ui/TreasureOpen_06_big.bmp" , "resources/ui/TreasureOpen_07_big.bmp" , "resources/ui/TreasureOpen_08_big.bmp" });
+	string base = "Resources/chest_animation/Chest1/chest1_";
+	vector<string> chest_animation_filename;
+	for (int i = 1; i <= 330; i++) {
+		chest_animation_filename.emplace_back(base + to_string(i) + ".bmp");
+	}
+	chest_animation.load_skin(chest_animation_filename);
+	//chest_animation.set_animation(100, true);
+	chest_animation.set_animation(30, true);
+	// chest_animation.set_base_pos(5, 75);
+	chest_animation.set_base_pos(0, -33);
 	CPoint chest_item_pos[] = { CPoint(0,-50), CPoint(-80,-110), CPoint(80,-110), CPoint(-100,-10), CPoint(100,-10) };
 	for (int i = 0; i < 5; i++) {
 		chest_item_icon[i].load_icon();
@@ -139,6 +147,7 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		break;
 	case('C'):
 		// WIP: SPAWN CHEST
+		Chest::spawnChest(player.get_pos());
 		break;
 	case('D'):
 		timer.add_time(10000);
@@ -580,11 +589,14 @@ void CGameStateRun::OnShow()
 		break;
 	case(OPEN_CHEST):
 		event_background.show();
+		chest_animation.start();
 		chest_animation.show();
-		for (int i = 0; i < 5; i++) {
-			if (chest_item[i] > -1) {
-				chest_item_frame[i].show();
-				chest_item_icon[i].show(chest_item[i]);
+		if (chest_animation.done()) {
+			for (int i = 0; i < 5; i++) {
+				if (chest_item[i] > -1) {
+					chest_item_frame[i].show();
+					chest_item_icon[i].show(chest_item[i]);
+				}
 			}
 		}
 		break;

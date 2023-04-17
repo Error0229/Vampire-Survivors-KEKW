@@ -8,6 +8,7 @@ public:
 	virtual ~VSObject();
 	void load_skin(vector<char*> filename, COLORREF color= RGB(1, 11, 111));
 	void load_skin(char* filename, COLORREF color = RGB(1, 11, 111));
+	void load_skin(vector<string>& filename, COLORREF color = RGB(1, 11, 111));
 	void load_animation(vector<char*> filename, COLORREF color = RGB(1, 11, 111));
 	virtual void show_skin(double factor = 1.0);
 	virtual void show_animation(double factor = 1.0);
@@ -66,5 +67,7 @@ protected:
 	int _pool_id, _type;
 	double _scaler = 1;
 	double _fx, _fy;
+	int _file_size = 0;
+	clock_t _animation_cycle_time;
 };
 CPoint get_player_pos();
