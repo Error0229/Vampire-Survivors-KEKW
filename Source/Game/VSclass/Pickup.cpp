@@ -63,7 +63,7 @@ Xp::~Xp()
 {
 }
 void Xp::init_XP() {
-	pool.add_obj(Xp(), 2000);
+	Xp::pool.add_obj(Xp(), 2000);
 }
 void Xp::spawn(CPoint pos, int val)
 {
@@ -73,7 +73,7 @@ void Xp::spawn(CPoint pos, int val)
 }
 void Xp::spawnXP(CPoint pos, int val) {
 	// Xp xp = Xp(pos, val);
-	Xp* xp = pool.get_obj_ptr(XP);
+	Xp* xp = Xp::pool.get_obj_ptr(XP);
 	xp-> spawn(pos, val);
 	xp->_speed = 200;
 	xp_all.emplace_back(xp);
@@ -110,7 +110,7 @@ void Xp::show()
 			xp->show_skin();
 		}
 		else {
-			pool.free_obj_ptr(xp);
+			Xp::pool.free_obj_ptr(xp);
 		}
 	}
 	auto iter = remove_if(xp_all.begin(), xp_all.end(), [](Xp* xp) {return !xp->is_enable(); });
@@ -121,7 +121,7 @@ Chest::Chest()
 {
 	load_skin({ "Resources/pickup/BoxOpen.bmp" });
 	_type = CHEST;
-	_can_evo = false;
+	_can_evo = true;
 }
 Chest::~Chest()
 {
@@ -136,5 +136,30 @@ bool Chest::get_can_evo()
 {
 	return _can_evo;
 }
+void Chest::init_chest()
+{
+	pool.add_obj(Chest(), 100);
+}
+void Chest::spawnChest(CPoint pos)
+{
+	Chest* chest = pool.get_obj_ptr(CHEST);
+	chest-> spawn(pos, true);
+	chest_all.emplace_back(chest);
+}
+void Chest::show()
+{
+	for (auto chest : chest_all) {
+		if (chest->is_enable()) {
+			chest->show_skin();
+		}
+		else {
+			pool.free_obj_ptr(chest);
+		}
+	}
+	auto iter = remove_if(chest_all.begin(), chest_all.end(), [](Chest* chest) {return !chest->is_enable(); });
+	chest_all.erase(iter, chest_all.end());
+}
 deque<Xp*> Xp::xp_all = {};
 ObjPool<Xp> Xp::pool(XP);
+deque<Chest*> Chest::chest_all = {};
+ObjPool<Chest> Chest::pool(CHEST);

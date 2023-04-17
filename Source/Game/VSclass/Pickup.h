@@ -10,7 +10,7 @@ public:
 	virtual void show_skin(double factor = 1.0);
 	int obj_type = PICKUP;
 protected:
-	int _type, _weight;
+	int _weight;
 	bool _is_enable;
 	static vector<Pickup> template_pickup;
 };
@@ -18,7 +18,7 @@ protected:
 class Xp : public Pickup {
 public:
 	Xp();
-	Xp(CPoint pos, int xp_vaalue);
+	Xp(CPoint pos, int xp_value);
 	~Xp();
 	void spawn(CPoint, int);
 	int get_xp_value();
@@ -40,6 +40,11 @@ public:
 	~Chest();
 	void spawn(CPoint, int);
 	bool get_can_evo();
+	static void init_chest();
+	static void spawnChest(CPoint);
+	static void show();
+	static deque<Chest*> chest_all;
+	static ObjPool<Chest> pool;
 private:
 	bool _can_evo;
 };

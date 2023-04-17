@@ -63,7 +63,8 @@ void EnemyFactory::load_wave()
 			getline(ss, 👀, ',');
 			_wave[cnt].boss_type[i] = stoi(👀);
 			getline(ss, 👀, ',');
-			_wave[cnt].chest_evo[i] = stoi(👀);
+			_wave[cnt].drop_chest[i] = stoi(👀);
+			_wave[cnt].spawned_boss[i] = false;
 		}
 		// 2 swarm
 		for(int i=0; i<2; i++){
@@ -87,7 +88,7 @@ void EnemyFactory::load_wave()
 	}
 }
 
-void EnemyFactory::add_enemy(int type, CPoint player_pos, int player_lvl, int count, bool random_pos)
+void EnemyFactory::add_enemy(int type, CPoint player_pos, int player_lvl, int count, bool random_pos, bool drop_chest)
 {
 	static int pos_loop_cnt = 0;
 	Enemy* 👿;
@@ -100,7 +101,7 @@ void EnemyFactory::add_enemy(int type, CPoint player_pos, int player_lvl, int co
 			if (++pos_loop_cnt == 32)
 				pos_loop_cnt = 0;
 		}
-		👿->spawn(pos, 100, 100, 1);
+		👿->spawn(pos, 100, 100, player_lvl, drop_chest);
 		live_enemy.push_back(👿);
 	}
 	_number_type[type] += count;
@@ -115,7 +116,7 @@ int EnemyFactory::get_number_all()
 	return live_enemy.size();
 }
 
-void EnemyFactory::show_enemy(clock_t tick, CPoint player_pos, int player_lvl)
+void EnemyFactory::update_enemy(clock_t tick, CPoint player_pos, int player_lvl)
 {
 	static clock_t last_tick = -1;
 	int min = tick/1000/60;
@@ -136,7 +137,17 @@ void EnemyFactory::show_enemy(clock_t tick, CPoint player_pos, int player_lvl)
 	vector<double> weights = { _wave[min].weight[0], _wave[min].weight[1], _wave[min].weight[2]};
 	if(get_number_all() < 300){
 		for(int i=0; i<((300 - get_number_all() > _wave[min].amount)?(_wave[min].amount):(300-get_number_all())); i++)
-			add_enemy(_wave[min].type[poll(weights)], player_pos, player_lvl);
+			add_enemy(_wave[min].type[poll(weights)], player_pos, player_lvl, 1, true);
+	}
+
+	//spawn boss
+	if(_wave[min].boss_type[0] != -1 && !_wave[min].spawned_boss[0]){
+		add_enemy(_wave[min].boss_type[0], player_pos, player_lvl, 1, true, _wave[min].drop_chest[0]);
+		_wave[min].spawned_boss[0] = true;
+	}
+	if(_wave[min].boss_type[1] != -1 && !_wave[min].spawned_boss[1]){
+		add_enemy(_wave[min].boss_type[1], player_pos, player_lvl, 1, true, _wave[min].drop_chest[1]);
+		_wave[min].spawned_boss[1] = true;
 	}
 }
 

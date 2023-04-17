@@ -6,7 +6,8 @@ typedef struct Wave{
 	int type[3];
 	double weight[3];
 	// boss
-	int boss_type[2], chest_evo[2];
+	int boss_type[2];
+	bool drop_chest[2], spawned_boss[2];
 	// swarm
 	int swarm_type[2], swarm_amount[2], swarm_duration_sec[2], swarm_repeat[2], swarm_chance[2], swarm_delay_msec[2];
 } Wave;
@@ -17,10 +18,10 @@ public:
 	~EnemyFactory();
 	void init();
 	
-	void add_enemy(int type, CPoint player_pos, int player_lvl, int count=1, bool random_pos=true);
+	void add_enemy(int type, CPoint player_pos, int player_lvl, int count=1, bool random_pos=true, bool drop_chest=false);
 	int get_number_type(int);
 	int get_number_all();
-	void show_enemy(clock_t tick, CPoint player_pos, int player_lvl);
+	void update_enemy(clock_t tick, CPoint player_pos, int player_lvl);
 	static vector<Enemy*> live_enemy;
 private:
 	static ObjPool<Enemy> _all_enemy;

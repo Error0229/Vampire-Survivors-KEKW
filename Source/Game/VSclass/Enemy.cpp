@@ -91,6 +91,8 @@ bool Enemy::hurt(int damage)
 		if (is_dead()) {
 			unshow_skin();
 			Xp::spawnXP(this->_position, static_cast<int>(_xp_value));
+			if (_is_drop_chest) 
+				Chest::spawnChest(this->_position);
 			_death_animation.set_pos(get_pos());
 			_death_animation.set_animation(100, true);
 			_death_animation.set_is_mirror(_is_mirror);
@@ -115,12 +117,13 @@ bool Enemy::is_collide_with(Enemy& obj, double overlap_bound)
 	return is_overlapped(*this, obj, overlap_bound);
 }
 
-void Enemy::spawn(CPoint pos, int move_animation_delay, int death_animation_delay, int player_lvl)
+void Enemy::spawn(CPoint pos, int move_animation_delay, int death_animation_delay, int player_lvl, bool drop_chest)
 {
 	set_animation(move_animation_delay, false);
 	_death_animation.set_animation(death_animation_delay, true);
 	_is_enable = true;
 	_position = pos;
+	_is_drop_chest = drop_chest;
 	_hp = (_hp_scale) ? (_hp_max * player_lvl) : (_hp_max);
 }
 
@@ -202,6 +205,7 @@ Enemy Enemy::load_enemy(int id, char* name, int health, int power, int mspeed, d
 
 	enemy._is_enable = false;
 	enemy._is_mirror = false;
+	enemy._is_drop_chest = false;
 	enemy._position = CPoint(0, 0);
 	enemy.set_type(id);
 	

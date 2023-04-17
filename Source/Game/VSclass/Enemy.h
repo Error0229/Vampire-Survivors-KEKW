@@ -39,7 +39,7 @@ public:
 	void show_skin(double factor = 1.0) override;
 	void set_level(int);
 	void set_enable(bool enable = true);
-	void spawn(CPoint pos, int move_animation_delay = 100, int death_animation_delay = 100, int player_lvl = 1);
+	void spawn(CPoint pos, int move_animation_delay = 100, int death_animation_delay = 100, int player_lvl = 1, bool drop_chest = false);
 	void update_pos(CPoint) override;
 	bool is_dead();
 	bool is_enable();
@@ -66,6 +66,6 @@ private:
 	bool _res_k, _res_d, _hp_scale, _is_stun = 0;
 	double _stun_speed;
 	int  _level;
-	bool _is_enable; //this name is not good
+	bool _is_enable, _is_drop_chest;
 	VSObject _death_animation;
 };

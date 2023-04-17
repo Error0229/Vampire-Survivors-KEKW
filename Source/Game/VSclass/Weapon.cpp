@@ -444,7 +444,7 @@ void Weapon::update_all_weapon_stats(int might, int cooldown, int proj_speed, in
 }
 void Weapon::modify_base(string type, double effect) {
 	if (type == "damage") {
-		_base_stats[type] = any_cast<double>(_base_stats[type]) + effect; // BUG HERE
+		_base_stats[type] = any_cast<double>(_base_stats[type]) + effect;
 	}
 	else if (type == "speed" ) {
 		_base_stats[type] = static_cast<int>(static_cast<double>(any_cast<int>(_base_stats[type])) * (100.0+effect)/100.0);

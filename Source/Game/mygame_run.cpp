@@ -40,10 +40,10 @@ void CGameStateRun::OnBeginState()
 void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 {
 	Weapon::load_weapon_stats();
-	//Enemy::load_template_enemies();
 	enemy_factory.init();
 	Icon::load_filename();
 	Xp::init_XP();
+	Chest::init_chest();
 	_gamerun_status = PLAYING;
 	_next_status = PLAYING;
 
@@ -59,11 +59,6 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	map.load_map({ "resources/map/dummy1.bmp" });
 	map.set_pos(0, 0);
 	QuadTree::VSPlain.clear();
-
-	for(int i=0; i<100; i++){
-		xp.push_back(Xp());
-		chest.push_back(Chest());
-	}
 
 	event_background.load_skin("resources/ui/event_background.bmp");
 	event_background.set_base_pos(0, 0);
@@ -135,11 +130,6 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	static int chest_cnt = 0; //tmp
 	switch (nChar) {
 	case('A'):
-		//for (int i = 0; i < (int)enemy.size();i++) {
-		//	if (enemy[i].hurt(1000000)) {
-		//		xp[i].spawn(enemy[i].get_pos(), enemy[i].get_xp_value());
-		//	}
-		//}
 		for (auto 😈 : enemy_factory.live_enemy) {
 			😈->hurt(1000);
 		}
@@ -148,9 +138,7 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		player.pick_up_xp(20);
 		break;
 	case('C'):
-		if (chest_cnt > 99)
-			break;
-		chest[chest_cnt++].spawn(player.get_pos() + CPoint(0, -50), true);
+		// WIP: SPAWN CHEST
 		break;
 	case('D'):
 		timer.add_time(10000);
@@ -393,20 +381,10 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 				player.pick_up_xp(i->get_xp_value());
 			}
 		}
-		for (auto& i : xp) {
-			if (i.is_enable() && VSObject::distance(player, i) < player.get_magnet()) {
-				i.set_speed(500);
-				i.update_pos(player.get_pos());
-				if (is_overlapped(player, i)) {
-					i.despawn();
-					player.pick_up_xp(i.get_xp_value());
-				}
-			}
-		}
-		for (auto& i : chest) {
-			if (i.is_enable() && is_overlapped(player, i)) {
-				i.despawn();
-				can_evo = i.get_can_evo();
+		for (auto i : Chest::chest_all) {
+			if (i->is_enable() && is_overlapped(player, *i)) {
+				i->despawn();
+				can_evo = i->get_can_evo();
 				_next_status = OPEN_CHEST;
 			}
 		}
@@ -494,12 +472,9 @@ void CGameStateRun::OnShow()
 	//}
 	for(auto 😈: enemy_factory.live_enemy)
 		😈->show_skin();
-	enemy_factory.show_enemy(timer.get_ticks(), player.get_pos(), player.get_level());
-	for (auto& i : xp)
-		i.show_skin();
-	for (auto& i : chest)
-		i.show_skin();
+	enemy_factory.update_enemy(timer.get_ticks(), player.get_pos(), player.get_level());
 	Xp::show();
+	Chest::show();
 
 	xp_bar_cover.show();
 	xp_bar.set_base_pos(-8 - (xp_bar.get_width() * (100 - player.get_exp_percent()) / 100), -300 + (xp_bar.get_height() >> 1));
@@ -618,4 +593,3 @@ void CGameStateRun::OnShow()
 	text_device.add_text("LV " + to_string(player.get_level()), CPoint(380, -287) + player.get_pos(), 1, FONT_24x18_B, ALIGN_RIGHT);
 	text_device.print_all();
 }
-

@@ -101,9 +101,6 @@ namespace game_framework {
 		Map map;
 		Player player;
 		EnemyFactory enemy_factory;
-		//vector<Enemy> enemy;
-		vector<Xp> xp;
-		vector<Chest> chest;
 		int _gamerun_status, _next_status;
 		VSTimer timer;
 
