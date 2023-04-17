@@ -68,4 +68,5 @@ private:
 	int  _level;
 	bool _is_enable, _is_drop_chest;
 	VSObject _death_animation;
+	VSObject _hit_animation;
 };

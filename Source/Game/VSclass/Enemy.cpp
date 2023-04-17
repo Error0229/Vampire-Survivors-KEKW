@@ -11,6 +11,7 @@ Enemy::Enemy()
 	obj_type = ENEMY;
 	_last_time_got_hit_by_projectile.resize(100, -1000000);
 	_last_time_got_hit = -1000000;
+	_hit_animation.load_skin({ "Resources/hit_effect/Shockwave3.bmp"});
 }
 Enemy::~Enemy() 
 {
@@ -53,6 +54,11 @@ int Enemy::get_spawn_limit() {
 }
 void Enemy::show_skin(double factor)
 {
+	auto dt = clock() - _last_time_got_hit;
+	if (dt < 120) {
+		_hit_animation.set_pos(_position);
+		_hit_animation.show_skin(factor + static_cast<double>(dt) / 1000.0 -0.3);
+	}
 	if ( !_is_enable )
 		return;
 	if ( !is_dead() ) {
