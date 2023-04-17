@@ -258,7 +258,8 @@ int CGameStateRun::draw_level_up(bool pull_from_inv)
 	}
 	// calc weapon weights
 	// increase this once we made a new weapom.
-	for (int i = 0; i < 2; i++) {
+	// we made weapon till diamond
+	for (int i = 0; i < DIAMOND+1; i++) {
 		if (level_up_choice[0] == i || level_up_choice[1] == i || level_up_choice[2] == i || level_up_choice[3] == i)
 			continue;
 		if ((pull_from_inv && player_items[i] == 1) || (!pull_from_inv && Weapon::weapon_count() < 6 && player_items[i] == 0)) {
