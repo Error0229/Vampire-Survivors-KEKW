@@ -375,7 +375,7 @@ void Weapon::attack() {
 				int x = static_cast<int>(cos(angle) * 1000);
 				int y = static_cast<int>(sin(angle) * 1000);
 				proj.set_target_vec({ x, y });
-				Projectile::create_projectile(proj, player_pos, player_pos + CPoint{ x,y }, w._type, i * w._proj_interval, w._area, w._damage, w._speed, w._duration + 10000, w._pierce, w._proj_interval, w._hitbox_delay,
+				Projectile::create_projectile(proj, player_pos, player_pos + CPoint{ x,y }, w._type, i * w._proj_interval, w._area, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
 										w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, false);
 			}
 		}break;
