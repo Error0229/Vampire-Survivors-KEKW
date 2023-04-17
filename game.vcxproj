@@ -256,9 +256,11 @@
     <None Include="Resources\item_id.csv" />
     <None Include="RES\GAME.RC2" />
     <None Include="Source\Game\VSclass\enemy_stats.csv" />
+    <None Include="Source\Game\VSclass\stage_event_1.csv" />
     <None Include="Source\Game\VSclass\weapon_stats.csv" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Game\VSclass\EnemyFactory.cpp" />
     <ClCompile Include="Source\Game\VSclass\ObjPool.cpp" />
     <ClCompile Include="Source\Game\VSclass\QuadTree.cpp" />
     <ClCompile Include="Source\Game\VSclass\Projectile.cpp" />
@@ -287,6 +289,7 @@
     <ClCompile Include="Source\Game\VSclass\VSObject.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Game\VSclass\EnemyFactory.h" />
     <ClInclude Include="Source\Game\VSclass\ObjPool.h" />
     <ClInclude Include="Source\Game\VSclass\QuadTree.h" />
     <ClInclude Include="Source\Game\VSclass\Projectile.h" />

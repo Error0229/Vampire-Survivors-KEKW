@@ -127,3 +127,7 @@ string VSTimer::get_second_string()
         s = "0" + s;
     return s;
 }
+void VSTimer::add_time(clock_t t)
+{
+    start_ticks -= t;
+}
