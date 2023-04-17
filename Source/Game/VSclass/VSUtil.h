@@ -18,6 +18,7 @@ public:
 	bool is_running();
 	clock_t get_ticks();
 	int get_second();
+	void add_time(clock_t);
 	string get_minute_string();
 	string get_second_string();
 private:

@@ -11,3 +11,4 @@
 #include "Pickup.h"
 #include "Player.h"
 #include "ObjPool.h"
+#include "EnemyFactory.h"

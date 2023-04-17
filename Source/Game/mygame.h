@@ -100,9 +100,7 @@ namespace game_framework {
 		CPoint mouse_pos;								// 滑鼠的座標
 		Map map;
 		Player player;
-		vector<Enemy> enemy;
-		vector<Xp> xp;
-		vector<Chest> chest;
+		EnemyFactory enemy_factory;
 		int _gamerun_status, _next_status;
 		VSTimer timer;
 
