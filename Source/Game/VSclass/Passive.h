@@ -12,7 +12,6 @@ public:
 	bool is_max_level();
 	int get_max_level();
 	string get_level_up_msg(bool is_new=false);
-	int get_alt_effect();
 	int get_rarity();
 	string get_name();
 	void upgrade();

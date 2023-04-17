@@ -20,8 +20,8 @@ Projectile::Projectile(int type, vector<string> filename, COLORREF color) : Proj
 Projectile::Projectile(int type) {
 	*this = template_proj[type];
 }
-Projectile::~Projectile() {};
-
+Projectile::~Projectile() {
+}
 bool Projectile::operator < (const Projectile& rhs) const {
 	return this->_type < rhs._type;
 }
@@ -31,12 +31,19 @@ void Projectile::set_offset(CPoint os) {
 void Projectile::init_projectile(int type, int count) {
 	pool.add_obj(type, count);
 }
-void Projectile::collide_with_enemy(Enemy& 🥵) {
-	clock_t now = clock();
-	if (_is_over || !is_overlapped((*this), 🥵) || now - 🥵._last_time_got_hit_by_projectile[this->_type] < this->_hitbox_delay)
+void Projectile::set_angle(double angle) {
+	_angle = angle;
+}
+void Projectile::collide_with_enemy(Enemy& 🥵, int player_duration) {
+	if ((_type == HOLYWATER || _type == BORA) && is_animation()) {
 		return;
+	}
+	clock_t now = clock();
+	if (_is_over || !is_overlapped((*this), 🥵, 1 - _area * 0.04) || now - 🥵._last_time_got_hit_by_projectile[this->_type] < this->_hitbox_delay) {
+		return;
+	}
 	🥵._is_stun = true;
-	🥵._stun_speed = -1.0 * 🥵._speed * 🥵._kb * (this->_duration <= 0 ? 1 : this->_duration) * this->_knock_back;
+	🥵._stun_speed = -1.0 * static_cast<double>(🥵._speed) * 🥵._kb * static_cast<double>(player_duration) * this->_knock_back / 100.0;
 	🥵._last_time_got_hit = now;
 	🥵._last_time_got_hit_by_projectile[this->_type] = now;
 	this->_pierce -= 1;
@@ -44,17 +51,18 @@ void Projectile::collide_with_enemy(Enemy& 🥵) {
 		this->_is_over = true;
 	🥵.hurt(static_cast<int>(this->_damage));
 }
-void Projectile::create_projectile(Projectile& proj, CPoint position, CPoint target_pos, int type, int delay, double damage, int speed, int duration, int pierce, int proj_interval, int hitbox_delay, double knock_back, int pool_limit, int chance, int criti_multi, int block_by_wall, bool is_mirror) {
+void Projectile::create_projectile(Projectile& proj, CPoint position, CPoint target_pos, int type, int delay, double area, double damage, int speed, int duration, int pierce, int proj_interval, int hitbox_delay, double knock_back, int pool_limit, int chance, int criti_multi, int block_by_wall, bool is_mirror) {
 	proj._type = type;
 	proj._position = position;
 	proj._target = target_pos;
 	proj._delay = delay;
+	proj._area = area;
 	proj._damage = damage;
 	proj._speed = speed;
 	proj._duration = duration;
 	proj._pierce = pierce;
 	proj._proj_interval = proj_interval;
-	proj._hitbox_delay = hitbox_delay;
+	proj._hitbox_delay = hitbox_delay > 0 ? hitbox_delay : 100000;
 	proj._knock_back = knock_back;
 	proj._pool_limit = pool_limit;
 	proj._chance = chance;
@@ -63,6 +71,7 @@ void Projectile::create_projectile(Projectile& proj, CPoint position, CPoint tar
 	proj._is_mirror = is_mirror;
 	proj._is_start = (delay > 0 ? 0 : 1);
 	proj._is_over = false;
+	proj.set_create_time(clock());
 	CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
 	proj._offset = proj._position - player_pos;
 	Projectile::all_proj.push_back(proj);
@@ -75,53 +84,182 @@ void Projectile::set_delay(int delay) {
 	_delay = delay;
 }
 void Projectile::set_create_time(clock_t time) {
-	_create_time = time; 
+	_create_time = time;
 }
-void Projectile::set_life_cycle(clock_t time) {
-	_life_cycle = time;
-}
+
 void Projectile::update_position() {
-	for (Projectile& proj: Projectile::all_proj) {
+	CPoint player_pos = get_player_pos();
+	CPoint p;
+	GetCursorPos(&p);
+	HWND targetWindow = FindWindow(NULL, GAME_TITLE);
+	ScreenToClient(targetWindow, &p);
+	for (Projectile& proj : Projectile::all_proj) {
+		int dt = clock() - proj._create_time - proj._delay;
 		switch (proj._type) {
-		case(WHIP): 
-			proj.WHIP_transition();
+		case(WHIP): case (VAMPIRICA): case (GARLIC): case (VORTEX):
+			proj.set_pos(player_pos + proj._offset);
 			break;
-		case(MAGIC_MISSILE):
-			proj.MAGIC_MISSILE_transition();
+		case(MAGIC_MISSILE): case(HOLY_MISSILE):
+			if (!proj._is_start && (dt < 0 && dt > -100)) {
+				int min_dis = 1000000000;
+				proj.set_pos(player_pos);
+				CPoint target = player_pos;
+				QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(&proj), min_dis);
+				proj.set_target_vec((target != player_pos ? target - player_pos : CPoint(420, 69)));
+				double rad = atan2(target.y - player_pos.y, target.x - player_pos.x);
+				proj.set_rotation(rad);
+			}
+			else if (proj._is_start) {
+				proj.update_pos_by_vec();
+			}
 			break;
-		case (KNIFE):
-			proj.KNIFE_transition();
+		case (KNIFE): case (THOUSAND):
+			if (!proj._is_start && (dt < 0 && dt > -100)) {
+				p.x = p.x - VSObject::player_dx;
+				p.y = p.y - VSObject::player_dy;
+				proj.set_target_vec(p - player_pos);
+				proj.set_pos(player_pos + proj._offset);
+				double rad = atan2(p.y - player_pos.y, p.x - player_pos.x);
+				proj.set_rotation(rad);
+			}
+			else if (proj._is_start) {
+				proj.update_pos_by_vec();
+			}
 			break;
-		case (VAMPIRICA):
-			proj.VAMPIRICA_transition();
+		case (AXE):
+			if (proj._is_start && dt >= 0) {
+				proj.set_pos(proj.get_parabola(proj._angle, static_cast<double>(proj._speed), dt));
+			}
 			break;
-		case (HOLY_MISSILE):
-			proj.HOLY_MISSILE_transition();
+		case CROSS: case HEAVENSWORD: {
+			const double vertical = MATH_PI / 2;
+			if (!proj._is_start && (dt < 0 && dt > -100)) {
+				int min_dis = 1000000000;
+				CPoint target;
+				QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(&proj), min_dis);
+				proj.set_target_vec(target - proj._position);
+			}
+			else if (proj._is_start) {
+				CPoint par = proj.get_parabola(vertical, static_cast<double>(proj._speed), dt);
+				double vlen1 = sqrt(proj._target_vec.x * proj._target_vec.x + proj._target_vec.y * proj._target_vec.y);
+				double angle = acos(proj._target_vec.y / vlen1);
+				par.x -= proj._target.x;
+				par.y -= proj._target.y;
+				double x, y;
+				if (proj._target_vec.x > 0) {
+					x = par.x * cos(angle) - par.y * sin(angle);
+					y = -par.x * sin(angle) - par.y * cos(angle);
+				}
+				else {
+					x = -par.x * cos(angle) + par.y * sin(angle);
+					y = -par.x * sin(angle) - par.y * cos(angle);
+				}
+				proj.set_pos(CPoint(static_cast<int>(x), static_cast<int>(y)) + proj._target);
+				if (proj._is_top && !proj.is_animation()) {
+					proj.enable_animation();
+				}
+			}
+		}	break;
+		case (HOLYBOOK): case (VESPERS): {
+			double radius = proj._angle;
+			double speed = proj._speed / (1000.0 / GAME_CYCLE_TIME);
+			CPoint origin_pos = player_pos + proj._offset;
+			double angular_velocity = speed / radius / 20;
+			double initial_angle = atan2(origin_pos.y - player_pos.y, origin_pos.x - player_pos.x);
+			double final_angle = initial_angle + dt * angular_velocity;
+			double x = player_pos.x + radius * cos(final_angle);
+			double y = player_pos.y + radius * sin(final_angle);
+			proj.set_pos(CPoint(static_cast<int>(x), static_cast<int>(y)));
+		}	break;
+		case FIREBALL:case HELLFIRE: {
+			if (!proj._is_start && (dt < 0 && dt > -100)) {
+				proj.set_pos(player_pos);
+			}
+			else if(proj._is_start){
+				proj.update_pos_by_vec();
+			}
+		}	break;
+		case HOLYWATER: case BORA: {
+			if (!proj._is_start && (dt < 0 && dt > -50)) {
+				int min_dis = 1000000000;
+				proj.set_pos(player_pos);
+				CPoint target = player_pos;
+				QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(&proj), min_dis);
+				target = (target != player_pos) ? (target) : (player_pos + CPoint(rand() % 400 - 200, rand() % 400 - 200));
+				proj.set_target_vec(target - player_pos);
+				proj._target = target;
+			}
+			else if (proj._is_start) {
+				if (proj.is_animation() && ( distance(proj._target, proj._position) < 50 * proj._area)) {
+					proj.set_animation_frame(36);
+					proj.disable_animation();
+					proj.set_create_time(clock());
+					proj._delay = 0;
+					proj._area += 0.5;
+					proj._speed /= 10;
+				}
+				else if (proj.is_animation()) {
+					proj.update_pos_by_vec();
+				}
+				else if(proj._type == BORA){
+					proj.update_pos(get_player_pos());
+				}
+			}
+		}	break;
+		case (DIAMOND): case (ROCHER): {
+			proj.set_scaler(proj._area);
+			static int border = 0;
+			border = hit_border(player_pos.x, player_pos.y, w_size_x - proj.get_width() + (proj.get_width() >> 3), w_size_y - proj.get_height() + (proj.get_height() >> 3), proj._position.x, proj._position.y);
+			if (proj._is_start && dt >=0) {
+				if (border == 0) {
+					proj.update_pos_by_vec();
+					break;
+				}
+				while (border != 0) {
+					border = hit_border(player_pos.x, player_pos.y, w_size_x - proj.get_width() + (proj.get_width() >> 3), w_size_y - proj.get_height() + (proj.get_height() >> 3), proj._position.x, proj._position.y);
+					if (border == 1) {
+						proj._target_vec.x = -proj._target_vec.x;
+						proj._position.x = player_pos.x - (w_size_x >> 1) +  (proj.get_width());
+					}
+					else if (border == 2) {
+						proj._target_vec.x = -proj._target_vec.x;
+						proj._position.x = player_pos.x + (w_size_x >> 1) - (proj.get_width() );
+					}
+					else if (border == 3) {
+						proj._target_vec.y = -proj._target_vec.y;
+						proj._position.y = player_pos.y - (w_size_y >> 1) + (proj.get_height() );
+					}
+					else if (border == 4) {
+						proj._target_vec.y = -proj._target_vec.y;
+						proj._position.y = player_pos.y + (w_size_y >> 1) -   (proj.get_height() );
+					}
+				}
+			}
+
+		}break;
+		case (SCYTHE):  {
+			if (proj._is_start && dt >= 0) {
+				proj.update_pos_by_vec();
+			}
+		}	break;
+		default :
 			break;
 		}
 	}
 }
 void Projectile::show_skin(double factor) {
-	VSObject::show_skin(factor);
-	if (VSObject::distance(this->_position, CPoint{ (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx, (OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy }) > 700) {
+	if (is_animation() && get_animation_frame() == 36 && (_type == HOLYWATER || _type == BORA)) {
+		set_animation_frame(0);
+	}
+	VSObject::show_skin(_area);
+	if (VSObject::distance(this->_position, get_player_pos()) > 700) {
 		this->_is_over = true;
 	}
-	if(this->_life_cycle == -1) return;
-	if(this->_skin.IsAnimationDone() || clock() - this->_create_time - this->_delay >= this->_life_cycle)
+	if (this->_duration == -1) return;
+	if ( clock() - this->_create_time - this->_delay >= this->_duration)
 		this->_is_over = true;
 }
 void Projectile::show() {
-	// int deq_size = static_cast<int> (all_proj.size());
-	/*for (int i = 0; i < deq_size; i++) {
-		if (clock() - all_proj.front()._create_time >= all_proj.front()._delay) {
-			all_proj.front().show_skin();
-			all_proj.front()._is_start = true;
-		}
-		if (!all_proj.front()._is_over) {
-			all_proj.emplace_back(all_proj.front());
-		}
-		all_proj.pop_front();
-	}*/
 	for (Projectile& rf : all_proj) {
 		// Projectile& rf = r;
 		if (clock() - rf._create_time >= rf._delay) {
@@ -142,78 +280,42 @@ void Projectile::show() {
 		all_proj.shrink_to_fit(); // release memory
 	}
 }
-void Projectile::WHIP_transition() {
-	CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
-	_position = player_pos + _offset;
-}
-void Projectile::MAGIC_MISSILE_transition() {
-	if (!_is_start && clock() - _create_time - _delay < 0) {
-		CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
-		int min_dis = 1000000000;
-		this->set_pos(player_pos);
-		CPoint target = player_pos;
-		QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(this), min_dis);
-		this->set_target_vec((target != player_pos ? target - player_pos : CPoint(420, 69)));
-		double rad = atan2(target.y - player_pos.y, target.x - player_pos.x);
-		this->set_rotation(rad);
-	}
-	else {
-		this->update_pos_by_vec();
-	}
-}
-void Projectile::KNIFE_transition() {
-	if (!_is_start && clock() - _create_time - _delay < 0) {
-		CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
-		CPoint p;
-		GetCursorPos(&p);
-		HWND targetWindow = FindWindow(NULL, GAME_TITLE);
-		ScreenToClient(targetWindow, &p);
-		p.x = p.x - VSObject::player_dx;
-		p.y = p.y - VSObject::player_dy;
-		this->set_target_vec(p - player_pos);
-		_position = player_pos + _offset;
-		double rad = atan2(p.y - player_pos.y, p.x - player_pos.x);
-		this->set_rotation(rad);
-	}
-	else {
-		this->update_pos_by_vec();
-	}
-}
-void Projectile::VAMPIRICA_transition() {
-	CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
-	_position = player_pos + _offset;
-}
-void Projectile::HOLY_MISSILE_transition() {
-	if (!_is_start && clock() - _create_time - _delay < 0) {
-		CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
-		int min_dis = 1000000000;
-		this->set_pos(player_pos);
-		CPoint target = (player_pos);
-		QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(this), min_dis);
-		this->set_target_vec((target != player_pos ? target - player_pos : _target_vec));
-		double rad = atan2(target.y - player_pos.y, target.x - player_pos.x);
-		this->set_rotation(rad);
-	}
-	else {
-		this->update_pos_by_vec();
-	}
-}
+
 void Projectile::set_rotation(double radien) {
-	// angle += 2*acos(-1)
+	_angle = radien;
 	int angle = static_cast<int>(radien * 180 / acos(-1));
-	angle = (angle + 360) % 360;
-	int regular_angle = 15 * static_cast<int> (angle / 15.0);
+	angle = (-angle + 360) % 360;
+	int regular_angle = 10 * static_cast<int> (angle / 10.0);
 	if (regular_angle == 0) return;
-
-	vector <string> rotated_filename;
-	for (auto s : _file_name) {
-		rotated_filename.emplace_back(s.substr(0, s.find_last_of('.')) + "_r" + std::to_string(regular_angle) + ".bmp");
-	}
-	this->_skin.ResetBitmap();
-	this->_skin.LoadBitmapByString(rotated_filename, RGB(1,11,111));
+	this->_skin.SelectShowBitmap(regular_angle / 10);
 }
+void Projectile::load_rotation() { // only rotate first for some secret reason
+	vector <string> rotated_filename;
+	auto s = _file_name[0];
+	for (int i = 0; i < 360; i += 10) {
+		rotated_filename.emplace_back(s.substr(0, s.find_last_of('.')) + "_r" + std::to_string(i) + ".bmp");
+	}
 
-// deque<Projectile> Projectile::all_proj = {};
+	for (int i = 1; i < static_cast<int>(_file_name.size()); ++i) {
+		rotated_filename.push_back(_file_name[i]);
+	}
+	
+	this->_skin.ResetBitmap();
+	this->_skin.LoadBitmapByString(rotated_filename, RGB(1, 11, 111));
+}
+CPoint Projectile::get_parabola(double angle, double speed, int time) {
+	double dt = static_cast<double>(time) / 1000.0;
+	static double pre_y = 100000000;
+	speed = speed / (1000.0 / GAME_CYCLE_TIME) * 50; // 50 depends on game cycle time
+	// since projectile using this function don't need target so we use it as a tmp
+	double x = _target.x + speed * dt * cos(angle);
+	double y = _target.y - speed * dt * sin(angle) + 0.5 * 980 * dt * dt;
+	if (!_is_top && y > pre_y) {
+		_is_top = true;
+	}
+	pre_y = y;
+	return CPoint(static_cast<int>(x), static_cast<int>(y));
+}
 ObjPool<Projectile> Projectile::pool(PROJECTILE);
 vector<reference_wrapper<Projectile>> Projectile::all_proj;
 map <int, Projectile> Projectile::template_proj = {};

@@ -2,7 +2,7 @@
 #include "../config.h"
 #include "../../Library/gameutil.h"
 #include "VSObject.h"
-
+#include "VSUtil.h"
 
 VSObject::VSObject()
 {
@@ -33,9 +33,10 @@ void VSObject::load_animation(vector<char*> filename, COLORREF color)
 	this->_animations.push_back(game_framework::CMovingBitmap());
 	this->_animations.back().LoadBitmap(filename, color);
 }
-void VSObject::show_skin(double factor) 
+void VSObject::show_skin(double factor)
 {
-	this->_skin.SetTopLeft(this->_position.x - (this->_skin.Width() >> 1) + player_dx, this->_position.y - (this->_skin.Height() >> 1) + player_dy);
+	_scaler = factor;
+	this->_skin.SetTopLeft(this->_position.x - (get_width() >> 1) + player_dx, this->_position.y - (this->get_height() >> 1) + player_dy);
 	this->_skin.ShowBitmap(factor, _is_mirror);
 }
 void VSObject::show_animation(double factor)
@@ -47,7 +48,7 @@ void VSObject::unshow_skin()
 {
 	this->_skin.UnshowBitmap();
 }
-void VSObject::set_default_direct(int dir) 
+void VSObject::set_default_direct(int dir)
 {
 	this->_default_direct = dir;
 }
@@ -84,7 +85,7 @@ void VSObject::set_target_vec(CPoint v) {
 	_target_vec = v;
 }
 void VSObject::set_target_vec(int dx, int dy) {
-	_target_vec = CPoint{dx, dy};
+	_target_vec = CPoint{ dx, dy };
 }
 void VSObject::set_speed(double speed) {
 	this->_speed = static_cast<int>(speed);
@@ -99,6 +100,9 @@ void VSObject::select_show_animation(int index)
 }
 void VSObject::set_type(int type) {
 	_type = type;
+}
+void VSObject::set_animation_frame(int i) {
+	_skin.SelectShowBitmap(i);
 }
 int VSObject::get_type() {
 	return _type;
@@ -125,14 +129,17 @@ int VSObject::get_pool_id() {
 void VSObject::update_pos()
 {
 	// have a speed and moving in a 2d plane
-	int dis = distance(_target, this->_position);
-	if (dis < 1) return;
+	_target_vec = _target - _position;
 	this->_direct = (this->_target.x > this->_position.x) ? RIGHT : LEFT;
 	this->_is_mirror = (_direct != _default_direct);
-	int dx = VSOM(this->_speed * ( this->_target.x - this->_position.x ) / dis);
-	int dy = VSOM(this->_speed * ( this->_target.y - this->_position.y ) / dis);
-	_fx += (_speed * (double)(this->_target.x - this->_position.x) / (double)dis / 100) - (double)dx;
-	_fy += (_speed * (double)(this->_target.y - this->_position.y) / (double)dis / 100) - (double)dy;
+	update_pos_by_vec(_target_vec);
+	return;
+	int dis = distance(_target, this->_position);
+	if (dis < 1) return;
+	int dx = VSOM(this->_speed * square(this->_target.x - this->_position.x) / dis);
+	int dy = VSOM(this->_speed * square(this->_target.y - this->_position.y) / dis);
+	_fx += (_speed * (double)square(this->_target.x - this->_position.x) / (double)dis / 100) - (double)dx;
+	_fy += (_speed * (double)square(this->_target.y - this->_position.y) / (double)dis / 100) - (double)dy;
 	if (abs(_fx) > 1) {
 		dx += static_cast<int>(_fx);
 		_fx -= static_cast<int>(_fx);
@@ -141,28 +148,29 @@ void VSObject::update_pos()
 		dy += static_cast<int>(_fy);
 		_fy -= static_cast<int>(_fy);
 	}
-	this->_position.x += dx ;
-	this->_position.y += dy ;
+	this->_position.x += dx;
+	this->_position.y += dy;
 }
 void VSObject::update_pos_by_vec(CPoint vec) {
-	if (_target_vec == CPoint{ 0,0 })
+	double speed = static_cast<double>(_speed) / (1000.0 / GAME_CYCLE_TIME);
+	if (_target_vec == CPoint{ 0, 0 })
 		return;
-	if (vec != CPoint{ 0,0 })
+	if (vec != CPoint{ 0, 0 })
 		_target_vec = vec;
 	//this->_direct = (this->_target.x > this->_position.x) ? RIGHT : LEFT;
 	//this->_is_mirror = (_direct != _default_direct);
-	double dis = static_cast<double>(square(_target_vec.x) + square(_target_vec.y));
-	double vx = (_target_vec.x > 0 ? 1.0 : -1.0) *_speed * square(_target_vec.x) / dis;
-	double vy = (_target_vec.y > 0 ? 1.0 : -1.0) *_speed * square(_target_vec.y) / dis;
+	double dis = static_cast<double>((square(_target_vec.x) + square(_target_vec.y)));
+	double vx = (_target_vec.x > 0 ? 1.0 : -1.0) * speed * square(_target_vec.x) / dis;
+	double vy = (_target_vec.y > 0 ? 1.0 : -1.0) * speed * square(_target_vec.y) / dis;
 	int dx = static_cast<int> (vx);
 	int dy = static_cast<int> (vy);
 	_fx += vx - (double)dx;
 	_fy += vy - (double)dy;
-	if (abs(_fx) > 1) {
+	if (fabs(_fx) > 1) {
 		dx += static_cast<int>(_fx);
 		_fx -= static_cast<int>(_fx);
 	}
-	if (abs(_fy) > 1) {
+	if (fabs(_fy) > 1) {
 		dy += static_cast<int>(_fy);
 		_fy -= static_cast<int>(_fy);
 	}
@@ -178,7 +186,7 @@ bool is_overlapped(VSObject& obj1, VSObject& obj2, double overlap_bound)
 {
 	int dx = abs(obj1._position.x - obj2._position.x);
 	int dy = abs(obj1._position.y - obj2._position.y);
-	return 
+	return
 		(
 			dx < ((int)((obj1.get_width() + obj2.get_width()) >> 1) * overlap_bound) &&
 			dy < ((int)((obj1.get_height() + obj2.get_height()) >> 1) * overlap_bound)
@@ -186,13 +194,15 @@ bool is_overlapped(VSObject& obj1, VSObject& obj2, double overlap_bound)
 }
 int VSObject::get_height()
 {
-	return this->_skin.Height();
+	return static_cast<int>(static_cast<double>(this->_skin.Height()) * _scaler);
 }
 int VSObject::get_width()
 {
-	return this->_skin.Width();
+	return static_cast<int>(static_cast<double>(this->_skin.Width()) * _scaler);
 }
-
+bool VSObject::is_animation() {
+	return this->_skin.IsAnimation();
+}
 bool VSObject::is_animation_done()
 {
 	return this->_skin.IsAnimationDone();
@@ -202,9 +212,17 @@ void VSObject::set_is_mirror(bool is_mirror)
 {
 	this->_is_mirror = is_mirror;
 }
+void VSObject::set_scaler(double scaler)
+{
+	this->_scaler = scaler;
+}
 int VSObject::get_direct()
 {
 	return this->_default_direct;
+}
+int VSObject::get_animation_frame()
+{
+	return this->_skin.GetSelectShowBitmap();
 }
 
 void VSObject::append_collide(VSObject& other, double overlap_bound, double factor) {
@@ -236,6 +254,9 @@ void VSObject::update_collide()
 	// maight integrated into update_pos in the future if we need the real vector implentment
 	this->_position += _collision;
 	_collision = (0, 0);
+}
+CPoint get_player_pos() {
+	return CPoint((w_size_x >> 1) - VSObject::player_dx, (w_size_y >> 1) - VSObject::player_dy);
 }
 
 int VSObject::player_dx = (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1);

@@ -53,15 +53,17 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	player.set_default_direct(RIGHT);
 	player.set_animation(150, false);
 	player.load_bleed();
-	player.acquire_weapon(MAGIC_MISSILE);
+	player.acquire_weapon(DIAMOND);
 	player.acquire_passive(POWER);
 
 	map.load_map({ "resources/map/dummy1.bmp" });
 	map.set_pos(0, 0);
 	QuadTree::VSPlain.clear();
 
-	for(int i=0; i<100; i++)
+	for(int i=0; i<100; i++){
+		xp.push_back(Xp());
 		chest.push_back(Chest());
+	}
 
 	event_background.load_skin("resources/ui/event_background.bmp");
 	event_background.set_base_pos(0, 0);
@@ -69,15 +71,15 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 		level_up_button[i].load_skin("resources/ui/event_button.bmp");
 		level_up_icon_frame[i].load_skin("resources/ui/frameB.bmp");
 		level_up_button[i].set_base_pos(0, -75 + 75 * i);
-		level_up_icon_frame[i].set_base_pos(-120, -90 + 75*i);
-		level_up_icon[i].set_base_pos(-120, -90 + 75*i);
+		level_up_icon_frame[i].set_base_pos(-120, -90 + 75 * i);
+		level_up_icon[i].set_base_pos(-120, -90 + 75 * i);
 		level_up_icon[i].load_icon();
 		level_up_choice[i] = -1;
 	}
-	chest_animation.load_skin({"resources/ui/TreasureIdle_01_big.bmp", "resources/ui/TreasureIdle_02_big.bmp" , "resources/ui/TreasureIdle_03_big.bmp" , "resources/ui/TreasureIdle_04_big.bmp" , "resources/ui/TreasureIdle_05_big.bmp" , "resources/ui/TreasureIdle_06_big.bmp" ,"resources/ui/TreasureIdle_07_big.bmp" ,"resources/ui/TreasureIdle_08_big.bmp", "resources/ui/TreasureOpen_01_big.bmp", "resources/ui/TreasureOpen_02_big.bmp" , "resources/ui/TreasureOpen_03_big.bmp" , "resources/ui/TreasureOpen_04_big.bmp" , "resources/ui/TreasureOpen_05_big.bmp" , "resources/ui/TreasureOpen_06_big.bmp" , "resources/ui/TreasureOpen_07_big.bmp" , "resources/ui/TreasureOpen_08_big.bmp" });
+	chest_animation.load_skin({ "resources/ui/TreasureIdle_01_big.bmp", "resources/ui/TreasureIdle_02_big.bmp" , "resources/ui/TreasureIdle_03_big.bmp" , "resources/ui/TreasureIdle_04_big.bmp" , "resources/ui/TreasureIdle_05_big.bmp" , "resources/ui/TreasureIdle_06_big.bmp" ,"resources/ui/TreasureIdle_07_big.bmp" ,"resources/ui/TreasureIdle_08_big.bmp", "resources/ui/TreasureOpen_01_big.bmp", "resources/ui/TreasureOpen_02_big.bmp" , "resources/ui/TreasureOpen_03_big.bmp" , "resources/ui/TreasureOpen_04_big.bmp" , "resources/ui/TreasureOpen_05_big.bmp" , "resources/ui/TreasureOpen_06_big.bmp" , "resources/ui/TreasureOpen_07_big.bmp" , "resources/ui/TreasureOpen_08_big.bmp" });
 	chest_animation.set_animation(100, true);
 	chest_animation.set_base_pos(5, 75);
-	CPoint chest_item_pos[] = {CPoint(0,-50), CPoint(-80,-110), CPoint(80,-110), CPoint(-100,-10), CPoint(100,-10)};
+	CPoint chest_item_pos[] = { CPoint(0,-50), CPoint(-80,-110), CPoint(80,-110), CPoint(-100,-10), CPoint(100,-10) };
 	for (int i = 0; i < 5; i++) {
 		chest_item_icon[i].load_icon();
 		chest_item_icon[i].set_base_pos(chest_item_pos[i]);
@@ -92,21 +94,21 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	xp_bar_cover.set_base_pos(-8, -300 + (xp_bar_frame.get_height() >> 1));
 	xp_bar.load_skin({ "resources/ui/xp_bar.bmp", "resources/ui/xp_bar_1.bmp", "resources/ui/xp_bar_2.bmp", "resources/ui/xp_bar_3.bmp", "resources/ui/xp_bar_4.bmp", "resources/ui/xp_bar_5.bmp" });
 	xp_bar.set_base_pos(-8, -300 + (xp_bar.get_height() >> 1));
-	xp_bar.set_animation(1, false);
+	xp_bar.set_animation(1, false);;
 	xp_bar.disable_animation();
 
 	inv_slot.load_skin("resources/ui/weaponSlots.bmp");
-	inv_slot.set_base_pos(-400 + (inv_slot.get_width()>>1), -300 + 24 + (inv_slot.get_height()>>1));
+	inv_slot.set_base_pos(-400 + (inv_slot.get_width() >> 1), -300 + 24 + (inv_slot.get_height() >> 1));
 	for (int i = 0; i < 12; i++) {
 		inv_icon[i].load_icon();
-		inv_icon[i].set_base_pos(-400 + 8 + i%6*16, -300 + 24 + 8 + i/6*16);
+		inv_icon[i].set_base_pos(-400 + 8 + i % 6 * 16, -300 + 24 + 8 + i / 6 * 16);
 	}
 
 	inv_detail_frame.load_skin("resources/ui/inv_detail_frame.bmp");
-	inv_detail_frame.set_base_pos(-400+(inv_detail_frame.get_width() >> 1), -300+24+(inv_detail_frame.get_height() >> 1));
+	inv_detail_frame.set_base_pos(-400 + (inv_detail_frame.get_width() >> 1), -300 + 24 + (inv_detail_frame.get_height() >> 1));
 	for (int i = 0; i < 12; i++) {
 		inv_detail_item_icons[i].load_icon();
-		inv_detail_item_icons[i].set_base_pos(-400 + 20 + i%6*26, -300 + 24 + 20 + i/6*58);
+		inv_detail_item_icons[i].set_base_pos(-400 + 20 + i % 6 * 26, -300 + 24 + 20 + i / 6 * 58);
 		for (int j = 0; j < 12; j++) {
 			inv_detail_item_knots[i][j][0].load_skin("resources/ui/weaponLevelEmpty.bmp");
 			inv_detail_item_knots[i][j][1].load_skin("resources/ui/weaponLevelFull.bmp");
@@ -129,7 +131,7 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	// A: kill all enemies
 	// B: pick up 10 xp
 	// C: spawn a chest above player
-	
+
 	static int chest_cnt = 0; //tmp
 	switch (nChar) {
 	case('A'):
@@ -159,7 +161,7 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void CGameStateRun::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	
+
 }
 
 void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
@@ -184,7 +186,7 @@ void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的
 					_next_status = PLAYING;
 				break;
 			}
-			
+
 		}
 		break;
 	case(OPEN_CHEST):
@@ -259,7 +261,7 @@ int CGameStateRun::draw_level_up(bool pull_from_inv)
 	for (int i = 0; i < 2; i++) {
 		if (level_up_choice[0] == i || level_up_choice[1] == i || level_up_choice[2] == i || level_up_choice[3] == i)
 			continue;
-		if ((pull_from_inv && player_items[i] == 1) || (!pull_from_inv && Weapon::weapon_count()<6 && player_items[i] == 0)) {
+		if ((pull_from_inv && player_items[i] == 1) || (!pull_from_inv && Weapon::weapon_count() < 6 && player_items[i] == 0)) {
 			weights[i] = Weapon::_base_weapon[i].get_rarity();
 			no_weight = false;
 		}
@@ -268,7 +270,7 @@ int CGameStateRun::draw_level_up(bool pull_from_inv)
 	for (int i = 63; i < 84; i++) {
 		if (level_up_choice[0] == i || level_up_choice[1] == i || level_up_choice[2] == i || level_up_choice[3] == i)
 			continue;
-		if ((pull_from_inv && player_items[i] == 1) || (!pull_from_inv && Passive::passive_count()<6 && player_items[i] == 0)) {
+		if ((pull_from_inv && player_items[i] == 1) || (!pull_from_inv && Passive::passive_count() < 6 && player_items[i] == 0)) {
 			weights[i] = Passive(i).get_rarity();
 			no_weight = false;
 		}
@@ -284,7 +286,7 @@ int CGameStateRun::draw_open_chest(bool pull_evo)
 	//63~83: passive
 	vector<double> weights;
 	vector<int> index_to_type;
-	
+
 	bool all_max = true, can_evo = false;
 	for (auto& i : Weapon::all_weapon) {
 		if (i.can_evo())
@@ -333,13 +335,13 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 {
 	update_mouse_pos();
 	vector <VSObject*> result;
-	
+
 	//polling
 	vector<double> weights(2, 0);
-	
+
 	//open chest
 	int chest_item_count;
-	static bool can_evo=false;
+	static bool can_evo = false;
 
 	_gamerun_status = _next_status;
 	vector <VSObject*> plain_result = {};
@@ -364,7 +366,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			plain_result.clear();
 			QuadTree::VSPlain.query_by_type(plain_result, (VSObject*)(&proj), ENEMY);
 			for (VSObject* obj : plain_result) {
-				proj.collide_with_enemy(*((Enemy*)obj));
+				proj.collide_with_enemy(*((Enemy*)obj), player.get_duration());
 			}
 		}
 		for (auto 😈: enemy_factory.live_enemy) {
@@ -392,7 +394,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		}
 		for (auto& i : xp) {
 			if (i.is_enable() && VSObject::distance(player, i) < player.get_magnet()) {
-				i.set_speed(200);
+				i.set_speed(500);
 				i.update_pos(player.get_pos());
 				if (is_overlapped(player, i)) {
 					i.despawn();
@@ -410,9 +412,8 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 
 		if (!player.is_hurt())
 			player.regen();
-		
 
-		if(player.get_exp_percent()==100)
+		if (player.get_exp_percent() == 100)
 			_next_status = LEVEL_UP;
 
 		break;
@@ -421,7 +422,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		//level up status
 		//--------------------------------------------------------
 		timer.pause();
-		
+
 		if (level_up_choice[0] != -1)
 			break;
 
@@ -437,7 +438,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		// 4th_choice
 		weights[1] = 1 - (1 / (double)player.get_luck() * 100);
 		weights[0] = 1 - weights[1];
-		level_up_choice[3] = (poll(weights, true))? draw_level_up(false) : -1;
+		level_up_choice[3] = (poll(weights, true)) ? draw_level_up(false) : -1;
 
 		// set which choice can be click
 		for (int i = 0; i < 4; i++) {
@@ -446,7 +447,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			else
 				level_up_button[i].activate_hover = false;
 		}
-		
+
 		break;
 	case(OPEN_CHEST):
 		//--------------------------------------------------------
@@ -495,10 +496,10 @@ void CGameStateRun::OnShow()
 	enemy_factory.show_enemy(timer.get_ticks(), player.get_pos(), player.get_level());
 	for (auto& i : xp)
 		i.show_skin();
-	for(auto& i: chest)
+	for (auto& i : chest)
 		i.show_skin();
 	Xp::show();
-	
+
 	xp_bar_cover.show();
 	xp_bar.set_base_pos(-8 - (xp_bar.get_width() * (100 - player.get_exp_percent()) / 100), -300 + (xp_bar.get_height() >> 1));
 	xp_bar.show();
@@ -513,13 +514,14 @@ void CGameStateRun::OnShow()
 	switch (_gamerun_status) {
 	case(PLAYING):
 		inv_slot.show();
+		xp_bar.set_selector(0);
 		xp_bar.disable_animation();
 		for (int i = 0; i < Weapon::weapon_count(); i++)
 			inv_icon[i].show(Weapon::all_weapon[i].get_type());
 		for (int i = 0; i < Passive::passive_count(); i++)
-			inv_icon[i+6].show(Passive::all_passive[i].get_type());
+			inv_icon[i + 6].show(Passive::all_passive[i].get_type());
 
-		hp_bar.set_selector((player.get_hp_percent() -1) / 5);
+		hp_bar.set_selector((player.get_hp_percent() - 1) / 5);
 		hp_bar.show();
 		break;
 	case(LEVEL_UP):
@@ -527,7 +529,7 @@ void CGameStateRun::OnShow()
 		event_background.show();
 		inv_detail_frame.show();
 		for (int i = 0; i < 4; i++) {
-			if (level_up_choice[i]>-1) {
+			if (level_up_choice[i] > -1) {
 				level_up_button[i].show();
 				level_up_icon_frame[i].show();
 				level_up_icon[i].show(level_up_choice[i]);
@@ -579,13 +581,13 @@ void CGameStateRun::OnShow()
 		//inventory detail 
 		for (int i = 0; i < Weapon::weapon_count(); i++) {
 			inv_detail_item_icons[i].show(Weapon::all_weapon[i].get_type());
-			for(int j = 0; j < Weapon::all_weapon[i].get_max_level(); j++)
+			for (int j = 0; j < Weapon::all_weapon[i].get_max_level(); j++)
 				inv_detail_item_knots[i][j][Weapon::all_weapon[i].get_level() > j].show();
 		}
 		for (int i = 0; i < Passive::passive_count(); i++) {
-			inv_detail_item_icons[i+6].show(Passive::all_passive[i].get_type());
+			inv_detail_item_icons[i + 6].show(Passive::all_passive[i].get_type());
 			for (int j = 0; j < Passive::all_passive[i].get_max_level(); j++)
-				inv_detail_item_knots[i+6][j][Passive::all_passive[i].get_level() > j].show();
+				inv_detail_item_knots[i + 6][j][Passive::all_passive[i].get_level() > j].show();
 		}
 		// player stat text
 		stat_frame.show();

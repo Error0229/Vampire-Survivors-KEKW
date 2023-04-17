@@ -15,6 +15,7 @@ public:
 	void set_default_direct(int dir);
 	void set_animation(int delay, bool _once, int cooldown = 0);
 	void set_selector(int);
+	void set_scaler(double);
 	void enable_animation();
 	void disable_animation();
 	void set_pos(CPoint);
@@ -29,15 +30,18 @@ public:
 	virtual void set_speed(int);
 	virtual void set_speed(double);
 	void select_show_animation(int);
+	void set_animation_frame(int);
 	CPoint get_pos();
 	virtual void update_pos(CPoint);
 	virtual void update_pos();
 	virtual void update_pos_by_vec(CPoint vec = {0,0});
 	void set_is_mirror(bool);
 	bool is_animation_done();
+	bool is_animation();
 	int get_direct();
 	int get_height();
 	int get_width();
+	int get_animation_frame();
 	void append_collide(VSObject&, double overlap_bound, double factor);
 	void update_collide();
 	void is_collide_with(VSObject* other);
@@ -60,6 +64,7 @@ protected:
 	int _direct, _default_direct=LEFT;
 	int _speed=0;
 	int _pool_id, _type;
+	double _scaler = 1;
 	double _fx, _fy;
 };
-
+CPoint get_player_pos();

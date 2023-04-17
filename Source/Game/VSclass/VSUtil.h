@@ -1,10 +1,12 @@
 #pragma once
+#include "../config.h"
 #define VSOM(x) ((x * 10) >> 10) 
 // VS oprimizer
 int square(int x);
 int fast_sqrt(int x);
 bool is_overlapped_pure(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 int poll(vector<double>& weights, bool handle_negtive = false);
+int hit_border(int bx, int by, int w, int h, int obj_x, int obj_y);
 class VSTimer{
 public:
 	VSTimer();
@@ -83,3 +85,6 @@ enum pickup_types {
 };
 #define BLACK (RGB(0,0,0))
 #define WHITE (RGB(255,255,255))
+const double MATH_PI = 3.1415926;
+constexpr int w_size_x = (OPEN_AS_FULLSCREEN ? RESOLUTION_X : SIZE_X);
+constexpr int w_size_y = (OPEN_AS_FULLSCREEN ? RESOLUTION_Y : SIZE_Y);

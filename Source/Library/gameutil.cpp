@@ -1,4 +1,4 @@
-//#define	 INITGUID
+ï»¿//#define	 INITGUID
 #include "stdafx.h"
 #include "../Core/StdAfx.h" // prevent sometimes intelliscense bugged
 #include "../Core/game.h"
@@ -25,13 +25,16 @@ namespace game_framework {
 
 	/////////////////////////////////////////////////////////////////////////////
 	// CMovingBitmap: Moving Bitmap class
-	// ³o­Ó class ´£¨Ñ¥i¥H²¾°Êªº¹Ï§Î
-	// ­nÀ´±o«ç»ò©I¥s(¹B¥Î)¨ä¦UºØ¯à¤O¡A¦ı¬O¥i¥H¤£À´¤U¦Cªºµ{¦¡¬O¤°»ò·N«ä
+	// é€™å€‹ class æä¾›å¯ä»¥ç§»å‹•çš„åœ–å½¢
+	// è¦æ‡‚å¾—æ€éº¼å‘¼å«(é‹ç”¨)å…¶å„ç¨®èƒ½åŠ›ï¼Œä½†æ˜¯å¯ä»¥ä¸æ‡‚ä¸‹åˆ—çš„ç¨‹å¼æ˜¯ä»€éº¼æ„æ€
 	/////////////////////////////////////////////////////////////////////////////
 
 	CMovingBitmap::CMovingBitmap()
 	{
 		isBitmapLoaded = false;
+		if (ENABLE_FEATURE) {
+			scaler = FIX_SCALE;
+		}
 	}
 
 
@@ -161,7 +164,7 @@ namespace game_framework {
 		if (last_time == -1) {
 			last_time = clock();
 		}
-		CDDraw::BltBitmapToBack(SurfaceID[ selector ], location.left, location.top, factor);
+		CDDraw::BltBitmapToBack(SurfaceID[ selector ], location.left, location.top, factor + scaler);
 		clock_t now = clock();
 		if ( animation_cooldown != 0 && ( ( now - last_animation_done ) > animation_cooldown ) && ( isAnimation == false ) ) {
 			isAnimation = true;
@@ -192,7 +195,7 @@ namespace game_framework {
 	void CMovingBitmap::ShowBitmap(double factor, bool is_mirror) //important msg!! it only work on my laptop for now
 	{
 		GAME_ASSERT(isBitmapLoaded, "A bitmap must be loaded before ShowBitmap() is called !!!");
-		CDDraw::BltBitmapToBack(SurfaceID[ selector ], location.left, location.top, factor, is_mirror);
+		CDDraw::BltBitmapToBack(SurfaceID[ selector ], location.left, location.top, factor + scaler, is_mirror);
 		if (last_time == -1) {
 			last_time = clock();
 		}
@@ -226,7 +229,7 @@ namespace game_framework {
 
 
 	void CMovingBitmap::SelectShowBitmap(int _select) {
-		GAME_ASSERT(_select < ( int ) SurfaceID.size(), "¿ï¾Ü¹Ï¤ù®É¯Á¤Ş¥X¬É");
+		GAME_ASSERT(_select < ( int ) SurfaceID.size(), "choosing image out of range")
 		selector = _select;
 	}
 
@@ -243,13 +246,13 @@ namespace game_framework {
 	int CMovingBitmap::Width()
 	{
 		GAME_ASSERT(isBitmapLoaded, "A bitmap must be loaded before Width() is called !!!");
-		return _bitmap_size[ selector ].cx;
+		return static_cast<int>(_bitmap_size[ selector ].cx * (1.0 + scaler));
 	}
 
 	int CMovingBitmap::Height()
 	{
 		GAME_ASSERT(isBitmapLoaded, "A bitmap must be loaded before Height() is called !!!");
-		return _bitmap_size[selector].cy;
+		return static_cast<int>(_bitmap_size[selector].cy * (1.0 + scaler));
 	}
 
 	int CMovingBitmap::Left()
@@ -265,7 +268,7 @@ namespace game_framework {
 	void CMovingBitmap::EnableAnimation() {
 		if (isPause) {
 			isPause = false;
-			selector = 0;
+			// selector = 0;
 			isAnimation = true;
 			isAnimationDone = false;
 		}
@@ -273,13 +276,16 @@ namespace game_framework {
 	void CMovingBitmap::DisableAnimation() {
 		if (!isPause) {
 			isPause = true;
-			selector = 0;
+			// selector = 0;
 			isAnimation = false;
 			isAnimationDone = true;
 		}
 	}
 	bool CMovingBitmap::IsAnimationDone() {
 		return isAnimationDone;
+	}
+	bool CMovingBitmap::IsAnimation() {
+		return isAnimation;
 	}
 
 	int CMovingBitmap::GetMovingBitmapFrame() {
@@ -294,8 +300,8 @@ namespace game_framework {
 
 	/////////////////////////////////////////////////////////////////////////////
 	// CTextDraw: The class provide the ability to draw the text.
-	// ³o­Ó class ´£¨Ñ¤å¦rªº§e²{
-	// ­nÀ´±o«ç»ò©I¥s(¹B¥Î)¨ä¦UºØ¯à¤O¡A¦ı¬O¥i¥H¤£À´¤U¦Cªºµ{¦¡¬O¤°»ò·N«ä
+	// é€™å€‹ class æä¾›æ–‡å­—çš„å‘ˆç¾
+	// è¦æ‡‚å¾—æ€éº¼å‘¼å«(é‹ç”¨)å…¶å„ç¨®èƒ½åŠ›ï¼Œä½†æ˜¯å¯ä»¥ä¸æ‡‚ä¸‹åˆ—çš„ç¨‹å¼æ˜¯ä»€éº¼æ„æ€
 	/////////////////////////////////////////////////////////////////////////////
 
 	void CTextDraw::Print(CDC* pDC, int x, int y, string str) {

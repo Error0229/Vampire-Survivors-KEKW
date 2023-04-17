@@ -29,6 +29,7 @@ public:
 	int get_magnet();
 	int get_luck();
 	int get_pickup_range();
+	int get_duration();
 	vector<stat_struct> get_stats_string();
 	int get_hp_percent();
 	bool is_hurt();

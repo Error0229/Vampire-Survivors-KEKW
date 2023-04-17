@@ -4,7 +4,7 @@
 class Weapon : public VSObject {
 public:
 	Weapon();
-	Weapon(int, char*, vector<int>);
+	Weapon(int, char*, vector<double>);
 	~Weapon();
 	void upgrade();
 	static void load_weapon_stats();
@@ -40,9 +40,9 @@ protected:
 	unordered_map<string, any> _base_stats;
 	unordered_map<string, int> _modifier;
 	string _name;
-	int _type, _level, _max_level, _speed, _rarity,   
+	int _level, _max_level, _rarity,
 		_amount, _duration, _pierce, _cooldown, _proj_interval,
-		_hitbox_delay, _pool_limit, _chance, 
+		_hitbox_delay, _pool_limit, _chance,
 		_crit_multi, _block_by_wall, _evolution_type, _evolution_require;
 	double _area, _damage, _knock_back;
 	clock_t _last_time_attack = -1;

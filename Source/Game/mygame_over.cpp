@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "../Core/Resource.h"
 #include <mmsystem.h>
 #include <ddraw.h>
@@ -10,7 +10,7 @@
 using namespace game_framework;
 
 /////////////////////////////////////////////////////////////////////////////
-// ³o­Óclass¬°¹CÀ¸ªºµ²§ôª¬ºA(Game Over)
+// é€™å€‹classç‚ºéŠæˆ²çš„çµæŸç‹€æ…‹(Game Over)
 /////////////////////////////////////////////////////////////////////////////
 
 CGameStateOver::CGameStateOver(CGame *g): CGameState(g)
@@ -29,16 +29,16 @@ void CGameStateOver::OnBeginState()
 void CGameStateOver::OnInit()
 {
 	//
-	// ·í¹Ï«Ü¦h®É¡AOnInit¸ü¤J©Ò¦³ªº¹Ï­nªá«Ü¦h®É¶¡¡C¬°Á×§Kª±¹CÀ¸ªº¤H
-	//     µ¥ªº¤£­@·Ğ¡A¹CÀ¸·|¥X²{¡uLoading ...¡v¡AÅã¥ÜLoadingªº¶i«×¡C
+	// ç•¶åœ–å¾ˆå¤šæ™‚ï¼ŒOnInitè¼‰å…¥æ‰€æœ‰çš„åœ–è¦èŠ±å¾ˆå¤šæ™‚é–“ã€‚ç‚ºé¿å…ç©éŠæˆ²çš„äºº
+	//     ç­‰çš„ä¸è€ç…©ï¼ŒéŠæˆ²æœƒå‡ºç¾ã€ŒLoading ...ã€ï¼Œé¡¯ç¤ºLoadingçš„é€²åº¦ã€‚
 	//
-	ShowInitProgress(66, "Initialize...");	// ±µ­Ó«e¤@­Óª¬ºAªº¶i«×¡A¦¹³B¶i«×µø¬°66%
+	ShowInitProgress(66, "Initialize...");	// æ¥å€‹å‰ä¸€å€‹ç‹€æ…‹çš„é€²åº¦ï¼Œæ­¤è™•é€²åº¦è¦–ç‚º66%
 	//
-	// ¶}©l¸ü¤J¸ê®Æ
+	// é–‹å§‹è¼‰å…¥è³‡æ–™
 	//
-	Sleep(1000);				// ©ñºC¡A¥H«K¬İ²M·¡¶i«×¡A¹ê»Ú¹CÀ¸½Ğ§R°£¦¹Sleep
+	Sleep(1000);				// æ”¾æ…¢ï¼Œä»¥ä¾¿çœ‹æ¸…æ¥šé€²åº¦ï¼Œå¯¦éš›éŠæˆ²è«‹åˆªé™¤æ­¤Sleep
 	//
-	// ³Ì²×¶i«×¬°100%
+	// æœ€çµ‚é€²åº¦ç‚º100%
 	//
 	ShowInitProgress(100, "OK!");
 
