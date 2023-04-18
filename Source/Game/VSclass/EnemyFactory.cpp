@@ -29,63 +29,90 @@ void EnemyFactory::init()
 		_all_enemy.add_obj(😈, 😈.get_spawn_limit());
 		_number_type.push_back(0);
 	}
-	load_wave();
+	load_wave_enemy();
+	load_wave_boss();
+	load_wave_swarm();
 }
 
-void EnemyFactory::load_wave()
+void EnemyFactory::load_wave_enemy()
 {
-	ifstream file("source/game/VSclass/stage_event_1.csv");
+	ifstream file("source/game/VSclass/stage1_wave_enemy.csv");
 	string header, line;
 	string 👀; // 👀: string for reading
 	int cnt = 0;
 	getline(file, header);
-	memset(_wave, 0, sizeof(_wave));
 	while(getline(file, line)){
 		stringstream ss(line);
+		wave_enemy.push_back(Wave_enemy());
 		// time_min
 		getline(ss, 👀, ',');
-		_wave[cnt].time_min = stoi(👀);
+		wave_enemy[cnt].time = stoi(👀);
 		// 3 enemy
 		for(int i=0; i<3; i++){
 			getline(ss, 👀, ',');
-			_wave[cnt].type[i] = stoi(👀);
+			wave_enemy[cnt].type[i] = stoi(👀);
 			getline(ss, 👀, ',');
-			_wave[cnt].weight[i] = stod(👀);
+			wave_enemy[cnt].weight[i] = stod(👀);
 		}
 		// amount
 		getline(ss, 👀, ',');
-		_wave[cnt].amount = stoi(👀);
+		wave_enemy[cnt].amount = stoi(👀);
 		// interval
 		getline(ss, 👀, ',');
-		_wave[cnt].interval_msec = stoi(👀);
-		// 2 boss
-		for(int i=0; i<2; i++){
-			getline(ss, 👀, ',');
-			_wave[cnt].boss_type[i] = stoi(👀);
-			getline(ss, 👀, ',');
-			_wave[cnt].drop_chest[i] = stoi(👀);
-			_wave[cnt].spawned_boss[i] = false;
-		}
+		wave_enemy[cnt].interval_msec = stoi(👀);
+		
 		// 2 swarm
+		// for(int i=0; i<2; i++){
+		// 	getline(ss, 👀, ',');
+		// 	if(👀=="Flower Wall") // WIP
+		// 		_wave[cnt].swarm_type[i] = -1;
+		// 	else
+		// 		_wave[cnt].swarm_type[i] = stoi(👀);
+		// 	getline(ss, 👀, ',');
+		// 	_wave[cnt].swarm_amount[i] = stoi(👀);
+		// 	getline(ss, 👀, ',');
+		// 	_wave[cnt].swarm_delay_msec[i] = stoi(👀);
+		// 	getline(ss, 👀, ',');
+		// 	_wave[cnt].swarm_duration_sec[i] = stoi(👀);
+		// 	getline(ss, 👀, ',');
+		// 	_wave[cnt].swarm_repeat[i] = stoi(👀);
+		// 	getline(ss, 👀, ',');
+		// 	_wave[cnt].swarm_chance[i] = stoi(👀);
+		// }
+		cnt++;
+	}
+}
+void EnemyFactory::load_wave_boss()
+{
+	ifstream file("source/game/VSclass/stage1_wave_boss.csv");
+	string header, line;
+	string 👀; // 👀: string for reading
+	int cnt = 0;
+	getline(file, header);
+	while(getline(file, line)){
+		stringstream ss(line);
+		wave_boss.push_back(Wave_boss());
+		getline(ss, 👀, ',');
+		wave_boss[cnt].time = stoi(👀);
 		for(int i=0; i<2; i++){
 			getline(ss, 👀, ',');
-			if(👀=="Flower Wall") // WIP
-				_wave[cnt].swarm_type[i] = -1;
-			else
-				_wave[cnt].swarm_type[i] = stoi(👀);
+			wave_boss[cnt].type[i] = stoi(👀);
 			getline(ss, 👀, ',');
-			_wave[cnt].swarm_amount[i] = stoi(👀);
+			wave_boss[cnt].drop_chest[i] = stoi(👀);
 			getline(ss, 👀, ',');
-			_wave[cnt].swarm_delay_msec[i] = stoi(👀);
+			wave_boss[cnt].can_evo[i] = stoi(👀);
 			getline(ss, 👀, ',');
-			_wave[cnt].swarm_duration_sec[i] = stoi(👀);
+			wave_boss[cnt].chest_chance[i][0] = stoi(👀);
 			getline(ss, 👀, ',');
-			_wave[cnt].swarm_repeat[i] = stoi(👀);
-			getline(ss, 👀, ',');
-			_wave[cnt].swarm_chance[i] = stoi(👀);
+			wave_boss[cnt].chest_chance[i][1] = stoi(👀);
 		}
 		cnt++;
 	}
+}
+
+void EnemyFactory::load_wave_swarm()
+{
+
 }
 
 void EnemyFactory::add_enemy(int type, CPoint player_pos, int player_lvl, int count, bool random_pos, bool drop_chest)
@@ -120,7 +147,7 @@ void EnemyFactory::update_enemy(clock_t tick, CPoint player_pos, int player_lvl)
 {
 	static clock_t last_tick = -1;
 	int min = tick/1000/60;
-	if(tick - last_tick >= _wave[min].interval_msec)
+	if(tick - last_tick >= wave_enemy[min].interval_msec)
 		last_tick = tick;
 	else
 		return;
@@ -133,22 +160,24 @@ void EnemyFactory::update_enemy(clock_t tick, CPoint player_pos, int player_lvl)
 	}
 	auto itor = std::remove_if(live_enemy.begin(), live_enemy.end(), [](Enemy* e) {return !e->is_enable(); });
 	live_enemy.erase(itor, live_enemy.end());
+	
 	// spawn enemy
-	vector<double> weights = { _wave[min].weight[0], _wave[min].weight[1], _wave[min].weight[2]};
+	vector<double> weights = { wave_enemy[min].weight[0], wave_enemy[min].weight[1], wave_enemy[min].weight[2]};
 	if(get_number_all() < 300){
-		for(int i=0; i<((300 - get_number_all() > _wave[min].amount)?(_wave[min].amount):(300-get_number_all())); i++)
-			add_enemy(_wave[min].type[poll(weights)], player_pos, player_lvl, 1, true);
+		for(int i=0; i<((300 - get_number_all() > wave_enemy[min].amount)?(wave_enemy[min].amount):(300-get_number_all())); i++)
+			add_enemy(wave_enemy[min].type[poll(weights)], player_pos, player_lvl, 1, true);
 	}
 
 	//spawn boss
-	if(_wave[min].boss_type[0] != -1 && !_wave[min].spawned_boss[0]){
-		add_enemy(_wave[min].boss_type[0], player_pos, player_lvl, 1, true, _wave[min].drop_chest[0]);
-		_wave[min].spawned_boss[0] = true;
+	bool is_spawn_boss = false;
+	for(int i=0; i<2; i++){
+		if(wave_boss_cnt < (int)wave_boss.size() && wave_boss[wave_boss_cnt].time == min && wave_boss[wave_boss_cnt].type[i] != -1){
+			add_enemy(wave_boss[wave_boss_cnt].type[i], player_pos, player_lvl, 1, true, wave_boss[wave_boss_cnt].drop_chest[i]);
+			is_spawn_boss = true;
+		}
 	}
-	if(_wave[min].boss_type[1] != -1 && !_wave[min].spawned_boss[1]){
-		add_enemy(_wave[min].boss_type[1], player_pos, player_lvl, 1, true, _wave[min].drop_chest[1]);
-		_wave[min].spawned_boss[1] = true;
-	}
+	if(is_spawn_boss)
+		wave_boss_cnt ++;
 }
 
 vector<Enemy*> EnemyFactory::live_enemy;

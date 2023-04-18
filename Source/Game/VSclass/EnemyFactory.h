@@ -1,16 +1,20 @@
 #pragma once
 
-typedef struct Wave{
-	// enemy
-	int time_min, amount, interval_msec;
+
+struct Wave_enemy{
+	int time, amount, interval_msec;
 	int type[3];
 	double weight[3];
-	// boss
-	int boss_type[2];
-	bool drop_chest[2], spawned_boss[2];
-	// swarm
-	int swarm_type[2], swarm_amount[2], swarm_duration_sec[2], swarm_repeat[2], swarm_chance[2], swarm_delay_msec[2];
-} Wave;
+};
+struct Wave_boss{
+	int time;
+	int type[2], chest_chance[2][2];
+	bool drop_chest[2], can_evo[2];
+};
+struct Wave_swarm{
+	int time;
+	int type[2], amount[2], duration_sec[2], repeat[2], chance[2], delay_msec[2];
+};
 
 class EnemyFactory {
 public:
@@ -24,10 +28,15 @@ public:
 	void update_enemy(clock_t tick, CPoint player_pos, int player_lvl);
 	static vector<Enemy*> live_enemy;
 private:
+	int wave_boss_cnt = 0, wave_swarm_cnt = 0;
 	static ObjPool<Enemy> _all_enemy;
 	static bool _is_init;
 	static vector<int> _number_type;
-	Wave _wave[31];
+	vector<Wave_enemy> wave_enemy;
+	vector<Wave_boss> wave_boss;
+	vector<Wave_swarm> wave_swarm;
 
-	void load_wave();
+	void load_wave_enemy();
+	void load_wave_boss();
+	void load_wave_swarm();
 };
