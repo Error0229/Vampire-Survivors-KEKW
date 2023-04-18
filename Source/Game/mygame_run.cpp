@@ -331,6 +331,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 	//open chest
 	int chest_item_count;
 	static bool can_evo = false;
+	static int chest_upgrade_chance_0 = 0, chest_upgrade_chance_1 = 0;
 
 	_gamerun_status = _next_status;
 	vector <VSObject*> plain_result = {};
@@ -385,6 +386,8 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			if (i->is_enable() && is_overlapped(player, *i)) {
 				i->despawn();
 				can_evo = i->get_can_evo();
+				chest_upgrade_chance_0 = i->get_upgrade_chance_0();
+				chest_upgrade_chance_1 = i->get_upgrade_chance_1();
 				_next_status = OPEN_CHEST;
 			}
 		}
@@ -439,14 +442,16 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 
 		chest_animation.enable_animation();
 		// poll chest item count
-		weights[1] = 0.05 * (double)player.get_luck() / 100;
+		weights[1] = (double)chest_upgrade_chance_0 / 100 * (double)player.get_luck() / 100;
 		weights[0] = 1 - weights[1];
 		chest_item_count = 1;
+		TRACE("1:%lf\n", weights[1]);
 		if (poll(weights, true))
 			chest_item_count = 5;
 		else {
-			weights[1] = 0.2 * (double)player.get_luck() / 100;
+			weights[1] = (double)chest_upgrade_chance_1 / 100 * (double)player.get_luck() / 100;
 			weights[0] = 1 - weights[1];
+			TRACE("2:%lf\n", weights[1]);
 			if (poll(weights, true))
 				chest_item_count = 3;
 		}

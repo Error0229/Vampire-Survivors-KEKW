@@ -92,7 +92,7 @@ bool Enemy::hurt(int damage)
 			unshow_skin();
 			Xp::spawnXP(this->_position, static_cast<int>(_xp_value));
 			if (_is_drop_chest) 
-				Chest::spawnChest(this->_position);
+				Chest::spawnChest(this->_position, _chest_can_evo, _chest_upgrade_chance_0, _chest_upgrade_chance_1);
 			_death_animation.set_pos(get_pos());
 			_death_animation.set_animation(100, true);
 			_death_animation.set_is_mirror(_is_mirror);
@@ -117,14 +117,25 @@ bool Enemy::is_collide_with(Enemy& obj, double overlap_bound)
 	return is_overlapped(*this, obj, overlap_bound);
 }
 
-void Enemy::spawn(CPoint pos, int move_animation_delay, int death_animation_delay, int player_lvl, bool drop_chest)
+void Enemy::spawn(CPoint pos, int move_animation_delay, int death_animation_delay, int player_lvl)
 {
 	set_animation(move_animation_delay, false);
 	_death_animation.set_animation(death_animation_delay, true);
 	_is_enable = true;
 	_position = pos;
-	_is_drop_chest = drop_chest;
+	_is_drop_chest = false;
+	_chest_can_evo = false;
+	_chest_upgrade_chance_0 = 0;
+	_chest_upgrade_chance_1 = 0;
 	_hp = (_hp_scale) ? (_hp_max * player_lvl) : (_hp_max);
+}
+
+void Enemy::set_chest(bool can_evo, int chance0, int chance1)
+{
+	_is_drop_chest = true;
+	_chest_can_evo = can_evo;
+	_chest_upgrade_chance_0 = chance0;
+	_chest_upgrade_chance_1 = chance1;
 }
 
 void Enemy::load_template_enemies()
@@ -205,9 +216,13 @@ Enemy Enemy::load_enemy(int id, char* name, int health, int power, int mspeed, d
 
 	enemy._is_enable = false;
 	enemy._is_mirror = false;
-	enemy._is_drop_chest = false;
 	enemy._position = CPoint(0, 0);
 	enemy.set_type(id);
+
+	enemy._is_drop_chest = false;
+	enemy._chest_can_evo = false;
+	enemy._chest_upgrade_chance_0 = 0;
+	enemy._chest_upgrade_chance_1 = 0;
 	
 	enemy._speed = 50;
 	return enemy;

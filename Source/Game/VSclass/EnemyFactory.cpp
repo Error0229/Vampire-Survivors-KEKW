@@ -115,7 +115,7 @@ void EnemyFactory::load_wave_swarm()
 
 }
 
-void EnemyFactory::add_enemy(int type, CPoint player_pos, int player_lvl, int count, bool random_pos, bool drop_chest)
+void EnemyFactory::add_enemy(int type, CPoint player_pos, int player_lvl, int count, bool random_pos, bool drop_chest, bool can_evo, int chest_chance0, int chest_chance1)
 {
 	static int pos_loop_cnt = 0;
 	Enemy* 👿;
@@ -128,7 +128,9 @@ void EnemyFactory::add_enemy(int type, CPoint player_pos, int player_lvl, int co
 			if (++pos_loop_cnt == 32)
 				pos_loop_cnt = 0;
 		}
-		👿->spawn(pos, 100, 100, player_lvl, drop_chest);
+		👿->spawn(pos, 100, 100, player_lvl);
+		if(drop_chest)
+			👿->set_chest(can_evo, chest_chance0, chest_chance1);
 		live_enemy.push_back(👿);
 	}
 	_number_type[type] += count;
@@ -172,7 +174,7 @@ void EnemyFactory::update_enemy(clock_t tick, CPoint player_pos, int player_lvl)
 	bool is_spawn_boss = false;
 	for(int i=0; i<2; i++){
 		if(wave_boss_cnt < (int)wave_boss.size() && wave_boss[wave_boss_cnt].time == min && wave_boss[wave_boss_cnt].type[i] != -1){
-			add_enemy(wave_boss[wave_boss_cnt].type[i], player_pos, player_lvl, 1, true, wave_boss[wave_boss_cnt].drop_chest[i]);
+			add_enemy(wave_boss[wave_boss_cnt].type[i], player_pos, player_lvl, 1, true, wave_boss[wave_boss_cnt].drop_chest[i], wave_boss[wave_boss_cnt].can_evo[i], wave_boss[wave_boss_cnt].chest_chance[i][0], wave_boss[wave_boss_cnt].chest_chance[i][1]);
 			is_spawn_boss = true;
 		}
 	}

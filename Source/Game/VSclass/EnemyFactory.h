@@ -22,7 +22,7 @@ public:
 	~EnemyFactory();
 	void init();
 	
-	void add_enemy(int type, CPoint player_pos, int player_lvl, int count=1, bool random_pos=true, bool drop_chest=false);
+	void add_enemy(int type, CPoint player_pos, int player_lvl, int count=1, bool random_pos=true, bool drop_chest=false, bool can_evo=false, int chest_chance0=0, int chest_chance1=0);
 	int get_number_type(int);
 	int get_number_all();
 	void update_enemy(clock_t tick, CPoint player_pos, int player_lvl);
