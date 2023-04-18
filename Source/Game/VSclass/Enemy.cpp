@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "../../Library/audio.h"
 #include "../../Library/gameutil.h"
 #include "VSObject.h"
 #include "Enemy.h"
@@ -94,6 +95,7 @@ bool Enemy::hurt(int damage)
 {
 	if (!is_dead()) {
 		_hp -= damage;
+		game_framework::CAudio::Instance()->Play(2, false);
 		if (is_dead()) {
 			unshow_skin();
 			Xp::spawnXP(this->_position, static_cast<int>(_xp_value));

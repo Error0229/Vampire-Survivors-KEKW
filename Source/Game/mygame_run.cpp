@@ -34,6 +34,7 @@ CGameStateRun::~CGameStateRun()
 void CGameStateRun::OnBeginState()
 {
 	timer.start();
+	CAudio::Instance()->Play(0, true); // 🉑
 }
 
 
@@ -59,7 +60,6 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	map.load_map({ "resources/map/dummy1.bmp" });
 	map.set_pos(0, 0);
 	QuadTree::VSPlain.clear();
-
 	event_background.load_skin("resources/ui/event_background.bmp");
 	event_background.set_base_pos(0, 0);
 	for (int i = 0; i < 4; i++) {
@@ -82,6 +82,9 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	chest_animation.set_animation(30, true);
 	// chest_animation.set_base_pos(5, 75);
 	chest_animation.set_base_pos(0, -33);
+	CAudio::Instance()->Load(0, "Resources/AudioClip/bgm_elrond_bone.wav");
+	CAudio::Instance()->Load(1, "Resources/AudioClip/sfx_gem.wav");
+	CAudio::Instance()->Load(2, "Resources/AudioClip/sfx_enemyHit.wav");
 	CPoint chest_item_pos[] = { CPoint(0,-50), CPoint(-80,-110), CPoint(80,-110), CPoint(-100,-10), CPoint(100,-10) };
 	for (int i = 0; i < 5; i++) {
 		chest_item_icon[i].load_icon();
@@ -333,7 +336,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 {
 	update_mouse_pos();
 	vector <VSObject*> result;
-
+	
 	//polling
 	vector<double> weights(2, 0);
 
@@ -386,6 +389,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		Xp::update_XP_pos(player.get_pickup_range());
 		for (auto i : Xp::xp_all) {
 			if (is_overlapped(player, *i)) {
+				CAudio::Instance()->Play(1, false);
 				i->despawn();
 				player.pick_up_xp(i->get_xp_value());
 			}
