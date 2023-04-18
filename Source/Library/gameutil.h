@@ -174,7 +174,7 @@ public:
 	TextDevice();
 	~TextDevice();
 	void print_all();
-	void add_text(string str="", CPoint pos = (0, 0), int duration = 1, int font_id=FONT_24x18_B, int align_id=ALIGN_CENTER);
+	void add_text(string str = "", CPoint pos = { 0, 0 }, int duration = 1, int font_id = FONT_24x18_B, int align_id = ALIGN_CENTER);
 private:
 	CDC* ptr_CDC;
 	VS_font fonts[2];

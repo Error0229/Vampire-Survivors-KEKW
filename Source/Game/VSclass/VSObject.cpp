@@ -260,7 +260,7 @@ void VSObject::update_collide()
 	// apply the collision to _position
 	// maight integrated into update_pos in the future if we need the real vector implentment
 	this->_position += _collision;
-	_collision = (0, 0);
+	_collision = { 0, 0 };
 }
 CPoint get_player_pos() {
 	return CPoint((w_size_x >> 1) - VSObject::player_dx, (w_size_y >> 1) - VSObject::player_dy);

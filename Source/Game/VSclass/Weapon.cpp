@@ -285,7 +285,7 @@ void Weapon::attack() {
 					QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(&proj), min_dis);
 					double rad = atan2(target.y - player_pos.y, target.x - player_pos.x);
 					proj.set_rotation(rad);
-					proj.set_target_vec((target != player_pos ? target - player_pos : (mouse_pos.x > player_pos.x ? (1000, 1000) : (-1000, 1000))));
+					proj.set_target_vec((target != player_pos ? target - player_pos : (mouse_pos.x > player_pos.x ? CPoint{1000, 0} : CPoint{ -1000, 0})));
 				}
 				Projectile::create_projectile(proj, player_pos, target, w._type, i * w._proj_interval, w._area, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
 					w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, false);
