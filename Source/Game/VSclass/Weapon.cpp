@@ -732,7 +732,7 @@ void Weapon::load_weapon_stats() {
 		while (token != base_proj) {
 			token = base_proj.substr(0, base_proj.find_first_of(" "));
 			base_proj = base_proj.substr(base_proj.find_first_of(" ") + 1);
-			proj_vec.emplace_back(token);
+			proj_vec.emplace_back(token.substr(0, token.find_last_of("\\") + 1) + "2x_" + token.substr(token.find_last_of("\\") + 1));
 		}
 		getline(ss, name, ',');
 		getline(ss, token, ',');
