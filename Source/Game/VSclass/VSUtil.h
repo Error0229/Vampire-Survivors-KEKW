@@ -51,7 +51,8 @@ enum VSObject_types {
 	PROJECTILE,
 	PICKUP,
 	WALL,
-	MAP
+	MAP,
+	DAMAGE
 };
 enum weapon_names {
 	WHIP = 0, MAGIC_MISSILE, KNIFE, AXE, CROSS, HOLYBOOK,

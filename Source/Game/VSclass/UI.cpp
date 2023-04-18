@@ -130,4 +130,76 @@ void Icon::load_filename()
 	}
 }
 vector<string> Icon::icon_filename;
-
+vector<Damage*> Damage::all_dmg;
+ObjPool<Damage> Damage::pool(DAMAGE);
+Damage Damage::dmg;
+Damage* Damage::damage_device() {
+	return &dmg;
+}
+Damage::Damage() {
+	_type = DAMAGE;
+}
+void Damage::init() {
+	pool.add_obj(Damage(0, { 0,0 }), 2000);
+}
+Damage::Damage(int damage, CPoint pos) :_number(damage) {
+	_position = pos;
+	VSObject tmp({ "resources/damage/0.bmp","resources/damage/1.bmp","resources/damage/2.bmp","resources/damage/3.bmp","resources/damage/4.bmp","resources/damage/5.bmp","resources/damage/6.bmp","resources/damage/7.bmp","resources/damage/8.bmp","resources/damage/9.bmp" });
+	tmp.set_speed(50);
+	tmp.set_target_vec(0, -100);
+	_number_width = tmp.get_width();
+	tmp.set_selector(-1);
+	for (int i = 0; i < 4; i++) {
+		num_bmp.push_back(tmp);
+	}
+	_animation_cycle_time = 1000;
+	_type = DAMAGE;
+}
+void Damage::add_damage(int num, CPoint pos) {
+	Damage* ptr = pool.get_obj_ptr(DAMAGE);
+	ptr->_number = num ;
+	string s = to_string(num);
+	if (num >= 100) {
+		ptr->num_bmp[0].set_selector(s[0] - '0');
+		ptr->num_bmp[0].set_pos(pos.x - ptr->_number_width, pos.y);
+		ptr->num_bmp[1].set_selector(s[1] - '0');
+		ptr->num_bmp[1].set_pos(pos.x, pos.y);
+		ptr->num_bmp[2].set_selector(s[2] - '0');
+		ptr->num_bmp[2].set_pos(pos.x + ptr->_number_width, pos.y);
+	}
+	else if (num >= 10) {
+		ptr->num_bmp[0].set_selector(s[0] - '0');
+		ptr->num_bmp[0].set_pos(pos.x - ptr->_number_width, pos.y);
+		ptr->num_bmp[1].set_selector(s[1] - '0');
+		ptr->num_bmp[1].set_pos(pos.x, pos.y);
+	} 
+	else {
+		ptr->num_bmp[0].set_selector(num);
+		ptr->num_bmp[0].set_pos(pos);
+	}
+	ptr->start();
+	all_dmg.push_back(ptr);
+}
+void Damage::update() {
+	for (auto ptr : all_dmg) {
+		for(auto & bmp : ptr->num_bmp)
+			bmp.update_pos_by_vec();
+	}
+}
+void Damage::show_damage() {
+	for (int i = 0; i < (int)all_dmg.size(); i++) {
+		if (all_dmg[i]->done()) {
+			pool.free_obj_ptr(all_dmg[i]);
+		}
+		else {
+			for (auto& bmp : all_dmg[i]->num_bmp) {
+				if(bmp.get_animation_frame() != -1)
+					bmp.show_skin();
+			}
+		}
+	}
+	auto iter = remove_if(all_dmg.begin(), all_dmg.end(), [](Damage* d) {
+		return d->done();
+	});
+	all_dmg.erase(iter, all_dmg.end());
+}

@@ -1,4 +1,5 @@
 #pragma once
+#include "ObjPool.h"
 class Ui : public VSObject
 {
 public:
@@ -39,4 +40,22 @@ public:
 	static vector<string> icon_filename;
 private:
 
+};
+class Damage : public Ui {
+public:
+	static Damage* damage_device();
+	void add_damage(int, CPoint);
+	void update();
+	void show_damage();
+	void init();
+	~Damage() = default;
+private:
+	Damage();
+	Damage(int, CPoint);
+	static Damage dmg;
+	static vector<Damage*> all_dmg;
+	static ObjPool<Damage> pool;
+	int _number;
+	int _number_width; 
+	vector<VSObject> num_bmp;
 };

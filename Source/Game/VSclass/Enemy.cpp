@@ -2,6 +2,7 @@
 #include "../../Library/audio.h"
 #include "../../Library/gameutil.h"
 #include "VSObject.h"
+#include "Ui.h"
 #include "Enemy.h"
 #include "Pickup.h"
 #include "VSUtil.h"
@@ -93,6 +94,7 @@ void Enemy::update_pos(CPoint pos) {
 
 bool Enemy::hurt(int damage) 
 {
+	Damage::damage_device()->add_damage(damage, _position);
 	if (!is_dead()) {
 		_hp -= damage;
 		game_framework::CAudio::Instance()->Play(2, false);

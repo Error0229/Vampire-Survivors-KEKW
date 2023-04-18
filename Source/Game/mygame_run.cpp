@@ -45,6 +45,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	Icon::load_filename();
 	Xp::init_XP();
 	Chest::init_chest();
+	Damage::damage_device()->init();
 	_gamerun_status = PLAYING;
 	_next_status = PLAYING;
 
@@ -356,7 +357,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		//playing status
 		//--------------------------------------------------------
 		timer.resume();
-
+		Damage::damage_device()->update();
 		player.update_pos(mouse_pos);
 		QuadTree::VSPlain.set_range(-Player::player_dx - offset, -Player::player_dy - offset, (OPEN_AS_FULLSCREEN ? RESOLUTION_X : SIZE_X) + offset, (OPEN_AS_FULLSCREEN ? RESOLUTION_Y : SIZE_Y) + offset);
 		for (auto i_enemy : enemy_factory.live_enemy) {
@@ -481,17 +482,14 @@ void CGameStateRun::OnShow()
 {
 	map.map_padding(player.get_pos());
 	map.show_map();
-	player.show_skin();
 	Weapon::show();
-	//for (int i = 0; i < (int)enemy.size(); i++) {
-	//	enemy[i].show_skin();
-	//}
+	Xp::show();
+	Chest::show();
+	player.show_skin();
 	for(auto 😈: enemy_factory.live_enemy)
 		😈->show_skin();
 	enemy_factory.update_enemy(timer.get_ticks(), player.get_pos(), player.get_level());
-	Xp::show();
-	Chest::show();
-
+	Damage::damage_device()->show_damage();
 	xp_bar_cover.show();
 	xp_bar.set_base_pos(-8 - (xp_bar.get_width() * (100 - player.get_exp_percent()) / 100), -300 + (xp_bar.get_height() >> 1));
 	xp_bar.show();
