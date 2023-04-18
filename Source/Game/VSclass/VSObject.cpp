@@ -61,7 +61,7 @@ void VSObject::set_default_direct(int dir)
 void VSObject::set_animation(int delay, bool _once, int cooldown)
 {
 	this->_skin.SetAnimation(delay, _once, cooldown);
-	_animation_cycle_time = delay * (_file_size+2) ;
+	_animation_cycle_time = delay * (_file_size+2) ; // ?
 }
 void VSObject::set_selector(int selector)
 {
