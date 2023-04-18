@@ -88,6 +88,7 @@ bool Enemy::hurt(int damage)
 {
 	if (!is_dead()) {
 		_hp -= damage;
+		_mspeed = 0;
 		if (is_dead()) {
 			unshow_skin();
 			Xp::spawnXP(this->_position, static_cast<int>(_xp_value));

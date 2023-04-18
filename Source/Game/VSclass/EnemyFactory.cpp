@@ -149,10 +149,7 @@ void EnemyFactory::update_enemy(clock_t tick, CPoint player_pos, int player_lvl)
 {
 	static clock_t last_tick = -1;
 	int min = tick/1000/60;
-	if(tick - last_tick >= wave_enemy[min].interval_msec)
-		last_tick = tick;
-	else
-		return;
+
 	//delete disable enemy
 	for (auto 😈: live_enemy) {
 		if (😈->is_enable())
@@ -164,10 +161,25 @@ void EnemyFactory::update_enemy(clock_t tick, CPoint player_pos, int player_lvl)
 	live_enemy.erase(itor, live_enemy.end());
 	
 	// spawn enemy
-	vector<double> weights = { wave_enemy[min].weight[0], wave_enemy[min].weight[1], wave_enemy[min].weight[2]};
-	if(get_number_all() < 300){
-		for(int i=0; i<((300 - get_number_all() > wave_enemy[min].amount)?(wave_enemy[min].amount):(300-get_number_all())); i++)
-			add_enemy(wave_enemy[min].type[poll(weights)], player_pos, player_lvl, 1, true);
+	bool is_spawn_enemy = false;
+	if(tick - last_tick >= wave_enemy[min].interval_msec){
+		is_spawn_enemy = true;
+		last_tick = tick;
+	}
+	if(is_spawn_enemy){
+		if(get_number_all() < wave_enemy[min].amount){
+			// if alive enemy < minimum amout, spawn it till minimum amount
+			vector<double> weights = { wave_enemy[min].weight[0], wave_enemy[min].weight[1], wave_enemy[min].weight[2]};
+			for(int i=0; i<(wave_enemy[min].amount - get_number_all()); i++)
+				add_enemy(wave_enemy[min].type[poll(weights)], player_pos, player_lvl, 1, true);
+		}
+		else if(get_number_all() < 300){
+			// spawn each type of enemies once
+			for(int i=0; i<3; i++){
+				if(wave_enemy[min].weight[i])
+					add_enemy(wave_enemy[min].type[i], player_pos, player_lvl, 1, true);
+			}
+		}
 	}
 
 	//spawn boss
@@ -180,6 +192,8 @@ void EnemyFactory::update_enemy(clock_t tick, CPoint player_pos, int player_lvl)
 	}
 	if(is_spawn_boss)
 		wave_boss_cnt ++;
+
+	//spawn swarm
 }
 
 vector<Enemy*> EnemyFactory::live_enemy;
