@@ -23,6 +23,7 @@ public:
 	static void create_projectile(Projectile p);
 	static void update_position();
 	static void show();
+	static void reset();
 	static vector<reference_wrapper<Projectile>> all_proj;
 	static ObjPool<Projectile> pool;
 	static std::map<int, Projectile> template_proj;

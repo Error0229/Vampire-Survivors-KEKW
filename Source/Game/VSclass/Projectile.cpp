@@ -316,6 +316,12 @@ CPoint Projectile::get_parabola(double angle, double speed, int time) {
 	pre_y = y;
 	return CPoint(static_cast<int>(x), static_cast<int>(y));
 }
+void Projectile::reset() {
+	for (auto& r : all_proj) {
+		pool.free_obj(r);
+	}
+	all_proj.clear();
+}
 ObjPool<Projectile> Projectile::pool(PROJECTILE);
 vector<reference_wrapper<Projectile>> Projectile::all_proj;
 map <int, Projectile> Projectile::template_proj = {};
