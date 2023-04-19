@@ -477,7 +477,7 @@ void CGameStateRun::OnShow()
 	//}
 	for(auto 😈: enemy_factory.live_enemy)
 		😈->show_skin();
-	enemy_factory.update_enemy(timer.get_ticks(), player.get_pos(), player.get_level());
+	enemy_factory.update(timer.get_ticks(), player.get_pos(), player.get_level(), player.get_luck(), player.get_curse());
 	Xp::show();
 	Chest::show();
 

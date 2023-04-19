@@ -13,7 +13,8 @@ struct Wave_boss{
 };
 struct Wave_swarm{
 	int time;
-	int type[2], amount[2], duration_sec[2], repeat[2], chance[2], delay_msec[2];
+	int type[2][2], amount[2], duration_sec[2], repeat[2], chance[2], interval_msec[2];
+	int spawned_cnt[2];
 };
 
 class EnemyFactory {
@@ -22,13 +23,12 @@ public:
 	~EnemyFactory();
 	void init();
 	
-	void add_enemy(int type, CPoint player_pos, int player_lvl, int count=1, bool random_pos=true, bool drop_chest=false, bool can_evo=false, int chest_chance0=0, int chest_chance1=0);
 	int get_number_type(int);
 	int get_number_all();
-	void update_enemy(clock_t tick, CPoint player_pos, int player_lvl);
+	void update(clock_t tick, CPoint player_pos, int player_lvl, int luck, int curse);
+	vector<Enemy*> add_enemy(int type, CPoint player_pos, int count, int player_lvl, int curse);
 	static vector<Enemy*> live_enemy;
 private:
-	int wave_boss_cnt = 0, wave_swarm_cnt = 0;
 	static ObjPool<Enemy> _all_enemy;
 	static bool _is_init;
 	static vector<int> _number_type;
@@ -39,4 +39,7 @@ private:
 	void load_wave_enemy();
 	void load_wave_boss();
 	void load_wave_swarm();
+	void update_enemy(clock_t tick, CPoint player_pos, int player_lvl, int curse);
+	void update_boss(clock_t tick, CPoint player_pos, int player_lvl, int curse);
+	void update_swarm(clock_t tick, CPoint player_pos, int player_lvl);
 };

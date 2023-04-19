@@ -37,10 +37,12 @@ public:
 	Enemy();
 	~Enemy();
 	void show_skin(double factor = 1.0) override;
-	void set_level(int);
 	void set_enable(bool enable = true);
-	void spawn(CPoint pos, int move_animation_delay = 100, int death_animation_delay = 100, int player_lvl = 1);
+	void set_spawn(CPoint pos, int move_animation_delay = 100, int death_animation_delay = 100);
+	void set_scale(int player_lvl, int curse);
 	void set_chest(bool can_evo, int chance0, int chance1);
+	void set_spawn_pos(bool is_swarm = false);
+	void set_swarm();
 	void update_pos(CPoint) override;
 	bool is_dead();
 	bool is_enable();
@@ -66,7 +68,6 @@ private:
 	double _kb, _res_f, _xp_value;
 	bool _res_k, _res_d, _hp_scale, _is_stun = 0;
 	double _stun_speed;
-	int  _level;
 	bool _is_enable;
 	bool _is_drop_chest, _chest_can_evo;
 	int _chest_upgrade_chance_0, _chest_upgrade_chance_1;

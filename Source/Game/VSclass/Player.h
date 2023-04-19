@@ -1,9 +1,9 @@
 #pragma once
 
-typedef struct stat_struct {
+struct stat_struct {
 	int type;
 	string name_string, val_string;
-} stat_struct;
+};
 
 class Player :public VSObject{
 public:
@@ -28,6 +28,7 @@ public:
 	int get_move_speed();
 	int get_magnet();
 	int get_luck();
+	int get_curse();
 	int get_pickup_range();
 	int get_duration();
 	vector<stat_struct> get_stats_string();

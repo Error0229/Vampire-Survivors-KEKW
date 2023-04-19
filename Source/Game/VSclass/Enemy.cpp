@@ -16,11 +16,6 @@ Enemy::~Enemy()
 {
 }
 
-void Enemy::set_level(int level)
-{
-	this->_level = level;
-}
-
 void Enemy::set_enable(bool enable) 
 {
 	_is_enable = enable;
@@ -88,7 +83,6 @@ bool Enemy::hurt(int damage)
 {
 	if (!is_dead()) {
 		_hp -= damage;
-		_mspeed = 0;
 		if (is_dead()) {
 			unshow_skin();
 			Xp::spawnXP(this->_position, static_cast<int>(_xp_value));
@@ -118,7 +112,7 @@ bool Enemy::is_collide_with(Enemy& obj, double overlap_bound)
 	return is_overlapped(*this, obj, overlap_bound);
 }
 
-void Enemy::spawn(CPoint pos, int move_animation_delay, int death_animation_delay, int player_lvl)
+void Enemy::set_spawn(CPoint pos, int move_animation_delay, int death_animation_delay)
 {
 	set_animation(move_animation_delay, false);
 	_death_animation.set_animation(death_animation_delay, true);
@@ -128,7 +122,19 @@ void Enemy::spawn(CPoint pos, int move_animation_delay, int death_animation_dela
 	_chest_can_evo = false;
 	_chest_upgrade_chance_0 = 0;
 	_chest_upgrade_chance_1 = 0;
-	_hp = (_hp_scale) ? (_hp_max * player_lvl) : (_hp_max);
+	_hp = _hp_max;
+}
+
+void Enemy::set_scale(int player_lvl, int curse)
+{
+	//hp scale
+	if(_hp_scale)
+		_hp *= player_lvl;
+	_hp = player_lvl * _hp;
+	_hp_max = _hp;
+
+	//speed scale
+	_mspeed = curse * _mspeed / 100;
 }
 
 void Enemy::set_chest(bool can_evo, int chance0, int chance1)
@@ -137,6 +143,25 @@ void Enemy::set_chest(bool can_evo, int chance0, int chance1)
 	_chest_can_evo = can_evo;
 	_chest_upgrade_chance_0 = chance0;
 	_chest_upgrade_chance_1 = chance1;
+}
+
+void Enemy::set_spawn_pos(bool is_swarm)
+{
+	if(is_swarm){
+		//WIP
+	}
+	else{
+		static int cnt = 0;
+		vector<CPoint> pos_offset = { CPoint(-424,  320),CPoint(-424,  240),CPoint(-424,  160),CPoint(-424,   80),CPoint(-424,    0),CPoint(-424,  -80),CPoint(-424, -160),CPoint(-424, -240),CPoint(-424, -320),CPoint(-318, -320),CPoint(-212, -320),CPoint(-106, -320),CPoint(0, -320),CPoint(106, -320),CPoint(212, -320),CPoint(318, -320),CPoint(424, -320),CPoint(424, -240),CPoint(424, -160),CPoint(424,  -80),CPoint(424,    0),CPoint(424,   80),CPoint(424,  160),CPoint(424,  240),CPoint(424,  320),CPoint(318,  320),CPoint(212,  320),CPoint(106,  320),CPoint(0,  320),CPoint(-106,  320),CPoint(-212,  320),CPoint(-318,  320)};
+		_position += pos_offset[cnt++];	
+		if(cnt == (int)pos_offset.size())
+			cnt = 0;
+	}
+}
+
+void Enemy::set_swarm()
+{
+	
 }
 
 void Enemy::load_template_enemies()
