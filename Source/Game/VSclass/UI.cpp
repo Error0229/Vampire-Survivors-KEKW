@@ -161,15 +161,15 @@ void Damage::add_damage(int num, CPoint pos) {
 	string s = to_string(num);
 	if (num >= 100) {
 		ptr->num_bmp[0].set_selector(s[0] - '0');
-		ptr->num_bmp[0].set_pos(pos.x - ptr->_number_width - 2, pos.y);
+		ptr->num_bmp[0].set_pos(pos.x - ptr->_number_width - 1, pos.y);
 		ptr->num_bmp[1].set_selector(s[1] - '0');
 		ptr->num_bmp[1].set_pos(pos.x, pos.y);
 		ptr->num_bmp[2].set_selector(s[2] - '0');
-		ptr->num_bmp[2].set_pos(pos.x + ptr->_number_width + 2, pos.y);
+		ptr->num_bmp[2].set_pos(pos.x + ptr->_number_width + 1, pos.y);
 	}
 	else if (num >= 10) {
 		ptr->num_bmp[0].set_selector(s[0] - '0');
-		ptr->num_bmp[0].set_pos(pos.x - ptr->_number_width - 2, pos.y);
+		ptr->num_bmp[0].set_pos(pos.x - ptr->_number_width - 1, pos.y);
 		ptr->num_bmp[1].set_selector(s[1] - '0');
 		ptr->num_bmp[1].set_pos(pos.x, pos.y);
 	} 
