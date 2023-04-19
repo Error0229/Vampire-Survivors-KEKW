@@ -87,7 +87,7 @@ void Enemy::update_pos(CPoint pos, clock_t tick) {
 	else if(_swarm_type == SWARM){
 		//charge toward target
 		//check disappear
-		if(_skin.Top() < -50 || _skin.Top() > 650 || _skin.Left() < -50 || _skin.Left() > 850){
+		if(_skin.Top() < -200 || _skin.Top() > 800 || _skin.Left() < -200 || _skin.Left() > 1000){
 			_is_enable = false;
 		}
 		else{
@@ -175,32 +175,53 @@ void Enemy::set_chest(bool can_evo, int chance0, int chance1)
 
 void Enemy::set_spawn_pos()
 {
-	static int cnt = 0;
+	static vector<double> random_pos_weights(88, 1);
 	if(_swarm_type == NOT_SWARM){
-		vector<CPoint> pos_offset = { CPoint(-424,  320),CPoint(-424,  240),CPoint(-424,  160),CPoint(-424,   80),CPoint(-424,    0),CPoint(-424,  -80),CPoint(-424, -160),CPoint(-424, -240),CPoint(-424, -320),CPoint(-318, -320),CPoint(-212, -320),CPoint(-106, -320),CPoint(0, -320),CPoint(106, -320),CPoint(212, -320),CPoint(318, -320),CPoint(424, -320),CPoint(424, -240),CPoint(424, -160),CPoint(424,  -80),CPoint(424,    0),CPoint(424,   80),CPoint(424,  160),CPoint(424,  240),CPoint(424,  320),CPoint(318,  320),CPoint(212,  320),CPoint(106,  320),CPoint(0,  320),CPoint(-106,  320),CPoint(-212,  320),CPoint(-318,  320)};
-		_position += pos_offset[cnt++];	
-		if(cnt == (int)pos_offset.size())
-			cnt = 0;
+		int i = poll(random_pos_weights);
+		if (i <= 21)
+			_position += CPoint(-440 + i * 40, -330);
+		else if (i <= 43)
+			_position += CPoint(440, -330 + (i - 21) * 30);
+		else if (i <= 65)
+			_position += CPoint(440 - (i - 43) * 40, 330);
+		else
+			_position += CPoint(-440, 330 - (i - 65) * 30);
 	}
 	else if(_swarm_type == SWARM){
 		//set target
-		_target_vec = CPoint(0, 500);
-		_position -= CPoint(0, 300);
+		CPoint pos;
+		if (_swarm_pos_i <= 4)
+			pos = CPoint(-440 + 176 * _swarm_pos_i, -330);
+		else if (_swarm_pos_i <= 9)
+			pos = CPoint(440, -330 + 110 * (_swarm_pos_i - 5));
+		else if (_swarm_pos_i <= 14)
+			pos = CPoint(440 - 176 * (_swarm_pos_i - 10), 330);
+		else
+			pos = CPoint(-440, 330 - 110 * (_swarm_pos_i - 15));
+		_position += pos;
+		_target_vec.x = -pos.x;
+		_target_vec.y = -pos.y;
 	}
 	else if(_swarm_type == WALL){
-		//eclipse
-		vector<CPoint> pos_offset = { CPoint(-424,  320),CPoint(-424,  240),CPoint(-424,  160),CPoint(-424,   80),CPoint(-424,    0),CPoint(-424,  -80),CPoint(-424, -160),CPoint(-424, -240),CPoint(-424, -320),CPoint(-318, -320),CPoint(-212, -320),CPoint(-106, -320),CPoint(0, -320),CPoint(106, -320),CPoint(212, -320),CPoint(318, -320),CPoint(424, -320),CPoint(424, -240),CPoint(424, -160),CPoint(424,  -80),CPoint(424,    0),CPoint(424,   80),CPoint(424,  160),CPoint(424,  240),CPoint(424,  320),CPoint(318,  320),CPoint(212,  320),CPoint(106,  320),CPoint(0,  320),CPoint(-106,  320),CPoint(-212,  320),CPoint(-318,  320)};
-		_position += pos_offset[cnt++];	
-		if(cnt == (int)pos_offset.size())
-			cnt = 0;
+		//eclipse WIP
+		int i = poll(random_pos_weights);
+		if (i <= 21)
+			_position += CPoint(-440 + i * 40, 330);
+		else if (i <= 43)
+			_position += CPoint(440, 330 - (i - 21) * 30);
+		else if (i <= 65)
+			_position += CPoint(440 - (i - 43) * 40, -330);
+		else
+			_position += CPoint(-440, -330 + (i - 65) * 30);
 	}
 }
 
-void Enemy::set_swarm(int swarm_type, int duraion, clock_t tick)
+void Enemy::set_swarm(int swarm_type, int duraion, clock_t tick, int swarm_pos_i)
 {
 	_swarm_type = swarm_type;
 	_swarm_duration = duraion;
 	_swarm_start_time = tick;
+	_swarm_pos_i = swarm_pos_i;
 }
 
 void Enemy::load_template_enemies()

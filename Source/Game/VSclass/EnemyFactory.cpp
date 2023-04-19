@@ -221,29 +221,36 @@ void EnemyFactory::update_swarm(clock_t tick, CPoint player_pos, int player_lvl,
 {
 	static clock_t last_tick[2] = { -69000, -69000 };
 	static int cnt = 0;
+	static vector<double> swarm_pos_weights(20, 1);
 	int min = tick / 1000 / 60;
 	if (cnt >= (int)wave_swarm.size() || wave_swarm[cnt].time != min)
 		return;
 	Enemy* 😈;
 	vector<Enemy*> 😈😈😈;
+	vector<double> weights(2, 0);
 	for (int i = 0; i < 2; i++) {
-		if (tick - last_tick[i] >= wave_swarm[cnt].interval[i] && wave_swarm[cnt].spawned_cnt[i] < wave_swarm[cnt].repeat[i]) {
-			if (wave_swarm[cnt].type[i][1] != -1) {
-				//two enemy type
-				for (int j = 0; j < wave_swarm[cnt].amount[i]; j++) {
-					😈 = add_enemy(wave_swarm[cnt].type[i][j & 2], player_pos, 1, player_lvl, curse)[0];
-					😈->set_scale(player_lvl, curse);
-					😈->set_swarm(wave_swarm[cnt].swarm_type, wave_swarm[cnt].duration[i], tick);
-					😈->set_spawn_pos();
+		if (tick - last_tick[i] >= wave_swarm[cnt].interval[i]*100/curse && wave_swarm[cnt].spawned_cnt[i] < wave_swarm[cnt].repeat[i]) {
+			weights[1] = (wave_swarm[cnt].chance[i]!=-1)?(wave_swarm[cnt].chance[i] * 100 / luck):100;
+			weights[0] = 100 - weights[1];
+			int swarm_pos_i = poll(swarm_pos_weights);
+			if(poll(weights, true)){
+				if (wave_swarm[cnt].type[i][1] != -1) {
+					//two enemy type
+					for (int j = 0; j < wave_swarm[cnt].amount[i] * curse / 100; j++) {
+						😈 = add_enemy(wave_swarm[cnt].type[i][j & 2], player_pos, 1, player_lvl, curse)[0];
+						😈->set_scale(player_lvl, curse);
+						😈->set_swarm(wave_swarm[cnt].swarm_type, wave_swarm[cnt].duration[i], tick, swarm_pos_i);
+						😈->set_spawn_pos();
+					}
 				}
-			}
-			else {
-				//one enemy type
-				😈😈😈 = add_enemy(wave_swarm[cnt].type[i][0], player_pos, wave_swarm[cnt].amount[i], player_lvl, curse);
-				for (auto 😈 : 😈😈😈) {
-					😈->set_scale(player_lvl, curse);
-					😈->set_swarm(wave_swarm[cnt].swarm_type, wave_swarm[cnt].duration[i], tick);
-					😈->set_spawn_pos();
+				else {
+					//one enemy type
+					😈😈😈 = add_enemy(wave_swarm[cnt].type[i][0], player_pos, wave_swarm[cnt].amount[i] * curse / 100, player_lvl, curse);
+					for (auto 😈 : 😈😈😈) {
+						😈->set_scale(player_lvl, curse);
+						😈->set_swarm(wave_swarm[cnt].swarm_type, wave_swarm[cnt].duration[i], tick, swarm_pos_i);
+						😈->set_spawn_pos();
+					}
 				}
 			}
 			last_tick[i] = tick;

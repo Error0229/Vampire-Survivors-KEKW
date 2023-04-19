@@ -42,7 +42,7 @@ public:
 	void set_scale(int player_lvl, int curse);
 	void set_chest(bool can_evo, int chance0, int chance1);
 	void set_spawn_pos();
-	void set_swarm(int swarm_type, int duraion, clock_t tick);
+	void set_swarm(int swarm_type, int duraion, clock_t tick, int swarm_pos_i);
 	void update_pos(CPoint, clock_t);
 	bool is_dead();
 	bool is_enable();
@@ -78,7 +78,7 @@ private:
 		SWARM,
 		WALL
 	};
-	int _swarm_type;
+	int _swarm_type, _swarm_pos_i;
 	clock_t _swarm_duration, _swarm_start_time;
 	VSObject _death_animation;
 };
