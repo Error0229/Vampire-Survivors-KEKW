@@ -360,7 +360,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			}
 		}
 		for (auto 😈: enemy_factory.live_enemy) {
-			😈->update_pos(player.get_pos());
+			😈->update_pos(player.get_pos(), timer.get_ticks());
 			result = {};
 			QuadTree::VSPlain.query_by_type(result, (VSObject*)(😈), ENEMY);
 			for (VSObject* obj : result) {

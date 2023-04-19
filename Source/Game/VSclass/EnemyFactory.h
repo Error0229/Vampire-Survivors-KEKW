@@ -12,8 +12,8 @@ struct Wave_boss{
 	bool drop_chest[2], can_evo[2];
 };
 struct Wave_swarm{
-	int time;
-	int type[2][2], amount[2], duration_sec[2], repeat[2], chance[2], interval_msec[2];
+	int time, swarm_type;
+	int type[2][2], amount[2], duration[2], repeat[2], chance[2], interval[2];
 	int spawned_cnt[2];
 };
 
@@ -41,5 +41,5 @@ private:
 	void load_wave_swarm();
 	void update_enemy(clock_t tick, CPoint player_pos, int player_lvl, int curse);
 	void update_boss(clock_t tick, CPoint player_pos, int player_lvl, int curse);
-	void update_swarm(clock_t tick, CPoint player_pos, int player_lvl);
+	void update_swarm(clock_t tick, CPoint player_pos, int player_lvl, int luck, int curse);
 };

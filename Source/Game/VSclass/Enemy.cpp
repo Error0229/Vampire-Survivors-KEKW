@@ -11,6 +11,9 @@ Enemy::Enemy()
 	obj_type = ENEMY;
 	_last_time_got_hit_by_projectile.resize(100, -1000000);
 	_last_time_got_hit = -1000000;
+	_swarm_type = NOT_SWARM;
+	_swarm_duration = -1;
+	_swarm_start_time = -1;
 }
 Enemy::~Enemy() 
 {
@@ -65,7 +68,7 @@ void Enemy::show_skin(double factor)
 		}
 	}
 }
-void Enemy::update_pos(CPoint pos) {
+void Enemy::update_pos(CPoint pos, clock_t tick) {
 	if (_is_stun) {
 		this->_speed = (int)_stun_speed;
 		if (clock() - _last_time_got_hit > 240) { // set to 2x of wiki said (120ms) 
@@ -76,7 +79,29 @@ void Enemy::update_pos(CPoint pos) {
 	else {
 		this->_speed = _mspeed;
 	}
-	VSObject::update_pos(pos);
+
+	if(_swarm_type == NOT_SWARM){
+		//apporch player
+		VSObject::update_pos(pos);
+	}
+	else if(_swarm_type == SWARM){
+		//charge toward target
+		//check disappear
+		if(_skin.Top() < -50 || _skin.Top() > 650 || _skin.Left() < -50 || _skin.Left() > 850){
+			_is_enable = false;
+		}
+		else{
+			update_pos_by_vec();
+		}
+	}
+	else if(_swarm_type == WALL){
+		//apporch player
+		if(_swarm_duration > 0 && tick-_swarm_start_time > _swarm_duration){
+			_is_enable = false;
+		}else{
+			VSObject::update_pos(pos);
+		}
+	}
 }
 
 bool Enemy::hurt(int damage) 
@@ -118,11 +143,14 @@ void Enemy::set_spawn(CPoint pos, int move_animation_delay, int death_animation_
 	_death_animation.set_animation(death_animation_delay, true);
 	_is_enable = true;
 	_position = pos;
+	_hp = _hp_max;
 	_is_drop_chest = false;
 	_chest_can_evo = false;
 	_chest_upgrade_chance_0 = 0;
 	_chest_upgrade_chance_1 = 0;
-	_hp = _hp_max;
+	_swarm_type = NOT_SWARM;
+	_swarm_duration = -1;
+	_swarm_start_time = -1;
 }
 
 void Enemy::set_scale(int player_lvl, int curse)
@@ -145,13 +173,22 @@ void Enemy::set_chest(bool can_evo, int chance0, int chance1)
 	_chest_upgrade_chance_1 = chance1;
 }
 
-void Enemy::set_spawn_pos(bool is_swarm)
+void Enemy::set_spawn_pos()
 {
-	if(is_swarm){
-		//WIP
+	static int cnt = 0;
+	if(_swarm_type == NOT_SWARM){
+		vector<CPoint> pos_offset = { CPoint(-424,  320),CPoint(-424,  240),CPoint(-424,  160),CPoint(-424,   80),CPoint(-424,    0),CPoint(-424,  -80),CPoint(-424, -160),CPoint(-424, -240),CPoint(-424, -320),CPoint(-318, -320),CPoint(-212, -320),CPoint(-106, -320),CPoint(0, -320),CPoint(106, -320),CPoint(212, -320),CPoint(318, -320),CPoint(424, -320),CPoint(424, -240),CPoint(424, -160),CPoint(424,  -80),CPoint(424,    0),CPoint(424,   80),CPoint(424,  160),CPoint(424,  240),CPoint(424,  320),CPoint(318,  320),CPoint(212,  320),CPoint(106,  320),CPoint(0,  320),CPoint(-106,  320),CPoint(-212,  320),CPoint(-318,  320)};
+		_position += pos_offset[cnt++];	
+		if(cnt == (int)pos_offset.size())
+			cnt = 0;
 	}
-	else{
-		static int cnt = 0;
+	else if(_swarm_type == SWARM){
+		//set target
+		_target_vec = CPoint(0, 500);
+		_position -= CPoint(0, 300);
+	}
+	else if(_swarm_type == WALL){
+		//eclipse
 		vector<CPoint> pos_offset = { CPoint(-424,  320),CPoint(-424,  240),CPoint(-424,  160),CPoint(-424,   80),CPoint(-424,    0),CPoint(-424,  -80),CPoint(-424, -160),CPoint(-424, -240),CPoint(-424, -320),CPoint(-318, -320),CPoint(-212, -320),CPoint(-106, -320),CPoint(0, -320),CPoint(106, -320),CPoint(212, -320),CPoint(318, -320),CPoint(424, -320),CPoint(424, -240),CPoint(424, -160),CPoint(424,  -80),CPoint(424,    0),CPoint(424,   80),CPoint(424,  160),CPoint(424,  240),CPoint(424,  320),CPoint(318,  320),CPoint(212,  320),CPoint(106,  320),CPoint(0,  320),CPoint(-106,  320),CPoint(-212,  320),CPoint(-318,  320)};
 		_position += pos_offset[cnt++];	
 		if(cnt == (int)pos_offset.size())
@@ -159,9 +196,11 @@ void Enemy::set_spawn_pos(bool is_swarm)
 	}
 }
 
-void Enemy::set_swarm()
+void Enemy::set_swarm(int swarm_type, int duraion, clock_t tick)
 {
-	
+	_swarm_type = swarm_type;
+	_swarm_duration = duraion;
+	_swarm_start_time = tick;
 }
 
 void Enemy::load_template_enemies()

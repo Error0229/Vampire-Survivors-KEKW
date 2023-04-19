@@ -41,9 +41,9 @@ public:
 	void set_spawn(CPoint pos, int move_animation_delay = 100, int death_animation_delay = 100);
 	void set_scale(int player_lvl, int curse);
 	void set_chest(bool can_evo, int chance0, int chance1);
-	void set_spawn_pos(bool is_swarm = false);
-	void set_swarm();
-	void update_pos(CPoint) override;
+	void set_spawn_pos();
+	void set_swarm(int swarm_type, int duraion, clock_t tick);
+	void update_pos(CPoint, clock_t);
 	bool is_dead();
 	bool is_enable();
 	int get_id();
@@ -69,7 +69,16 @@ private:
 	bool _res_k, _res_d, _hp_scale, _is_stun = 0;
 	double _stun_speed;
 	bool _is_enable;
+	//chest thing
 	bool _is_drop_chest, _chest_can_evo;
 	int _chest_upgrade_chance_0, _chest_upgrade_chance_1;
+	//swarm thing
+	enum Swarm_type {
+		NOT_SWARM, // make sense rigth?
+		SWARM,
+		WALL
+	};
+	int _swarm_type;
+	clock_t _swarm_duration, _swarm_start_time;
 	VSObject _death_animation;
 };
