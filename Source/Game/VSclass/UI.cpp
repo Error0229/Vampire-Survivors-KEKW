@@ -145,14 +145,14 @@ void Damage::init() {
 Damage::Damage(int damage, CPoint pos) :_number(damage) {
 	_position = pos;
 	VSObject tmp({ "resources/damage/0.bmp","resources/damage/1.bmp","resources/damage/2.bmp","resources/damage/3.bmp","resources/damage/4.bmp","resources/damage/5.bmp","resources/damage/6.bmp","resources/damage/7.bmp","resources/damage/8.bmp","resources/damage/9.bmp" });
-	tmp.set_speed(50);
+	tmp.set_speed(25);
 	tmp.set_target_vec(0, -100);
 	_number_width = tmp.get_width();
 	tmp.set_selector(-1);
 	for (int i = 0; i < 4; i++) {
 		num_bmp.push_back(tmp);
 	}
-	_animation_cycle_time = 1000;
+	_animation_cycle_time = 500;
 	_type = DAMAGE;
 }
 void Damage::add_damage(int num, CPoint pos) {
@@ -161,15 +161,15 @@ void Damage::add_damage(int num, CPoint pos) {
 	string s = to_string(num);
 	if (num >= 100) {
 		ptr->num_bmp[0].set_selector(s[0] - '0');
-		ptr->num_bmp[0].set_pos(pos.x - ptr->_number_width, pos.y);
+		ptr->num_bmp[0].set_pos(pos.x - ptr->_number_width - 2, pos.y);
 		ptr->num_bmp[1].set_selector(s[1] - '0');
 		ptr->num_bmp[1].set_pos(pos.x, pos.y);
 		ptr->num_bmp[2].set_selector(s[2] - '0');
-		ptr->num_bmp[2].set_pos(pos.x + ptr->_number_width, pos.y);
+		ptr->num_bmp[2].set_pos(pos.x + ptr->_number_width + 2, pos.y);
 	}
 	else if (num >= 10) {
 		ptr->num_bmp[0].set_selector(s[0] - '0');
-		ptr->num_bmp[0].set_pos(pos.x - ptr->_number_width, pos.y);
+		ptr->num_bmp[0].set_pos(pos.x - ptr->_number_width - 2, pos.y);
 		ptr->num_bmp[1].set_selector(s[1] - '0');
 		ptr->num_bmp[1].set_pos(pos.x, pos.y);
 	} 
