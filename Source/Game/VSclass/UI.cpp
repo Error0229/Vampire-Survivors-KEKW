@@ -65,6 +65,10 @@ void Ui::start() {
 		_is_start = true;
 	}
 }
+void Ui::reset() {
+	_is_start = false;
+	_animation_start_time = -1;
+}
 bool Ui::done()
 {
 	return ((clock() - _animation_start_time) > _animation_cycle_time);

@@ -12,6 +12,7 @@ public:
 	void set_base_pos(CPoint);
 	void set_base_pos(int, int);
 	void start();
+	void reset();
 	bool done();
 	CPoint get_base_pos();
 	virtual void show(double factor=1.0);				// show on "fixed" pos on the screen

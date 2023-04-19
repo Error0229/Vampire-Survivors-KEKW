@@ -37,6 +37,7 @@ void CGameStateRun::OnBeginState()
 	QuadTree::VSPlain.clear();
 	Weapon::all_weapon.clear();
 	Passive::all_passive.clear();
+	map.set_pos(0, 0);
 	Xp::reset_XP();
 	enemy_factory.reset();
 	timer.reset();
@@ -208,6 +209,8 @@ void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的
 	case(OPEN_CHEST):
 		for (int i = 0; i < 5; i++)
 			chest_item[i] = -1;
+		chest_animation.reset();
+		chest_animation.set_animation(30, true);
 		_next_status = PLAYING;
 		break;
 	case(GAME_OVER):
