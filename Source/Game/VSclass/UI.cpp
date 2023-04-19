@@ -66,6 +66,8 @@ void Ui::start() {
 	}
 }
 void Ui::reset() {
+	set_animation_frame(0);
+	enable_animation();
 	_is_start = false;
 	_animation_start_time = -1;
 }

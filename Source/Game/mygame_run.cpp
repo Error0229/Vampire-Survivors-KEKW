@@ -207,6 +207,8 @@ void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的
 		}
 		break;
 	case(OPEN_CHEST):
+		if (!chest_animation.done())
+			break;
 		for (int i = 0; i < 5; i++)
 			chest_item[i] = -1;
 		chest_animation.reset();
