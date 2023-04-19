@@ -16,7 +16,8 @@ using namespace game_framework;
 enum gamerun_status {
 	PLAYING,
 	LEVEL_UP,
-	OPEN_CHEST
+	OPEN_CHEST,
+	GAME_OVER
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -33,8 +34,27 @@ CGameStateRun::~CGameStateRun()
 
 void CGameStateRun::OnBeginState()
 {
+	QuadTree::VSPlain.clear();
+	Weapon::all_weapon.clear();
+	Passive::all_passive.clear();
+	Xp::reset_XP();
+	enemy_factory.reset();
+	timer.reset();
 	timer.start();
 	CAudio::Instance()->Play(0, true); // 🉑
+	player = Player();
+	player.set_default_direct(RIGHT);
+	player.set_animation(150, false);
+	player.load_skin({ "resources/character/Dog_01.bmp", "resources/character/Dog_02.bmp" ,"resources/character/Dog_03.bmp" ,"resources/character/Dog_04.bmp" ,"resources/character/Dog_05.bmp" });
+	player.load_bleed();
+	player.set_pos(0, 0);
+	player.set_speed(300);
+	player.acquire_weapon(WHIP);
+	player.acquire_passive(POWER);
+	map.set_pos(0, 0);
+	event_background.set_base_pos(0, 0);
+	_gamerun_status = PLAYING;
+	_next_status = PLAYING;
 }
 
 
@@ -46,23 +66,10 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	Xp::init_XP();
 	Chest::init_chest();
 	Damage::damage_device()->init();
-	_gamerun_status = PLAYING;
-	_next_status = PLAYING;
 
-	player.load_skin({ "resources/character/Dog_01.bmp", "resources/character/Dog_02.bmp" ,"resources/character/Dog_03.bmp" ,"resources/character/Dog_04.bmp" ,"resources/character/Dog_05.bmp" });
-	player.set_pos(0, 0);
-	player.set_speed(300);
-	player.set_default_direct(RIGHT);
-	player.set_animation(150, false);
-	player.load_bleed();
-	player.acquire_weapon(WHIP);
-	player.acquire_passive(POWER);
 
 	map.load_map({ "resources/map/dummy1.bmp" });
-	map.set_pos(0, 0);
-	QuadTree::VSPlain.clear();
 	event_background.load_skin("resources/ui/event_background.bmp");
-	event_background.set_base_pos(0, 0);
 	for (int i = 0; i < 4; i++) {
 		level_up_button[i].load_skin("resources/ui/event_button.bmp");
 		level_up_icon_frame[i].load_skin("resources/ui/frameB.bmp");
@@ -97,6 +104,11 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 		chest_item_frame[i].set_base_pos(chest_item_pos[i]);
 		chest_item[i] = -1;
 	}
+	game_over_frame.load_skin("Resources/ui/gameOver.bmp");
+	game_over_frame.set_base_pos(0, 0);
+	game_over_button.load_skin("Resources/ui/button_c8_normal.bmp");
+	game_over_button.set_base_pos(0, 50);
+	game_over_button.activate_hover = true;
 
 	xp_bar_frame.load_skin("resources/ui/xp_bar_frame.bmp");
 	xp_bar_frame.set_base_pos(-8, -300 + (xp_bar_frame.get_height() >> 1));
@@ -197,6 +209,11 @@ void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的
 		for (int i = 0; i < 5; i++)
 			chest_item[i] = -1;
 		_next_status = PLAYING;
+		break;
+	case(GAME_OVER):
+		if (game_over_button.is_hover(mouse_pos)) {
+			GotoGameState(GAME_STATE_OVER);
+		}
 		break;
 	}
 }
@@ -386,6 +403,10 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 				😈->append_collide(player, 1, 0.5);
 				😈->update_collide();
 				player.hurt(😈->get_power());
+				if (player.get_hp_percent() == 0) {
+					_next_status = GAME_OVER;
+					return;
+				}
 			}
 		}
 		QuadTree::VSPlain.clear();
@@ -475,6 +496,8 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 				player.obtain_item(chest_item[i]);
 			}
 		}
+		break;
+	case (GAME_OVER):
 		break;
 	}
 }
@@ -604,6 +627,10 @@ void CGameStateRun::OnShow()
 				}
 			}
 		}
+		break;
+	case (GAME_OVER):
+		game_over_frame.show();
+		game_over_button.show();
 		break;
 	}
 	text_device.add_text(timer.get_minute_string() + ":" + timer.get_second_string(), CPoint(0, -265) + player.get_pos(), 1, FONT_24x18_B, ALIGN_CENTER);

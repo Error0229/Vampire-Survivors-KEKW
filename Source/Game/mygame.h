@@ -69,8 +69,8 @@ namespace game_framework {
 		CMovingBitmap logo;								// csie的logo
 		CMovingBitmap text;
 		CMovingBitmap portrait;
-		Ui* button_start;
-		VSObject* background;
+		Ui button_start;
+		VSObject background;
 	};
 
 	/////////////////////////////////////////////////////////////////////////////
@@ -103,7 +103,8 @@ namespace game_framework {
 		EnemyFactory enemy_factory;
 		int _gamerun_status, _next_status;
 		VSTimer timer;
-
+		Ui game_over_frame;
+		Ui game_over_button;
 		Ui event_background;
 		Ui level_up_button[4];
 		int level_up_choice[4];

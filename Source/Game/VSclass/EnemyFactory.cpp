@@ -118,7 +118,6 @@ int EnemyFactory::get_number_all()
 
 void EnemyFactory::update_enemy(clock_t tick, CPoint player_pos, int player_lvl)
 {
-	static clock_t last_tick = -1;
 	int min = tick/1000/60;
 	if(tick - last_tick >= _wave[min].interval_msec)
 		last_tick = tick;
@@ -150,8 +149,16 @@ void EnemyFactory::update_enemy(clock_t tick, CPoint player_pos, int player_lvl)
 		_wave[min].spawned_boss[1] = true;
 	}
 }
+void EnemyFactory::reset() {
+	for (auto 😈 : live_enemy) {
+		_all_enemy.free_obj_ptr(😈);
+	}
+	live_enemy.clear();
+	last_tick = -1;
+}
 
 vector<Enemy*> EnemyFactory::live_enemy;
 ObjPool<Enemy> EnemyFactory::_all_enemy;
 bool EnemyFactory::_is_init = false;
 vector<int> EnemyFactory::_number_type;
+clock_t EnemyFactory::last_tick = -1;

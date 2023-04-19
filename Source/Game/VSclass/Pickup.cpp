@@ -89,6 +89,12 @@ void Xp::update_XP_pos(int player_magnet) {
 		}
 	}
 }
+void Xp::reset_XP()
+{
+	for (auto xp : xp_all) {
+		pool.free_obj_ptr(xp);
+	}
+}
 int Xp::get_xp_value()
 {
 	return _xp_value;

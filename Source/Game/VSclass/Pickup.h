@@ -26,6 +26,7 @@ public:
 	static void init_XP();
 	static void spawnXP(CPoint, int);
 	static void show();
+	static void reset_XP();
 	static void update_XP_pos(int player_magnet);
 	static deque<Xp*> xp_all;
 	static ObjPool<Xp> pool;
