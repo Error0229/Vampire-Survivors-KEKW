@@ -111,7 +111,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	game_over_frame.load_skin("Resources/ui/gameOver.bmp");
 	game_over_frame.set_base_pos(0, 0);
 	game_over_button.load_skin("Resources/ui/button_c8_normal.bmp");
-	game_over_button.set_base_pos(0, 50);
+	game_over_button.set_base_pos(0, 80);
 	game_over_button.activate_hover = true;
 
 	xp_bar_frame.load_skin("resources/ui/xp_bar_frame.bmp");
