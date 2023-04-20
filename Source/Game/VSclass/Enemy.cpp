@@ -173,7 +173,7 @@ void Enemy::set_chest(bool can_evo, int chance0, int chance1)
 	_chest_upgrade_chance_1 = chance1;
 }
 
-void Enemy::set_spawn_pos()
+void Enemy::set_spawn_pos(int count, int amount)
 {
 	static vector<double> random_pos_weights(88, 1);
 	if(_swarm_type == NOT_SWARM){
@@ -204,17 +204,20 @@ void Enemy::set_spawn_pos()
 	}
 	else if(_swarm_type == WALL){
 		//eclipse WIP
-		int i = poll(random_pos_weights);
-		if (i <= 21)
+		CPoint offset = get_ellipse_point(CPoint( 0,0 ), 440, 330 , count, amount);
+		_position += offset;
+		// int i = poll(random_pos_weights);
+		/*if (i <= 21)
 			_position += CPoint(-440 + i * 40, 330);
 		else if (i <= 43)
 			_position += CPoint(440, 330 - (i - 21) * 30);
 		else if (i <= 65)
 			_position += CPoint(440 - (i - 43) * 40, -330);
 		else
-			_position += CPoint(-440, -330 + (i - 65) * 30);
+			_position += CPoint(-440, -330 + (i - 65) * 30);*/
 	}
 }
+
 
 void Enemy::set_swarm(int swarm_type, int duraion, clock_t tick, int swarm_pos_i)
 {

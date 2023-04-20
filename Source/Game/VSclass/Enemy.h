@@ -41,7 +41,7 @@ public:
 	void set_spawn(CPoint pos, int move_animation_delay = 100, int death_animation_delay = 100);
 	void set_scale(int player_lvl, int curse);
 	void set_chest(bool can_evo, int chance0, int chance1);
-	void set_spawn_pos();
+	void set_spawn_pos(int count = 0, int amount = 0);
 	void set_swarm(int swarm_type, int duraion, clock_t tick, int swarm_pos_i);
 	void update_pos(CPoint, clock_t);
 	bool is_dead();

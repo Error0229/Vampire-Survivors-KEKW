@@ -236,11 +236,12 @@ void EnemyFactory::update_swarm(clock_t tick, CPoint player_pos, int player_lvl,
 			if(poll(weights, true)){
 				if (wave_swarm[cnt].type[i][1] != -1) {
 					//two enemy type
-					for (int j = 0; j < wave_swarm[cnt].amount[i] * curse / 100; j++) {
-						😈 = add_enemy(wave_swarm[cnt].type[i][j & 2], player_pos, 1, player_lvl, curse)[0];
+					int amount = wave_swarm[cnt].amount[i] * curse / 100;
+					for (int j = 0; j < amount; j++) {
+						😈 = add_enemy(wave_swarm[cnt].type[i][j & 1], player_pos, 1, player_lvl, curse)[0];
 						😈->set_scale(player_lvl, curse);
 						😈->set_swarm(wave_swarm[cnt].swarm_type, wave_swarm[cnt].duration[i], tick, swarm_pos_i);
-						😈->set_spawn_pos();
+						😈->set_spawn_pos(j, amount);
 					}
 				}
 				else {
