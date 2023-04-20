@@ -115,6 +115,8 @@ void VSObject::enable_animation()
 void VSObject::disable_animation()
 {
 	this->_skin.DisableAnimation();
+	if (mirror_loaded)
+		_m_skin.DisableAnimation();
 }
 void VSObject::set_pos(CPoint pos)
 {
@@ -150,6 +152,9 @@ void VSObject::set_type(int type) {
 	_type = type;
 }
 void VSObject::set_animation_frame(int i) {
+	if (mirror_loaded) {
+		_m_skin.SelectShowBitmap(i);
+	}
 	_skin.SelectShowBitmap(i);
 }
 int VSObject::get_type() {
@@ -249,11 +254,17 @@ int VSObject::get_width()
 	return static_cast<int>(static_cast<double>(this->_skin.Width()) * _scaler);
 }
 bool VSObject::is_animation() {
-	return this->_skin.IsAnimation();
+	bool k = false;
+	if(mirror_loaded && _is_mirror)
+		k = _m_skin.IsAnimation();
+	return k ||_skin.IsAnimation();
 }
 bool VSObject::is_animation_done()
 {
-	return this->_skin.IsAnimationDone();
+	bool k = false;
+	if (mirror_loaded && _is_mirror)
+		k = _m_skin.IsAnimationDone();
+	return k || _skin.IsAnimationDone();
 }
 
 void VSObject::set_is_mirror(bool is_mirror)

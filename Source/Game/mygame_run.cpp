@@ -53,6 +53,8 @@ void CGameStateRun::OnBeginState()
 	player.set_speed(300);
 	player.acquire_weapon(WHIP);
 	player.acquire_passive(POWER);
+	map = Map();
+	map.load_map({ "resources/map/dummy1.bmp" });
 	map.set_pos(0, 0);
 	event_background.set_base_pos(0, 0);
 	_gamerun_status = PLAYING;

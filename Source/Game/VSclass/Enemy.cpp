@@ -64,8 +64,9 @@ void Enemy::show_skin(double factor)
 	if ( !_is_enable )
 		return;
 	if ( !is_dead() ) {
-		this->_skin.SetTopLeft(this->_position.x - ( get_width() >> 1 ) + player_dx, this->_position.y - ( get_height() >> 1 ) + player_dy);
-		this->_skin.ShowBitmap(factor, _is_mirror);
+		// this->_skin.SetTopLeft(this->_position.x - ( get_width() >> 1 ) + player_dx, this->_position.y - ( get_height() >> 1 ) + player_dy);
+		// this->_skin.ShowBitmap(factor, _is_mirror);
+		VSObject::show_skin();
 	}
 	else {
 		if (_death_animation.is_animation_done() ) {
