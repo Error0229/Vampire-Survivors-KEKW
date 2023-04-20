@@ -22,6 +22,11 @@
     <None Include="Source\Game\VSclass\weapon_stats.csv" />
     <None Include="Resources\item_id.csv" />
     <None Include="Source\Game\VSclass\enemy_stats.csv" />
+    <None Include="Source\Game\VSclass\stage_event_1.csv" />
+    <None Include="Source\Game\VSclass\stage_event_1.xlsx" />
+    <None Include="Source\Game\VSclass\stage1_wave_boss.csv" />
+    <None Include="Source\Game\VSclass\stage1_wave_enemy.csv" />
+    <None Include="Source\Game\VSclass\stage1_wave_swarm.csv" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Library\audio.cpp">

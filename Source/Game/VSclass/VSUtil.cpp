@@ -60,7 +60,13 @@ int poll(vector<double>& weights, bool handle_negtive)
     discrete_distribution<> dist(weights.begin(), weights.end());
     return dist(gen);
 }
-
+CPoint get_ellipse_point(CPoint center, int long_r, int short_r, int count, int n) {
+    double angle_step = 2 * MATH_PI / static_cast<double>(n);
+    double angle = static_cast<double>(count) * angle_step;
+    double x = center.x + long_r * cos(angle);
+    double y = center.y + short_r * sin(angle);
+    return CPoint(static_cast<int>(x), static_cast<int>(y));
+}
 VSTimer::VSTimer()
 {
     start_ticks = 0;

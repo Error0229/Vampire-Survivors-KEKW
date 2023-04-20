@@ -211,6 +211,10 @@ int Player::get_luck()
 {
 	return _coef_luck;
 }
+int Player::get_curse()
+{
+	return _coef_curse;
+}
 int Player::get_duration() {
 	return _coef_duration;
 }

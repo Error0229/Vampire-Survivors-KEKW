@@ -170,7 +170,7 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		break;
 	case('C'):
 		// WIP: SPAWN CHEST
-		Chest::spawnChest(player.get_pos());
+		Chest::spawnChest(player.get_pos(), 1, 100, 100);
 		break;
 	case('D'):
 		timer.add_time(10000);
@@ -372,6 +372,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 	//open chest
 	int chest_item_count;
 	static bool can_evo = false;
+	static int chest_upgrade_chance_0 = 0, chest_upgrade_chance_1 = 0;
 
 	_gamerun_status = _next_status;
 	vector <VSObject*> plain_result = {};
@@ -400,7 +401,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			}
 		}
 		for (auto 😈: enemy_factory.live_enemy) {
-			😈->update_pos(player.get_pos());
+			😈->update_pos(player.get_pos(), timer.get_ticks());
 			result = {};
 			QuadTree::VSPlain.query_by_type(result, (VSObject*)(😈), ENEMY);
 			for (VSObject* obj : result) {
@@ -431,6 +432,8 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			if (i->is_enable() && is_overlapped(player, *i)) {
 				i->despawn();
 				can_evo = i->get_can_evo();
+				chest_upgrade_chance_0 = i->get_upgrade_chance_0();
+				chest_upgrade_chance_1 = i->get_upgrade_chance_1();
 				_next_status = OPEN_CHEST;
 			}
 		}
@@ -485,14 +488,16 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 
 		chest_animation.enable_animation();
 		// poll chest item count
-		weights[1] = 0.05 * (double)player.get_luck() / 100;
+		weights[1] = (double)chest_upgrade_chance_0 / 100 * (double)player.get_luck() / 100;
 		weights[0] = 1 - weights[1];
 		chest_item_count = 1;
+		TRACE("1:%lf\n", weights[1]);
 		if (poll(weights, true))
 			chest_item_count = 5;
 		else {
-			weights[1] = 0.2 * (double)player.get_luck() / 100;
+			weights[1] = (double)chest_upgrade_chance_1 / 100 * (double)player.get_luck() / 100;
 			weights[0] = 1 - weights[1];
+			TRACE("2:%lf\n", weights[1]);
 			if (poll(weights, true))
 				chest_item_count = 3;
 		}
@@ -519,7 +524,7 @@ void CGameStateRun::OnShow()
 	player.show_skin();
 	for(auto 😈: enemy_factory.live_enemy)
 		😈->show_skin();
-	enemy_factory.update_enemy(timer.get_ticks(), player.get_pos(), player.get_level());
+	enemy_factory.update(timer.get_ticks(), player.get_pos(), player.get_level(), player.get_luck(), player.get_curse());
 	Damage::damage_device()->show_damage();
 	xp_bar_cover.show();
 	xp_bar.set_base_pos(-8 - (xp_bar.get_width() * (100 - player.get_exp_percent()) / 100), -300 + (xp_bar.get_height() >> 1));
