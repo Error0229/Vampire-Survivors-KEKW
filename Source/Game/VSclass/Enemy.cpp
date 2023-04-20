@@ -185,6 +185,7 @@ Enemy Enemy::load_enemy(int id, char* name, int health, int power, int mspeed, d
 			break;
 		}
 	}
+	enemy.load_mirror_skin();
 	for (int i = 0; i < 20; i++) {
 		memset(tmp, 0, sizeof(tmp));
 		sprintf(tmp, ".\\Resources\\enemy\\%s_%d.bmp", name, i);
@@ -199,6 +200,7 @@ Enemy Enemy::load_enemy(int id, char* name, int health, int power, int mspeed, d
 			break;
 		}
 	}
+	enemy._death_animation.load_mirror_skin();
 	enemy._type = id;
 	enemy._id = id;
 	enemy._hp_max = health;

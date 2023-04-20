@@ -226,7 +226,19 @@ namespace game_framework {
 			selector = selector % SurfaceID.size();
 		}
 	}
-
+	void CMovingBitmap::SyncMirror(const CMovingBitmap& other){
+		selector = other.selector;
+		delayCount = other.delayCount;
+		animation_cooldown = other.animation_cooldown;
+		last_animation_done = other.last_animation_done;
+		animationCount = other.animationCount;
+		last_time = other.last_time;
+		isAnimation = other.isAnimation;
+		isAnimationDone = other.isAnimationDone;
+		once = other.once;
+		isPause = other.isPause;
+		scaler = other.scaler;
+	}
 
 	void CMovingBitmap::SelectShowBitmap(int _select) {
 		GAME_ASSERT(_select < ( int ) SurfaceID.size(), "choosing image out of range")

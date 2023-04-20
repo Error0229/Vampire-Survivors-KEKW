@@ -73,6 +73,7 @@ void Player::update_pos(CPoint target) {
 }
 void Player::load_bleed() {
 	_bleed_animation.load_skin({ "resources/character/Blood1.bmp", "resources/character/Blood2.bmp", "resources/character/Blood3.bmp" });
+	_bleed_animation.load_mirror_skin();
 	_bleed_animation.enable_animation();
 }
 void Player::show_skin(double factor) {

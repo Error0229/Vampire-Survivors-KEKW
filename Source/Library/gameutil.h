@@ -108,6 +108,7 @@ namespace game_framework {
 		void  ToggleAnimation();
 		void  EnableAnimation();
 		void  DisableAnimation();
+		void  SyncMirror(const CMovingBitmap & other);
 		int   Top();						// 取得圖形的左上角的 y 座標
 		int   Width();						// 取得圖形的寬度
 		bool  IsAnimationDone();

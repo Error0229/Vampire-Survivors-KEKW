@@ -745,8 +745,9 @@ void Weapon::load_weapon_stats() {
 		Projectile p(type, proj_vec);
 		switch (type) {
 		case WHIP: case VAMPIRICA:
+			p.load_mirror_skin();
 			p.set_default_direct(RIGHT);
-			p.set_animation(300, true, 0);
+			p.set_animation(200, true, 0);
 			p.enable_animation();
 			break;
 		case MAGIC_MISSILE:	case HOLY_MISSILE: case KNIFE: case THOUSAND: case FIREBALL: case HELLFIRE: case DIAMOND: case ROCHER:

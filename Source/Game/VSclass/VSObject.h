@@ -58,13 +58,14 @@ protected:
 	game_framework::CMovingBitmap _skin;
 	game_framework::CMovingBitmap _m_skin; // mirror skin
 	vector <game_framework::CMovingBitmap> _animations;
-	vector <string> _file_names;
+	vector <string> _file_name;
 	int _selector = 0;
 	CPoint _position;
 	CPoint _target;
 	CPoint _collision;
 	CPoint _target_vec = {0,0};
-	bool _is_mirror = 0;
+	bool _is_mirror = false;
+	bool mirror_loaded = false;
 	int _direct, _default_direct=LEFT;
 	int _speed=0;
 	int _pool_id, _type;
