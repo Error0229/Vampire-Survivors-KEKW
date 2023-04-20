@@ -60,20 +60,25 @@ void VSObject::show_skin(double factor)
 {
 	_scaler = factor;
 	_skin.SetTopLeft(this->_position.x - (get_width() >> 1) + player_dx, this->_position.y - (this->get_height() >> 1) + player_dy);
+	
 	if (mirror_loaded) {
-		_m_skin.SetTopLeft(_position.x - (get_width() >> 1) + player_dx, _position.y - (get_height() >> 1) + player_dy);
+		if (_is_mirror) {
+			_m_skin.SetTopLeft(_position.x - (get_width() >> 1) + player_dx, _position.y - (get_height() >> 1) + player_dy);
+		}
+		if (!last_mirror && _is_mirror) {
+			_m_skin.SyncMirror(_skin);
+		}
+		else if (last_mirror && !_is_mirror) {
+			_skin.SyncMirror(_m_skin);
+		}
 	}
-	if (!mirror_loaded) {
+	if (!mirror_loaded || !_is_mirror) {
 		_skin.ShowBitmap(factor);
 	}
 	else if (_is_mirror) {
 		_m_skin.ShowBitmap(factor);
-		_skin.SyncMirror(_m_skin);
 	}
-	else {
-		_skin.ShowBitmap(factor);
-		_m_skin.SyncMirror(_skin);
-	}
+	last_mirror = _is_mirror;
 }
 void VSObject::show_animation(double factor)
 {

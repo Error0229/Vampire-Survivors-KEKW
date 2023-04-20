@@ -66,8 +66,10 @@ protected:
 	CPoint _target_vec = {0,0};
 	bool _is_mirror = false;
 	bool mirror_loaded = false;
+	bool last_mirror = false;
 	int _direct, _default_direct=LEFT;
-	int _speed=0;
+
+	int _speed = 0;
 	int _pool_id, _type;
 	double _scaler = 1;
 	double _fx, _fy;
