@@ -10,6 +10,7 @@ public:
 	void load_skin(char* filename, COLORREF color = RGB(1, 11, 111));
 	void load_skin(vector<string>& filename, COLORREF color = RGB(1, 11, 111));
 	void load_animation(vector<char*> filename, COLORREF color = RGB(1, 11, 111));
+	void load_mirror_skin();
 	virtual void show_skin(double factor = 1.0);
 	virtual void show_animation(double factor = 1.0);
 	void unshow_skin();
@@ -55,7 +56,9 @@ public:
 	int obj_type = VSOBJECT;
 protected:
 	game_framework::CMovingBitmap _skin;
+	game_framework::CMovingBitmap _m_skin; // mirror skin
 	vector <game_framework::CMovingBitmap> _animations;
+	vector <string> _file_names;
 	int _selector = 0;
 	CPoint _position;
 	CPoint _target;
