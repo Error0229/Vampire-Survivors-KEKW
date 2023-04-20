@@ -78,19 +78,25 @@ void Player::load_bleed() {
 }
 void Player::show_skin(double factor) {
 	VSObject::show_skin(factor);
-	if (_is_hurt) {
-		_bleed_animation.set_animation(100, false);	//set_animation everytime because unshow will make the animation ended
+	if (_is_hurt && clock() - _last_time_got_hit < 300) {
 		_bleed_animation.set_pos(_position);
 		_bleed_animation.show_skin();
-		_is_hurt = false;
+		// _is_hurt = false;
 	}
 	else {
 		_bleed_animation.unshow_skin();
 	}
 }
 void Player::hurt(int damage) {
+	if (clock() - _last_time_got_hit < 250) {
+		return;
+	}
+	_last_time_got_hit = clock();
 	_hp -= damage;
 	_is_hurt = true;
+	_bleed_animation.set_animation(100, true);	//set_animation everytime because unshow will make the animation ended
+	_bleed_animation.set_animation_frame(0);
+	_bleed_animation.enable_animation();
 	if (_hp < 0) {
 		_hp = 0;
 	}
