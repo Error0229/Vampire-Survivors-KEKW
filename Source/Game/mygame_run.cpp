@@ -37,7 +37,7 @@ void CGameStateRun::OnBeginState()
 	QuadTree::VSPlain.clear();
 	Weapon::all_weapon.clear();
 	Passive::all_passive.clear();
-	map.set_pos(0, 0);
+	Projectile::reset();
 	Xp::reset_XP();
 	enemy_factory.reset();
 	timer.reset();
