@@ -313,7 +313,16 @@ void CAudio::SetPowerResume()
 	// Force Pause operation when the system power is to be turned off
 	Pause();
 }
-
+void CAudio::SetVolume(int volume) {		// 設定音量 not works!
+	char command[MAX_MCI_COMMAND_SIZE];
+	sprintf(command, "setaudio device all volume to %d", volume);
+	SendMciCommand(command);
+}				
+void CAudio::SetVolume(unsigned i, int volume) { // 設定編號i的聲音的音量 works!
+	char command[MAX_MCI_COMMAND_SIZE];
+    sprintf(command, "setaudio device%d volume to %d", i, volume);
+	SendMciCommand(command);
+}
 void CAudio::Resume()
 {
 	if (!isOpened)
@@ -338,4 +347,4 @@ void CAudio::Stop(unsigned id)
 	}
 }
 
-}
+} // namespace game

@@ -89,6 +89,8 @@ public:
 	void           Play(unsigned, bool=false);	// 開始撥放編號i的聲音，指定是否重覆撥放
 	void		   Resume();					// 復原暫停播放的音效
 	void           SetPowerResume();			// 電源恢復
+	void		   SetVolume(int);				// 設定音量
+	void		   SetVolume(unsigned, int);	// 設定編號i的聲音的音量
 	void           Stop(unsigned);				// 停止撥放編號i的聲音
 private:
 	class Info {

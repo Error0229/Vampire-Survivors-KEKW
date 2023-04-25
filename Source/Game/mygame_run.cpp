@@ -16,7 +16,8 @@ using namespace game_framework;
 enum gamerun_status {
 	PLAYING,
 	LEVEL_UP,
-	OPEN_CHEST
+	OPEN_CHEST,
+	GAME_OVER
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -33,7 +34,31 @@ CGameStateRun::~CGameStateRun()
 
 void CGameStateRun::OnBeginState()
 {
+	QuadTree::VSPlain.clear();
+	Weapon::all_weapon.clear();
+	Passive::all_passive.clear();
+	Projectile::reset();
+	Xp::reset_XP();
+	enemy_factory.reset();
+	timer.reset();
 	timer.start();
+	CAudio::Instance()->Play(0, true); // 🉑
+	player = Player();
+	player.set_default_direct(RIGHT);
+	player.set_animation(150, false);
+	player.load_skin({ "resources/character/Dog_01.bmp", "resources/character/Dog_02.bmp" ,"resources/character/Dog_03.bmp" ,"resources/character/Dog_04.bmp" ,"resources/character/Dog_05.bmp" });
+	player.load_mirror_skin();
+	player.load_bleed();
+	player.set_pos(0, 0);
+	player.set_speed(300);
+	player.acquire_weapon(WHIP);
+	player.acquire_passive(POWER);
+	map = Map();
+	map.load_map({ "resources/map/dummy1.bmp" });
+	map.set_pos(0, 0);
+	event_background.set_base_pos(0, 0);
+	_gamerun_status = PLAYING;
+	_next_status = PLAYING;
 }
 
 
@@ -44,24 +69,11 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	Icon::load_filename();
 	Xp::init_XP();
 	Chest::init_chest();
-	_gamerun_status = PLAYING;
-	_next_status = PLAYING;
+	Damage::damage_device()->init();
 
-	player.load_skin({ "resources/character/Dog_01.bmp", "resources/character/Dog_02.bmp" ,"resources/character/Dog_03.bmp" ,"resources/character/Dog_04.bmp" ,"resources/character/Dog_05.bmp" });
-	player.set_pos(0, 0);
-	player.set_speed(300);
-	player.set_default_direct(RIGHT);
-	player.set_animation(150, false);
-	player.load_bleed();
-	player.acquire_weapon(DIAMOND);
-	player.acquire_passive(POWER);
 
 	map.load_map({ "resources/map/dummy1.bmp" });
-	map.set_pos(0, 0);
-	QuadTree::VSPlain.clear();
-
 	event_background.load_skin("resources/ui/event_background.bmp");
-	event_background.set_base_pos(0, 0);
 	for (int i = 0; i < 4; i++) {
 		level_up_button[i].load_skin("resources/ui/event_button.bmp");
 		level_up_icon_frame[i].load_skin("resources/ui/frameB.bmp");
@@ -71,9 +83,23 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 		level_up_icon[i].load_icon();
 		level_up_choice[i] = -1;
 	}
-	chest_animation.load_skin({ "resources/ui/TreasureIdle_01_big.bmp", "resources/ui/TreasureIdle_02_big.bmp" , "resources/ui/TreasureIdle_03_big.bmp" , "resources/ui/TreasureIdle_04_big.bmp" , "resources/ui/TreasureIdle_05_big.bmp" , "resources/ui/TreasureIdle_06_big.bmp" ,"resources/ui/TreasureIdle_07_big.bmp" ,"resources/ui/TreasureIdle_08_big.bmp", "resources/ui/TreasureOpen_01_big.bmp", "resources/ui/TreasureOpen_02_big.bmp" , "resources/ui/TreasureOpen_03_big.bmp" , "resources/ui/TreasureOpen_04_big.bmp" , "resources/ui/TreasureOpen_05_big.bmp" , "resources/ui/TreasureOpen_06_big.bmp" , "resources/ui/TreasureOpen_07_big.bmp" , "resources/ui/TreasureOpen_08_big.bmp" });
-	chest_animation.set_animation(100, true);
-	chest_animation.set_base_pos(5, 75);
+	// chest_animation.load_skin({ "resources/ui/TreasureIdle_01_big.bmp", "resources/ui/TreasureIdle_02_big.bmp" , "resources/ui/TreasureIdle_03_big.bmp" , "resources/ui/TreasureIdle_04_big.bmp" , "resources/ui/TreasureIdle_05_big.bmp" , "resources/ui/TreasureIdle_06_big.bmp" ,"resources/ui/TreasureIdle_07_big.bmp" ,"resources/ui/TreasureIdle_08_big.bmp", "resources/ui/TreasureOpen_01_big.bmp", "resources/ui/TreasureOpen_02_big.bmp" , "resources/ui/TreasureOpen_03_big.bmp" , "resources/ui/TreasureOpen_04_big.bmp" , "resources/ui/TreasureOpen_05_big.bmp" , "resources/ui/TreasureOpen_06_big.bmp" , "resources/ui/TreasureOpen_07_big.bmp" , "resources/ui/TreasureOpen_08_big.bmp" });
+	string base = "Resources/chest_animation/Chest1/chest1_";
+	vector<string> chest_animation_filename;
+	for (int i = 1; i <= 330; i++) {
+		chest_animation_filename.emplace_back(base + to_string(i) + ".bmp");
+	}
+	chest_animation.load_skin(chest_animation_filename);
+	//chest_animation.set_animation(100, true);
+	chest_animation.set_animation(30, true);
+	// chest_animation.set_base_pos(5, 75);
+	chest_animation.set_base_pos(0, -33);
+	CAudio::Instance()->Load(0, "Resources/AudioClip/bgm_elrond_bone.wav");
+	CAudio::Instance()->Load(1, "Resources/AudioClip/sfx_gem.wav");
+	CAudio::Instance()->Load(2, "Resources/AudioClip/sfx_enemyHit.wav");
+	CAudio::Instance()->SetVolume(0, 10);
+	CAudio::Instance()->SetVolume(1, 10);
+	CAudio::Instance()->SetVolume(2, 10);
 	CPoint chest_item_pos[] = { CPoint(0,-50), CPoint(-80,-110), CPoint(80,-110), CPoint(-100,-10), CPoint(100,-10) };
 	for (int i = 0; i < 5; i++) {
 		chest_item_icon[i].load_icon();
@@ -82,6 +108,11 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 		chest_item_frame[i].set_base_pos(chest_item_pos[i]);
 		chest_item[i] = -1;
 	}
+	game_over_frame.load_skin("Resources/ui/gameOver.bmp");
+	game_over_frame.set_base_pos(0, 0);
+	game_over_button.load_skin("Resources/ui/button_c8_normal.bmp");
+	game_over_button.set_base_pos(0, 80);
+	game_over_button.activate_hover = true;
 
 	xp_bar_frame.load_skin("resources/ui/xp_bar_frame.bmp");
 	xp_bar_frame.set_base_pos(-8, -300 + (xp_bar_frame.get_height() >> 1));
@@ -139,6 +170,7 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		break;
 	case('C'):
 		// WIP: SPAWN CHEST
+		Chest::spawnChest(player.get_pos(), 1, 100, 100);
 		break;
 	case('D'):
 		timer.add_time(10000);
@@ -178,9 +210,18 @@ void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的
 		}
 		break;
 	case(OPEN_CHEST):
+		if (!chest_animation.done())
+			break;
 		for (int i = 0; i < 5; i++)
 			chest_item[i] = -1;
+		chest_animation.reset();
+		chest_animation.set_animation(30, true);
 		_next_status = PLAYING;
+		break;
+	case(GAME_OVER):
+		if (game_over_button.is_hover(mouse_pos)) {
+			GotoGameState(GAME_STATE_OVER);
+		}
 		break;
 	}
 }
@@ -324,13 +365,14 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 {
 	update_mouse_pos();
 	vector <VSObject*> result;
-
+	
 	//polling
 	vector<double> weights(2, 0);
 
 	//open chest
 	int chest_item_count;
 	static bool can_evo = false;
+	static int chest_upgrade_chance_0 = 0, chest_upgrade_chance_1 = 0;
 
 	_gamerun_status = _next_status;
 	vector <VSObject*> plain_result = {};
@@ -341,7 +383,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		//playing status
 		//--------------------------------------------------------
 		timer.resume();
-
+		Damage::damage_device()->update();
 		player.update_pos(mouse_pos);
 		QuadTree::VSPlain.set_range(-Player::player_dx - offset, -Player::player_dy - offset, (OPEN_AS_FULLSCREEN ? RESOLUTION_X : SIZE_X) + offset, (OPEN_AS_FULLSCREEN ? RESOLUTION_Y : SIZE_Y) + offset);
 		for (auto i_enemy : enemy_factory.live_enemy) {
@@ -359,7 +401,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			}
 		}
 		for (auto 😈: enemy_factory.live_enemy) {
-			😈->update_pos(player.get_pos());
+			😈->update_pos(player.get_pos(), timer.get_ticks());
 			result = {};
 			QuadTree::VSPlain.query_by_type(result, (VSObject*)(😈), ENEMY);
 			for (VSObject* obj : result) {
@@ -370,6 +412,10 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 				😈->append_collide(player, 1, 0.5);
 				😈->update_collide();
 				player.hurt(😈->get_power());
+				if (player.get_hp_percent() == 0) {
+					_next_status = GAME_OVER;
+					return;
+				}
 			}
 		}
 		QuadTree::VSPlain.clear();
@@ -377,6 +423,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		Xp::update_XP_pos(player.get_pickup_range());
 		for (auto i : Xp::xp_all) {
 			if (is_overlapped(player, *i)) {
+				CAudio::Instance()->Play(1, false);
 				i->despawn();
 				player.pick_up_xp(i->get_xp_value());
 			}
@@ -385,6 +432,8 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			if (i->is_enable() && is_overlapped(player, *i)) {
 				i->despawn();
 				can_evo = i->get_can_evo();
+				chest_upgrade_chance_0 = i->get_upgrade_chance_0();
+				chest_upgrade_chance_1 = i->get_upgrade_chance_1();
 				_next_status = OPEN_CHEST;
 			}
 		}
@@ -439,14 +488,16 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 
 		chest_animation.enable_animation();
 		// poll chest item count
-		weights[1] = 0.05 * (double)player.get_luck() / 100;
+		weights[1] = (double)chest_upgrade_chance_0 / 100 * (double)player.get_luck() / 100;
 		weights[0] = 1 - weights[1];
 		chest_item_count = 1;
+		TRACE("1:%lf\n", weights[1]);
 		if (poll(weights, true))
 			chest_item_count = 5;
 		else {
-			weights[1] = 0.2 * (double)player.get_luck() / 100;
+			weights[1] = (double)chest_upgrade_chance_1 / 100 * (double)player.get_luck() / 100;
 			weights[0] = 1 - weights[1];
+			TRACE("2:%lf\n", weights[1]);
 			if (poll(weights, true))
 				chest_item_count = 3;
 		}
@@ -459,23 +510,22 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			}
 		}
 		break;
+	case (GAME_OVER):
+		break;
 	}
 }
 void CGameStateRun::OnShow()
 {
 	map.map_padding(player.get_pos());
 	map.show_map();
-	player.show_skin();
 	Weapon::show();
-	//for (int i = 0; i < (int)enemy.size(); i++) {
-	//	enemy[i].show_skin();
-	//}
-	for(auto 😈: enemy_factory.live_enemy)
-		😈->show_skin();
-	enemy_factory.update_enemy(timer.get_ticks(), player.get_pos(), player.get_level());
 	Xp::show();
 	Chest::show();
-
+	player.show_skin();
+	for(auto 😈: enemy_factory.live_enemy)
+		😈->show_skin();
+	enemy_factory.update(timer.get_ticks(), player.get_pos(), player.get_level(), player.get_luck(), player.get_curse());
+	Damage::damage_device()->show_damage();
 	xp_bar_cover.show();
 	xp_bar.set_base_pos(-8 - (xp_bar.get_width() * (100 - player.get_exp_percent()) / 100), -300 + (xp_bar.get_height() >> 1));
 	xp_bar.show();
@@ -580,13 +630,20 @@ void CGameStateRun::OnShow()
 		break;
 	case(OPEN_CHEST):
 		event_background.show();
+		chest_animation.start();
 		chest_animation.show();
-		for (int i = 0; i < 5; i++) {
-			if (chest_item[i] > -1) {
-				chest_item_frame[i].show();
-				chest_item_icon[i].show(chest_item[i]);
+		if (chest_animation.done()) {
+			for (int i = 0; i < 5; i++) {
+				if (chest_item[i] > -1) {
+					chest_item_frame[i].show();
+					chest_item_icon[i].show(chest_item[i]);
+				}
 			}
 		}
+		break;
+	case (GAME_OVER):
+		game_over_frame.show();
+		game_over_button.show();
 		break;
 	}
 	text_device.add_text(timer.get_minute_string() + ":" + timer.get_second_string(), CPoint(0, -265) + player.get_pos(), 1, FONT_24x18_B, ALIGN_CENTER);

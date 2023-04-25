@@ -8,7 +8,9 @@ public:
 	virtual ~VSObject();
 	void load_skin(vector<char*> filename, COLORREF color= RGB(1, 11, 111));
 	void load_skin(char* filename, COLORREF color = RGB(1, 11, 111));
+	void load_skin(vector<string>& filename, COLORREF color = RGB(1, 11, 111));
 	void load_animation(vector<char*> filename, COLORREF color = RGB(1, 11, 111));
+	void load_mirror_skin();
 	virtual void show_skin(double factor = 1.0);
 	virtual void show_animation(double factor = 1.0);
 	void unshow_skin();
@@ -54,17 +56,24 @@ public:
 	int obj_type = VSOBJECT;
 protected:
 	game_framework::CMovingBitmap _skin;
+	game_framework::CMovingBitmap _m_skin; // mirror skin
 	vector <game_framework::CMovingBitmap> _animations;
+	vector <string> _file_name;
 	int _selector = 0;
 	CPoint _position;
 	CPoint _target;
 	CPoint _collision;
 	CPoint _target_vec = {0,0};
-	bool _is_mirror = 0;
+	bool _is_mirror = false;
+	bool mirror_loaded = false;
+	bool last_mirror = false;
 	int _direct, _default_direct=LEFT;
-	int _speed=0;
+
+	int _speed = 0;
 	int _pool_id, _type;
 	double _scaler = 1;
 	double _fx, _fy;
+	int _file_size = 0;
+	clock_t _animation_cycle_time;
 };
 CPoint get_player_pos();

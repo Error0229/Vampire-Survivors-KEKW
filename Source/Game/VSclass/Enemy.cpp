@@ -1,6 +1,8 @@
 #include "stdafx.h"
+#include "../../Library/audio.h"
 #include "../../Library/gameutil.h"
 #include "VSObject.h"
+#include "Ui.h"
 #include "Enemy.h"
 #include "Pickup.h"
 #include "VSUtil.h"
@@ -11,14 +13,13 @@ Enemy::Enemy()
 	obj_type = ENEMY;
 	_last_time_got_hit_by_projectile.resize(100, -1000000);
 	_last_time_got_hit = -1000000;
+	_swarm_type = NOT_SWARM;
+	_swarm_duration = -1;
+	_swarm_start_time = -1;
+	_hit_animation.load_skin({ "Resources/hit_effect/Shockwave3.bmp"});
 }
 Enemy::~Enemy() 
 {
-}
-
-void Enemy::set_level(int level)
-{
-	this->_level = level;
 }
 
 void Enemy::set_enable(bool enable) 
@@ -53,11 +54,17 @@ int Enemy::get_spawn_limit() {
 }
 void Enemy::show_skin(double factor)
 {
+	auto dt = clock() - _last_time_got_hit;
+	if (dt < 120) {
+		_hit_animation.set_pos(_position);
+		_hit_animation.show_skin(factor + static_cast<double>(dt) / 1000.0 -0.3);
+	}
 	if ( !_is_enable )
 		return;
 	if ( !is_dead() ) {
-		this->_skin.SetTopLeft(this->_position.x - ( get_width() >> 1 ) + player_dx, this->_position.y - ( get_height() >> 1 ) + player_dy);
-		this->_skin.ShowBitmap(factor, _is_mirror);
+		// this->_skin.SetTopLeft(this->_position.x - ( get_width() >> 1 ) + player_dx, this->_position.y - ( get_height() >> 1 ) + player_dy);
+		// this->_skin.ShowBitmap(factor, _is_mirror);
+		VSObject::show_skin();
 	}
 	else {
 		if (_death_animation.is_animation_done() ) {
@@ -70,7 +77,7 @@ void Enemy::show_skin(double factor)
 		}
 	}
 }
-void Enemy::update_pos(CPoint pos) {
+void Enemy::update_pos(CPoint pos, clock_t tick) {
 	if (_is_stun) {
 		this->_speed = (int)_stun_speed;
 		if (clock() - _last_time_got_hit > 240) { // set to 2x of wiki said (120ms) 
@@ -81,18 +88,42 @@ void Enemy::update_pos(CPoint pos) {
 	else {
 		this->_speed = _mspeed;
 	}
-	VSObject::update_pos(pos);
+
+	if(_swarm_type == NOT_SWARM){
+		//apporch player
+		VSObject::update_pos(pos);
+	}
+	else if(_swarm_type == SWARM){
+		//charge toward target
+		//check disappear
+		if(_skin.Top() < -200 || _skin.Top() > 800 || _skin.Left() < -200 || _skin.Left() > 1000){
+			_is_enable = false;
+		}
+		else{
+			update_pos_by_vec();
+		}
+	}
+	else if(_swarm_type == WALL){
+		//apporch player
+		if(_swarm_duration > 0 && tick-_swarm_start_time > _swarm_duration){
+			_is_enable = false;
+		}else{
+			VSObject::update_pos(pos);
+		}
+	}
 }
 
 bool Enemy::hurt(int damage) 
 {
+	Damage::damage_device()->add_damage(damage, _position);
 	if (!is_dead()) {
 		_hp -= damage;
+		game_framework::CAudio::Instance()->Play(2, false);
 		if (is_dead()) {
 			unshow_skin();
 			Xp::spawnXP(this->_position, static_cast<int>(_xp_value));
 			if (_is_drop_chest) 
-				Chest::spawnChest(this->_position);
+				Chest::spawnChest(this->_position, _chest_can_evo, _chest_upgrade_chance_0, _chest_upgrade_chance_1);
 			_death_animation.set_pos(get_pos());
 			_death_animation.set_animation(100, true);
 			_death_animation.set_is_mirror(_is_mirror);
@@ -117,14 +148,85 @@ bool Enemy::is_collide_with(Enemy& obj, double overlap_bound)
 	return is_overlapped(*this, obj, overlap_bound);
 }
 
-void Enemy::spawn(CPoint pos, int move_animation_delay, int death_animation_delay, int player_lvl, bool drop_chest)
+void Enemy::set_spawn(CPoint pos, int move_animation_delay, int death_animation_delay)
 {
 	set_animation(move_animation_delay, false);
 	_death_animation.set_animation(death_animation_delay, true);
 	_is_enable = true;
 	_position = pos;
-	_is_drop_chest = drop_chest;
-	_hp = (_hp_scale) ? (_hp_max * player_lvl) : (_hp_max);
+	_hp = _hp_max;
+	_is_drop_chest = false;
+	_chest_can_evo = false;
+	_chest_upgrade_chance_0 = 0;
+	_chest_upgrade_chance_1 = 0;
+	_swarm_type = NOT_SWARM;
+	_swarm_duration = -1;
+	_swarm_start_time = -1;
+}
+
+void Enemy::set_scale(int player_lvl, int curse)
+{
+	//hp scale
+	if(_hp_scale)
+		_hp *= player_lvl;
+	_hp = player_lvl * _hp;
+	_hp_max = _hp;
+
+	//speed scale
+	_mspeed = curse * _mspeed / 100;
+}
+
+void Enemy::set_chest(bool can_evo, int chance0, int chance1)
+{
+	_is_drop_chest = true;
+	_chest_can_evo = can_evo;
+	_chest_upgrade_chance_0 = chance0;
+	_chest_upgrade_chance_1 = chance1;
+}
+
+void Enemy::set_spawn_pos(int count, int amount)
+{
+	static vector<double> random_pos_weights(88, 1);
+	if(_swarm_type == NOT_SWARM){
+		int i = poll(random_pos_weights);
+		if (i <= 21)
+			_position += CPoint(-440 + i * 40, -330);
+		else if (i <= 43)
+			_position += CPoint(440, -330 + (i - 21) * 30);
+		else if (i <= 65)
+			_position += CPoint(440 - (i - 43) * 40, 330);
+		else
+			_position += CPoint(-440, 330 - (i - 65) * 30);
+	}
+	else if(_swarm_type == SWARM){
+		//set target
+		CPoint pos;
+		if (_swarm_pos_i <= 4)
+			pos = CPoint(-440 + 176 * _swarm_pos_i, -330);
+		else if (_swarm_pos_i <= 9)
+			pos = CPoint(440, -330 + 110 * (_swarm_pos_i - 5));
+		else if (_swarm_pos_i <= 14)
+			pos = CPoint(440 - 176 * (_swarm_pos_i - 10), 330);
+		else
+			pos = CPoint(-440, 330 - 110 * (_swarm_pos_i - 15));
+		_position += pos;
+		_target_vec.x = -pos.x;
+		_target_vec.y = -pos.y;
+	}
+	else if(_swarm_type == WALL){
+		//eclipse WIP
+		CPoint offset = get_ellipse_point(CPoint( 0,0 ), 440, 550 , count, amount);
+		_position += offset;
+	}
+}
+
+
+void Enemy::set_swarm(int swarm_type, int duraion, clock_t tick, int swarm_pos_i)
+{
+	_swarm_type = swarm_type;
+	_swarm_duration = duraion;
+	_swarm_start_time = tick;
+	_swarm_pos_i = swarm_pos_i;
 }
 
 void Enemy::load_template_enemies()
@@ -175,6 +277,7 @@ Enemy Enemy::load_enemy(int id, char* name, int health, int power, int mspeed, d
 			break;
 		}
 	}
+	enemy.load_mirror_skin();
 	for (int i = 0; i < 20; i++) {
 		memset(tmp, 0, sizeof(tmp));
 		sprintf(tmp, ".\\Resources\\enemy\\%s_%d.bmp", name, i);
@@ -189,6 +292,7 @@ Enemy Enemy::load_enemy(int id, char* name, int health, int power, int mspeed, d
 			break;
 		}
 	}
+	enemy._death_animation.load_mirror_skin();
 	enemy._type = id;
 	enemy._id = id;
 	enemy._hp_max = health;
@@ -205,9 +309,13 @@ Enemy Enemy::load_enemy(int id, char* name, int health, int power, int mspeed, d
 
 	enemy._is_enable = false;
 	enemy._is_mirror = false;
-	enemy._is_drop_chest = false;
 	enemy._position = CPoint(0, 0);
 	enemy.set_type(id);
+
+	enemy._is_drop_chest = false;
+	enemy._chest_can_evo = false;
+	enemy._chest_upgrade_chance_0 = 0;
+	enemy._chest_upgrade_chance_1 = 0;
 	
 	enemy._speed = 50;
 	return enemy;

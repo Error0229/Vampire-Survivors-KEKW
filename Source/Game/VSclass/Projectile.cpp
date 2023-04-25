@@ -62,7 +62,7 @@ void Projectile::create_projectile(Projectile& proj, CPoint position, CPoint tar
 	proj._duration = duration;
 	proj._pierce = pierce;
 	proj._proj_interval = proj_interval;
-	proj._hitbox_delay = hitbox_delay > 0 ? hitbox_delay : 100000;
+	proj._hitbox_delay = hitbox_delay > 0 ? hitbox_delay : 200;
 	proj._knock_back = knock_back;
 	proj._pool_limit = pool_limit;
 	proj._chance = chance;
@@ -95,6 +95,9 @@ void Projectile::update_position() {
 	ScreenToClient(targetWindow, &p);
 	for (Projectile& proj : Projectile::all_proj) {
 		int dt = clock() - proj._create_time - proj._delay;
+		if (proj._target_vec == CPoint(0, 0)) {
+			proj._target_vec = CPoint(420,69);
+		}
 		switch (proj._type) {
 		case(WHIP): case (VAMPIRICA): case (GARLIC): case (VORTEX):
 			proj.set_pos(player_pos + proj._offset);
@@ -315,6 +318,12 @@ CPoint Projectile::get_parabola(double angle, double speed, int time) {
 	}
 	pre_y = y;
 	return CPoint(static_cast<int>(x), static_cast<int>(y));
+}
+void Projectile::reset() {
+	for (auto& r : all_proj) {
+		pool.free_obj(r);
+	}
+	all_proj.clear();
 }
 ObjPool<Projectile> Projectile::pool(PROJECTILE);
 vector<reference_wrapper<Projectile>> Projectile::all_proj;

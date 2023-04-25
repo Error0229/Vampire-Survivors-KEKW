@@ -108,6 +108,7 @@ namespace game_framework {
 		void  ToggleAnimation();
 		void  EnableAnimation();
 		void  DisableAnimation();
+		void  SyncMirror(const CMovingBitmap & other);
 		int   Top();						// 取得圖形的左上角的 y 座標
 		int   Width();						// 取得圖形的寬度
 		bool  IsAnimationDone();
@@ -174,7 +175,7 @@ public:
 	TextDevice();
 	~TextDevice();
 	void print_all();
-	void add_text(string str="", CPoint pos = (0, 0), int duration = 1, int font_id=FONT_24x18_B, int align_id=ALIGN_CENTER);
+	void add_text(string str = "", CPoint pos = { 0, 0 }, int duration = 1, int font_id = FONT_24x18_B, int align_id = ALIGN_CENTER);
 private:
 	CDC* ptr_CDC;
 	VS_font fonts[2];

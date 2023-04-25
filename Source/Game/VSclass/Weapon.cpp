@@ -285,7 +285,7 @@ void Weapon::attack() {
 					QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(&proj), min_dis);
 					double rad = atan2(target.y - player_pos.y, target.x - player_pos.x);
 					proj.set_rotation(rad);
-					proj.set_target_vec((target != player_pos ? target - player_pos : (mouse_pos.x > player_pos.x ? (1000, 1000) : (-1000, 1000))));
+					proj.set_target_vec((target != player_pos ? target - player_pos : (mouse_pos.x > player_pos.x ? CPoint{1000, 0} : CPoint{ -1000, 0})));
 				}
 				Projectile::create_projectile(proj, player_pos, target, w._type, i * w._proj_interval, w._area, w._damage, w._speed, w._duration, w._pierce, w._proj_interval, w._hitbox_delay,
 					w._knock_back, w._pool_limit, w._chance, w._crit_multi, w._block_by_wall, false);
@@ -466,7 +466,7 @@ void Weapon::upgrade(int weapon_type) {
 }
 void Weapon::upgrade()
 {
-	VS_ASSERT(!this->is_evo_weapon(), "this weapon is evolution weapon, cannot be upgrade");
+	VS_ASSERT(!this->is_evo_weapon(), "this weapon is evolution weapon, cannot be upgrade")
 	_level++;
 	switch (_type) {
 	case WHIP:
@@ -745,8 +745,9 @@ void Weapon::load_weapon_stats() {
 		Projectile p(type, proj_vec);
 		switch (type) {
 		case WHIP: case VAMPIRICA:
+			p.load_mirror_skin();
 			p.set_default_direct(RIGHT);
-			p.set_animation(300, true, 0);
+			p.set_animation(200, true, 0);
 			p.enable_animation();
 			break;
 		case MAGIC_MISSILE:	case HOLY_MISSILE: case KNIFE: case THOUSAND: case FIREBALL: case HELLFIRE: case DIAMOND: case ROCHER:

@@ -21,7 +21,7 @@ bool Pickup::is_enable()
 {
 	return _is_enable;
 }
-void Pickup::spawn(CPoint pos, int val)
+void Pickup::spawn(CPoint pos)
 {
 	_position = pos;
 	_speed = 0;
@@ -69,7 +69,7 @@ void Xp::spawn(CPoint pos, int val)
 {
 	// val: xp_value
 	_xp_value = val;
-	Pickup::spawn(pos, val);
+	Pickup::spawn(pos);
 }
 void Xp::spawnXP(CPoint pos, int val) {
 	// Xp xp = Xp(pos, val);
@@ -87,6 +87,12 @@ void Xp::update_XP_pos(int player_magnet) {
 			xp->update_pos(player_pos);
 			xp->_is_moving = true;
 		}
+	}
+}
+void Xp::reset_XP()
+{
+	for (auto xp : xp_all) {
+		pool.free_obj_ptr(xp);
 	}
 }
 int Xp::get_xp_value()
@@ -122,28 +128,39 @@ Chest::Chest()
 	load_skin({ "Resources/pickup/BoxOpen.bmp" });
 	_type = CHEST;
 	_can_evo = true;
+	_upgrade_chance_0 = 0;
+	_upgrade_chance_1 = 0;
 }
 Chest::~Chest()
 {
 }
-void Chest::spawn(CPoint pos, int val)
+void Chest::spawn(CPoint pos, bool can_evo, int chance0, int chance1)
 {
-	//val: can_evo
-	_can_evo = val;
-	Pickup::spawn(pos, val);
+	_can_evo = can_evo;
+	_upgrade_chance_0 = chance0;
+	_upgrade_chance_1 = chance1;
+	Pickup::spawn(pos);
 }
 bool Chest::get_can_evo()
 {
 	return _can_evo;
 }
+int Chest::get_upgrade_chance_0()
+{
+	return _upgrade_chance_0;
+}
+int Chest::get_upgrade_chance_1()
+{
+	return _upgrade_chance_1;
+}
 void Chest::init_chest()
 {
 	pool.add_obj(Chest(), 100);
 }
-void Chest::spawnChest(CPoint pos)
+void Chest::spawnChest(CPoint pos, bool can_evo, int chance0, int chance1)
 {
 	Chest* chest = pool.get_obj_ptr(CHEST);
-	chest-> spawn(pos, true);
+	chest-> spawn(pos, can_evo, chance0, chance1);
 	chest_all.emplace_back(chest);
 }
 void Chest::show()

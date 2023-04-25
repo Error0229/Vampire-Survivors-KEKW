@@ -23,6 +23,7 @@ public:
 	static void create_projectile(Projectile p);
 	static void update_position();
 	static void show();
+	static void reset();
 	static vector<reference_wrapper<Projectile>> all_proj;
 	static ObjPool<Projectile> pool;
 	static std::map<int, Projectile> template_proj;
@@ -31,7 +32,6 @@ protected:
 		_hitbox_delay, _pool_limit, _chance,
 		_crit_multi, _block_by_wall;
 	int _delay = 0;
-	std::vector<std::string> _file_name;
 	std::map<int, game_framework::CMovingBitmap> _rotation_skin;
 	double _area, _damage, _knock_back, _angle;
 	bool _is_over = 0, _is_start = 0, _is_top = 0;

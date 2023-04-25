@@ -7,6 +7,7 @@ int fast_sqrt(int x);
 bool is_overlapped_pure(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 int poll(vector<double>& weights, bool handle_negtive = false);
 int hit_border(int bx, int by, int w, int h, int obj_x, int obj_y);
+CPoint get_ellipse_point(CPoint center, int long_r, int short_r, int count, int n);
 class VSTimer{
 public:
 	VSTimer();
@@ -51,7 +52,8 @@ enum VSObject_types {
 	PROJECTILE,
 	PICKUP,
 	WALL,
-	MAP
+	MAP,
+	DAMAGE
 };
 enum weapon_names {
 	WHIP = 0, MAGIC_MISSILE, KNIFE, AXE, CROSS, HOLYBOOK,

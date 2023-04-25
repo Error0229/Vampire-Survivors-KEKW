@@ -15,6 +15,9 @@ VSObject::VSObject()
 VSObject::VSObject(vector<char*> filename, COLORREF color) :VSObject()
 {
 	this->load_skin(filename, color);
+	for (auto s : filename) {
+		_file_name.push_back(s);
+	}
 }
 VSObject::~VSObject()
 {
@@ -22,11 +25,31 @@ VSObject::~VSObject()
 }
 void VSObject::load_skin(char* filename, COLORREF color)
 {
+	_file_size = 1;
 	this->_skin.LoadBitmap(filename, color);
+	_file_name.push_back(filename);
 }
 void VSObject::load_skin(vector<char*> filename, COLORREF color)
 {
+	_file_size = static_cast<int> (filename.size());
 	this->_skin.LoadBitmap(filename, color);
+	for (auto s : filename) {
+		_file_name.push_back(s);
+	}
+}
+void VSObject::load_skin(vector<string>& filename, COLORREF color) {
+	_file_size = static_cast<int> (filename.size());
+	_skin.LoadBitmapByString(filename, color);
+	_file_name = filename;
+}
+void VSObject::load_mirror_skin() {
+	vector<string> tmp;
+	for (auto &s : _file_name) {
+		tmp.emplace_back(s.substr(0, s.find_last_of(".")) + "_m" + s.substr(s.find_last_of(".")));
+	}
+	_m_skin.LoadBitmapByString(tmp, RGB(1, 11, 111));
+	_m_skin.SyncMirror(_skin);
+	mirror_loaded = true;
 }
 void VSObject::load_animation(vector<char*> filename, COLORREF color)
 {
@@ -36,8 +59,26 @@ void VSObject::load_animation(vector<char*> filename, COLORREF color)
 void VSObject::show_skin(double factor)
 {
 	_scaler = factor;
-	this->_skin.SetTopLeft(this->_position.x - (get_width() >> 1) + player_dx, this->_position.y - (this->get_height() >> 1) + player_dy);
-	this->_skin.ShowBitmap(factor, _is_mirror);
+	_skin.SetTopLeft(this->_position.x - (get_width() >> 1) + player_dx, this->_position.y - (this->get_height() >> 1) + player_dy);
+	
+	if (mirror_loaded) {
+		if (_is_mirror) {
+			_m_skin.SetTopLeft(_position.x - (get_width() >> 1) + player_dx, _position.y - (get_height() >> 1) + player_dy);
+		}
+		if (!last_mirror && _is_mirror) {
+			_m_skin.SyncMirror(_skin);
+		}
+		else if (last_mirror && !_is_mirror) {
+			_skin.SyncMirror(_m_skin);
+		}
+	}
+	if (!mirror_loaded || !_is_mirror) {
+		_skin.ShowBitmap(factor);
+	}
+	else if (_is_mirror) {
+		_m_skin.ShowBitmap(factor);
+	}
+	last_mirror = _is_mirror;
 }
 void VSObject::show_animation(double factor)
 {
@@ -54,19 +95,28 @@ void VSObject::set_default_direct(int dir)
 }
 void VSObject::set_animation(int delay, bool _once, int cooldown)
 {
-	this->_skin.SetAnimation(delay, _once, cooldown);
+	_skin.SetAnimation(delay, _once, cooldown);
+	if(mirror_loaded)
+		_m_skin.SetAnimation(delay, _once, cooldown);
+	_animation_cycle_time = delay * (_file_size+2) ; // ?
 }
 void VSObject::set_selector(int selector)
 {
-	this->_skin.SelectShowBitmap(selector);
+	_skin.SelectShowBitmap(selector);
+	if (mirror_loaded)
+		_m_skin.SelectShowBitmap(selector);
 }
 void VSObject::enable_animation()
 {
-	this->_skin.EnableAnimation();
+	_skin.EnableAnimation();
+	if (mirror_loaded)
+		_m_skin.EnableAnimation();
 }
 void VSObject::disable_animation()
 {
 	this->_skin.DisableAnimation();
+	if (mirror_loaded)
+		_m_skin.DisableAnimation();
 }
 void VSObject::set_pos(CPoint pos)
 {
@@ -102,6 +152,9 @@ void VSObject::set_type(int type) {
 	_type = type;
 }
 void VSObject::set_animation_frame(int i) {
+	if (mirror_loaded) {
+		_m_skin.SelectShowBitmap(i);
+	}
 	_skin.SelectShowBitmap(i);
 }
 int VSObject::get_type() {
@@ -201,11 +254,17 @@ int VSObject::get_width()
 	return static_cast<int>(static_cast<double>(this->_skin.Width()) * _scaler);
 }
 bool VSObject::is_animation() {
-	return this->_skin.IsAnimation();
+	bool k = false;
+	if(mirror_loaded && _is_mirror)
+		k = _m_skin.IsAnimation();
+	return k ||_skin.IsAnimation();
 }
 bool VSObject::is_animation_done()
 {
-	return this->_skin.IsAnimationDone();
+	bool k = false;
+	if (mirror_loaded && _is_mirror)
+		k = _m_skin.IsAnimationDone();
+	return k || _skin.IsAnimationDone();
 }
 
 void VSObject::set_is_mirror(bool is_mirror)
@@ -253,7 +312,7 @@ void VSObject::update_collide()
 	// apply the collision to _position
 	// maight integrated into update_pos in the future if we need the real vector implentment
 	this->_position += _collision;
-	_collision = (0, 0);
+	_collision = { 0, 0 };
 }
 CPoint get_player_pos() {
 	return CPoint((w_size_x >> 1) - VSObject::player_dx, (w_size_y >> 1) - VSObject::player_dy);

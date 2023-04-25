@@ -1,9 +1,9 @@
 #pragma once
 
-typedef struct stat_struct {
+struct stat_struct {
 	int type;
 	string name_string, val_string;
-} stat_struct;
+};
 
 class Player :public VSObject{
 public:
@@ -28,6 +28,7 @@ public:
 	int get_move_speed();
 	int get_magnet();
 	int get_luck();
+	int get_curse();
 	int get_pickup_range();
 	int get_duration();
 	vector<stat_struct> get_stats_string();
@@ -56,7 +57,7 @@ private:
 		_coef_cooldown, _coef_area, _coef_proj_speed, 
 		_coef_duration, _coef_move_speed, _coef_luck, 
 		_coef_growth, _coef_curse, _coef_greed; // coefficients
-
+	clock_t _last_time_got_hit = -1;
 	double _recovery;
 	int _hp;
 	int _exp, _max_exp;
