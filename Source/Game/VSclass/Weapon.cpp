@@ -466,7 +466,7 @@ void Weapon::upgrade(int weapon_type) {
 }
 void Weapon::upgrade()
 {
-	VS_ASSERT(!this->is_evo_weapon(), "this weapon is evolution weapon, cannot be upgrade");
+	VS_ASSERT(!this->is_evo_weapon(), "this weapon is evolution weapon, cannot be upgrade")
 	_level++;
 	switch (_type) {
 	case WHIP:

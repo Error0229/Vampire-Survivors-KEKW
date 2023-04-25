@@ -62,7 +62,7 @@ void Projectile::create_projectile(Projectile& proj, CPoint position, CPoint tar
 	proj._duration = duration;
 	proj._pierce = pierce;
 	proj._proj_interval = proj_interval;
-	proj._hitbox_delay = hitbox_delay > 0 ? hitbox_delay : 100000;
+	proj._hitbox_delay = hitbox_delay > 0 ? hitbox_delay : 200;
 	proj._knock_back = knock_back;
 	proj._pool_limit = pool_limit;
 	proj._chance = chance;
