@@ -136,16 +136,16 @@ int EnemyFactory::get_number_all()
 vector<Enemy*> EnemyFactory::add_enemy(int type, CPoint player_pos, int count, int player_lvl, int curse)
 {
 	Enemy* 😈;
-	vector<Enemy*> 😈😈😈;
+	vector<Enemy*> 😈_🛖_😈;
 	for (int i = 0; i < count; i++) {
 		😈 = _all_enemy.get_obj_ptr(type);
 		😈->set_spawn(player_pos, 100, 100);
 		😈->set_scale(player_lvl, curse);
 		live_enemy.push_back(😈);
-		😈😈😈.push_back(😈);
+		😈_🛖_😈.push_back(😈);
 	}
 	_number_type[type] += count;
-	return 😈😈😈;
+	return 😈_🛖_😈;
 }
 
 void EnemyFactory::update(clock_t tick, CPoint player_pos, int player_lvl, int luck, int curse)
