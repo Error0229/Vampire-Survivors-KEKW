@@ -259,6 +259,8 @@ void EnemyFactory::update_swarm(clock_t tick, CPoint player_pos, int player_lvl,
 		}
 	}
 	if (wave_swarm[cnt].spawned_cnt[0] >= wave_swarm[cnt].repeat[0] && wave_swarm[cnt].spawned_cnt[1] >= wave_swarm[cnt].repeat[1]) {
+		last_tick[0] = 0;
+		last_tick[1] = 0;
 		cnt++;
 	}
 }

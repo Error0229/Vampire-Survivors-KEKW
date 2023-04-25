@@ -204,17 +204,8 @@ void Enemy::set_spawn_pos(int count, int amount)
 	}
 	else if(_swarm_type == WALL){
 		//eclipse WIP
-		CPoint offset = get_ellipse_point(CPoint( 0,0 ), 440, 330 , count, amount);
+		CPoint offset = get_ellipse_point(CPoint( 0,0 ), 440, 550 , count, amount);
 		_position += offset;
-		// int i = poll(random_pos_weights);
-		/*if (i <= 21)
-			_position += CPoint(-440 + i * 40, 330);
-		else if (i <= 43)
-			_position += CPoint(440, 330 - (i - 21) * 30);
-		else if (i <= 65)
-			_position += CPoint(440 - (i - 43) * 40, -330);
-		else
-			_position += CPoint(-440, -330 + (i - 65) * 30);*/
 	}
 }
 
