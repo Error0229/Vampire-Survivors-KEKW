@@ -95,6 +95,9 @@ void Projectile::update_position() {
 	ScreenToClient(targetWindow, &p);
 	for (Projectile& proj : Projectile::all_proj) {
 		int dt = clock() - proj._create_time - proj._delay;
+		if (proj._target_vec == CPoint(0, 0)) {
+			proj._target_vec = CPoint(420,69);
+		}
 		switch (proj._type) {
 		case(WHIP): case (VAMPIRICA): case (GARLIC): case (VORTEX):
 			proj.set_pos(player_pos + proj._offset);

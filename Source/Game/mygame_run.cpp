@@ -51,7 +51,7 @@ void CGameStateRun::OnBeginState()
 	player.load_bleed();
 	player.set_pos(0, 0);
 	player.set_speed(300);
-	player.acquire_weapon(WHIP);
+	player.acquire_weapon(MAGIC_MISSILE);
 	player.acquire_passive(POWER);
 	map = Map();
 	map.load_map({ "resources/map/dummy1.bmp" });
