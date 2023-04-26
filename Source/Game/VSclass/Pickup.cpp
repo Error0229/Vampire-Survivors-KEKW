@@ -176,6 +176,12 @@ void Chest::show()
 	auto iter = remove_if(chest_all.begin(), chest_all.end(), [](Chest* chest) {return !chest->is_enable(); });
 	chest_all.erase(iter, chest_all.end());
 }
+void Chest::reset_chest()
+{
+	for (auto chest : chest_all) {
+		pool.free_obj_ptr(chest);
+	}
+}
 deque<Xp*> Xp::xp_all = {};
 ObjPool<Xp> Xp::pool(XP);
 deque<Chest*> Chest::chest_all = {};

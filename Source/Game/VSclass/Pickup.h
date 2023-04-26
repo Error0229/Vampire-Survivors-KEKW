@@ -46,6 +46,7 @@ public:
 	static void init_chest();
 	static void spawnChest(CPoint, bool, int, int);
 	static void show();
+	static void reset_chest();
 	static deque<Chest*> chest_all;
 	static ObjPool<Chest> pool;
 private:
