@@ -74,16 +74,16 @@ enum pickup_types {
 	XP,
 	COIN,
 	COIN_BAG,
-	Rich_Coin_Bag,
+	Rich_Coin_Bag, 		//capital
 	ROSARY,
-	NDUJA_FRITTA_TANTO,
-	OROLOGION,
+	NDUJA_FRITTA_TANTO, // del
+	OROLOGION,			// del
 	VACUUM,
 	FLOOR_CHICKEN,
-	GILDED_CLOVER,
-	LITTLE_COLVER,
-	CHEST,
-	GOLDEN_EGG
+	GILDED_CLOVER,      //del
+	LITTLE_COLVER,		
+	CHEST,				//move upward
+	GOLDEN_EGG			//del
 };
 #define BLACK (RGB(0,0,0))
 #define WHITE (RGB(255,255,255))
