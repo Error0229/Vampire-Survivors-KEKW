@@ -23,7 +23,7 @@ Weapon::Weapon(int type, char* skin, vector<double> stats) {
 	this->load_skin(skin);
 	this->_type = type;
 	_level = static_cast<int>(stats[0]), _max_level = static_cast<int>(stats[1]), _damage = stats[2],
-		_speed = static_cast<int>(stats[3] * 400), _area = stats[4], _rarity = static_cast<int>(stats[5]),
+		_speed = static_cast<int>(stats[3] * stats[19]), _area = stats[4], _rarity = static_cast<int>(stats[5]),
 		_amount = static_cast<int>(stats[6]), _duration = static_cast<int>(stats[7]), _pierce = static_cast<int>(stats[8]),
 		_cooldown = static_cast<int>(stats[9]), _proj_interval = static_cast<int>(stats[10]),
 		_hitbox_delay = static_cast<int>(stats[11]), _knock_back = stats[12], _pool_limit = static_cast<int>(stats[13]),
