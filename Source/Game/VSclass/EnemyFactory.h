@@ -29,13 +29,16 @@ public:
 	vector<Enemy*> add_enemy(int type, CPoint player_pos, int count, int player_lvl, int curse);
 	static vector<Enemy*> live_enemy;
 private:
-	static clock_t last_tick;
 	static ObjPool<Enemy> _all_enemy;
 	static bool _is_init;
 	static vector<int> _number_type;
 	vector<Wave_enemy> wave_enemy;
 	vector<Wave_boss> wave_boss;
 	vector<Wave_swarm> wave_swarm;
+
+	//variable used in upadate_wave
+	clock_t enemy_last_t, swarm_last_t[2];
+	int enemy_cnt, swarm_cnt;
 
 	void load_wave_enemy();
 	void load_wave_boss();

@@ -39,6 +39,7 @@ void CGameStateRun::OnBeginState()
 	Passive::all_passive.clear();
 	Projectile::reset();
 	Xp::reset_XP();
+	Chest::reset_chest();
 	enemy_factory.reset();
 	timer.reset();
 	timer.start();
@@ -169,7 +170,6 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		player.pick_up_xp(20);
 		break;
 	case('C'):
-		// WIP: SPAWN CHEST
 		Chest::spawnChest(player.get_pos(), 1, 100, 100);
 		break;
 	case('D'):
