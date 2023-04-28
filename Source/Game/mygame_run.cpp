@@ -44,17 +44,18 @@ void CGameStateRun::OnBeginState()
 	timer.reset();
 	timer.start();
 	CAudio::Instance()->Play(0, true); // 🉑
-	player = Player();
+	player = Player(game->Get🚹());
 	player.set_default_direct(RIGHT);
 	player.set_animation(150, false);
-	player.load_skin({ "resources/character/Dog_01.bmp", "resources/character/Dog_02.bmp" ,"resources/character/Dog_03.bmp" ,"resources/character/Dog_04.bmp" ,"resources/character/Dog_05.bmp" });
+	// player.load_skin({ "resources/character/Dog_01.bmp", "resources/character/Dog_02.bmp" ,"resources/character/Dog_03.bmp" ,"resources/character/Dog_04.bmp" ,"resources/character/Dog_05.bmp" });
 	player.load_mirror_skin();
 	player.load_bleed();
 	player.set_pos(0, 0);
 	player.set_speed(300);
-	player.acquire_weapon(WHIP);
-	player.acquire_passive(POWER);
+	// player.acquire_weapon(WHIP);
+	// player.acquire_passive(POWER);
 	map = Map();
+	// map = Map(game->Get🗺️())
 	map.load_map({ "resources/map/dummy1.bmp" });
 	map.set_pos(0, 0);
 	event_background.set_base_pos(0, 0);
@@ -71,7 +72,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	Xp::init_XP();
 	Chest::init_chest();
 	Damage::damage_device()->init();
-
+	Player::init_player();
 
 	map.load_map({ "resources/map/dummy1.bmp" });
 	event_background.load_skin("resources/ui/event_background.bmp");

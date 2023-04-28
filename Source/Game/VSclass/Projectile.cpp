@@ -141,6 +141,7 @@ void Projectile::update_position() {
 				CPoint target;
 				QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(&proj), min_dis);
 				proj.set_target_vec(target - proj._position);
+				proj.set_pos(player_pos);
 			}
 			else if (proj._is_start) {
 				CPoint par = proj.get_parabola(vertical, static_cast<double>(proj._speed), dt);
