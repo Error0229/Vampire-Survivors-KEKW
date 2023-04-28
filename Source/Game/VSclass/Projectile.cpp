@@ -71,6 +71,7 @@ void Projectile::create_projectile(Projectile& proj, CPoint position, CPoint tar
 	proj._is_mirror = is_mirror;
 	proj._is_start = (delay > 0 ? 0 : 1);
 	proj._is_over = false;
+	proj._collision = position;
 	proj.set_create_time(clock());
 	CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
 	proj._offset = proj._position - player_pos;
@@ -141,7 +142,7 @@ void Projectile::update_position() {
 				CPoint target;
 				QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(&proj), min_dis);
 				proj.set_target_vec(target - proj._position);
-				proj.set_pos(player_pos);
+				proj. _collision = player_pos;
 			}
 			else if (proj._is_start) {
 				CPoint par = proj.get_parabola(vertical, static_cast<double>(proj._speed), dt);
@@ -312,8 +313,8 @@ CPoint Projectile::get_parabola(double angle, double speed, int time) {
 	static double pre_y = 100000000;
 	speed = speed / (1000.0 / GAME_CYCLE_TIME) * 50; // 50 depends on game cycle time
 	// since projectile using this function don't need target so we use it as a tmp
-	double x = _target.x + speed * dt * cos(angle);
-	double y = _target.y - speed * dt * sin(angle) + 0.5 * 980 * dt * dt;
+	double x = _collision.x + speed * dt * cos(angle);
+	double y = _collision.y - speed * dt * sin(angle) + 0.5 * 980 * dt * dt;
 	if (!_is_top && y > pre_y) {
 		_is_top = true;
 	}
