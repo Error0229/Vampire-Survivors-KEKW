@@ -324,6 +324,11 @@
   <ItemGroup>
     <ResourceCompile Include="Source\Core\game.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\enemy\Brazier1.bmp" />
+    <Image Include="Resources\enemy\Brazier2.bmp" />
+    <Image Include="Resources\enemy\Brazier3.bmp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

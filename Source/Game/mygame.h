@@ -101,6 +101,7 @@ namespace game_framework {
 		Map map;
 		Player player;
 		EnemyFactory enemy_factory;
+		LightSourceFactory light_source_factory;
 		int _gamerun_status, _next_status;
 		VSTimer timer;
 		Ui game_over_frame;
@@ -133,7 +134,6 @@ namespace game_framework {
 
 		Ui hp_bar;
 
-		vector<LightSource> lightsource;
 	};
 
 	/////////////////////////////////////////////////////////////////////////////

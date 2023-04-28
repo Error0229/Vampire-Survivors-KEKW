@@ -41,6 +41,7 @@ void CGameStateRun::OnBeginState()
 	Xp::reset_XP();
 	Chest::reset_chest();
 	enemy_factory.reset();
+	light_source_factory.reset();
 	timer.reset();
 	timer.start();
 	CAudio::Instance()->Play(0, true); // 🉑
@@ -67,6 +68,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 {
 	Weapon::load_weapon_stats();
 	enemy_factory.init();
+	light_source_factory.init();
 	Icon::load_filename();
 	Xp::init_XP();
 	Chest::init_chest();
@@ -152,12 +154,6 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	hp_bar.load_skin({ "resources/ui/hp_bar_0.bmp", "resources/ui/hp_bar_1.bmp", "resources/ui/hp_bar_2.bmp", "resources/ui/hp_bar_3.bmp", "resources/ui/hp_bar_4.bmp", "resources/ui/hp_bar_5.bmp", "resources/ui/hp_bar_6.bmp", "resources/ui/hp_bar_7.bmp", "resources/ui/hp_bar_8.bmp", "resources/ui/hp_bar_9.bmp", "resources/ui/hp_bar_10.bmp", "resources/ui/hp_bar_11.bmp", "resources/ui/hp_bar_12.bmp", "resources/ui/hp_bar_13.bmp", "resources/ui/hp_bar_14.bmp", "resources/ui/hp_bar_15.bmp", "resources/ui/hp_bar_16.bmp", "resources/ui/hp_bar_17.bmp", "resources/ui/hp_bar_18.bmp", "resources/ui/hp_bar_19.bmp" });;
 	hp_bar.set_base_pos(0, 15);
 
-
-	////////////////////////////////////////
-	LightSource ls;
-	ls.set_spawn(CPoint(0, -50));
-	lightsource.push_back(ls);
-	////////////////////////////////////////
 }
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -398,13 +394,6 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 				QuadTree::VSPlain.insert((VSObject*)(i_enemy));
 			}
 		}
-		////////////////////////////////////////
-		for (auto &i : lightsource){
-			if(i.is_enable()){
-				QuadTree::VSPlain.insert((VSObject*)(&i));
-			}
-		}
-		////////////////////////////////////////
 		Weapon::attack();
 		Projectile::update_position();
 		for (Projectile& proj : Projectile::all_proj) {
@@ -412,10 +401,6 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			QuadTree::VSPlain.query_by_type(plain_result, (VSObject*)(&proj), ENEMY);
 			for (VSObject* obj : plain_result) {
 				proj.collide_with_enemy(*((Enemy*)obj), player.get_duration());
-			}
-			QuadTree::VSPlain.query_by_type(plain_result, (VSObject*)(&proj), LIGHTSOURCE);
-			for (VSObject* obj : plain_result) {
-				proj.collide_with_lightsource(*((LightSource*)obj), player.get_duration());
 			}
 		}
 		for (auto 😈: enemy_factory.live_enemy) {
@@ -436,10 +421,24 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 				}
 			}
 		}
-		////////////////////////////////////////
-		for(auto &i:lightsource)
-			i.update_pos(player.get_pos());
-		////////////////////////////////////////
+
+		// light source collision
+		QuadTree::VSPlain.clear();
+		for (auto i : light_source_factory.light_sourse_all){
+			if(i->is_enable()){
+				QuadTree::VSPlain.insert((VSObject*)(i));
+			}
+		}
+		for (Projectile& proj : Projectile::all_proj) {
+			plain_result.clear();
+			QuadTree::VSPlain.query_by_type(plain_result, (VSObject*)(&proj), LIGHTSOURCE);
+			for (VSObject* obj : plain_result) {
+				proj.collide_with_lightsource(*((LightSource*)obj), player.get_duration());
+			}
+		}
+		for(auto i: light_source_factory.light_sourse_all)
+			i->update_pos(player.get_pos());
+		
 		QuadTree::VSPlain.clear();
 		// suck xp
 		Xp::update_XP_pos(player.get_pickup_range());
@@ -546,11 +545,10 @@ void CGameStateRun::OnShow()
 	player.show_skin();
 	for(auto 😈: enemy_factory.live_enemy)
 		😈->show_skin();
-	////////////////////////////////////////
-	for(auto &i:lightsource)
-		i.show_skin();
-	////////////////////////////////////////
 	enemy_factory.update(timer.get_ticks(), player.get_pos(), player.get_level(), player.get_luck(), player.get_curse());
+	light_source_factory.update(timer.get_ticks(), player.get_pos());
+	for (auto i : light_source_factory.light_sourse_all)
+		i->show_skin();
 	Damage::damage_device()->show_damage();
 	xp_bar_cover.show();
 	xp_bar.set_base_pos(-8 - (xp_bar.get_width() * (100 - player.get_exp_percent()) / 100), -300 + (xp_bar.get_height() >> 1));
