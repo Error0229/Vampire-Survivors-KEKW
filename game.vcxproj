@@ -265,6 +265,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Game\VSclass\EnemyFactory.cpp" />
+    <ClCompile Include="Source\Game\VSclass\LightSource.cpp" />
     <ClCompile Include="Source\Game\VSclass\ObjPool.cpp" />
     <ClCompile Include="Source\Game\VSclass\QuadTree.cpp" />
     <ClCompile Include="Source\Game\VSclass\Projectile.cpp" />
@@ -294,6 +295,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Game\VSclass\EnemyFactory.h" />
+    <ClInclude Include="Source\Game\VSclass\LightSource.h" />
     <ClInclude Include="Source\Game\VSclass\ObjPool.h" />
     <ClInclude Include="Source\Game\VSclass\QuadTree.h" />
     <ClInclude Include="Source\Game\VSclass\Projectile.h" />

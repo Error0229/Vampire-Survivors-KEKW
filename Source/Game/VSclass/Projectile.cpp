@@ -51,6 +51,9 @@ void Projectile::collide_with_enemy(Enemy& 🥵, int player_duration) {
 		this->_is_over = true;
 	🥵.hurt(static_cast<int>(this->_damage));
 }
+void Projectile::collide_with_lightsource(LightSource& ls, int player_duration) {
+	ls.hurt(static_cast<int>(this->_damage));
+}
 void Projectile::create_projectile(Projectile& proj, CPoint position, CPoint target_pos, int type, int delay, double area, double damage, int speed, int duration, int pierce, int proj_interval, int hitbox_delay, double knock_back, int pool_limit, int chance, int criti_multi, int block_by_wall, bool is_mirror) {
 	proj._type = type;
 	proj._position = position;

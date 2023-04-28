@@ -132,6 +132,8 @@ namespace game_framework {
 		TextDevice text_device;
 
 		Ui hp_bar;
+
+		vector<LightSource> lightsource;
 	};
 
 	/////////////////////////////////////////////////////////////////////////////
