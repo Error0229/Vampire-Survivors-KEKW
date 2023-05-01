@@ -34,17 +34,21 @@ void CGameStateInit::OnInit()
 	button_start.load_skin({"resources/ui/button_start.bmp"});
 	button_start.activate_hover = true;
 	background.load_skin({"resources/ui/background_1.bmp"});
-
+	select_bg.load_skin({"resources/ui/event_background.bmp"});
+	✅.load_skin({"Resources/ui/button_c5_normal.bmp"});
+	❌.load_skin({"resources/ui/button_start.bmp"});
+	background.set_pos(0, 0);
+	button_start.set_pos(0, 0);
+	select_bg.set_pos(0, 0);
 
 }
 
 void CGameStateInit::OnBeginState()
 {
 	 // load backgrond (開始頁面)
+	STATE = menu_state::start;
 	VSObject::player_dx = w_size_x >> 1;
 	VSObject::player_dy = w_size_y >> 1;
-	background.set_pos(0, 0);
-	button_start.set_pos(0, 0);
 }
 
 void CGameStateInit::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -56,11 +60,39 @@ void CGameStateInit::OnLButtonDown(UINT nFlags, CPoint point)
 {
 
 	CPoint mouse_pos = point - CPoint((OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1), (OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1));
-	if (button_start.is_hover(mouse_pos)) 
-	{
-		game->Set🗺️🚹(1, "The Dog");
-		GotoGameState(GAME_STATE_RUN);		// 切換至GAME_STATE_RUN
+	switch (STATE) {
+	case menu_state::init: {
+		if (button_start.is_hover(mouse_pos)) {
+			STATE = menu_state::select_character;
+		}
+		break;
 	}
+	case menu_state::select_character :{
+		if (confirm_button.is_hover(mouse_pos)) {
+			STATE = menu_state::select_map;
+		}
+		else if (cancel_button.is_hover(mouse_pos)) {
+			STATE = menu_state::init;
+		}
+		break;
+	}
+	case menu_state::select_map: {
+		if (confirm_button.is_hover(mouse_pos)) {
+			game->Set🗺️🚹(1, "The Dog");
+			STATE = menu_state::start;
+		}
+		else if (cancel_button.is_hover(mouse_pos)) {
+			STATE = menu_state::select_character;
+		}
+		break;
+	}
+	}
+
+	//if (button_start.is_hover(mouse_pos)) 
+	//{
+	//	game->Set🗺️🚹(1, "The Dog");
+	//	GotoGameState(GAME_STATE_RUN);		// 切換至GAME_STATE_RUN
+	//}
 }
 
 void CGameStateInit::OnShow()
@@ -68,5 +100,24 @@ void CGameStateInit::OnShow()
 	// show background
 	background.show_skin();
 	//button_start->show_button();
-	button_start.show_skin();
+	switch (STATE) {
+	case menu_state::init: {
+		button_start.show_skin();
+		break;
+	}
+	case menu_state::select_character: {
+		text_device.add_text("Character selection", CPoint(0, -150), 1, FONT_12x08, ALIGN_LEFT);
+		select_bg.show_skin();
+		break;
+	}
+	case menu_state::select_map: {
+		text_device.add_text("map selection", CPoint(0, -150), 1, FONT_12x08, ALIGN_LEFT);
+		select_bg.show_skin();
+		break;
+	}
+	case menu_state::start:{
+		GotoGameState(GAME_STATE_RUN);
+		break;
+	}
+	}
 }

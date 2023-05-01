@@ -66,16 +66,21 @@ namespace game_framework {
 	protected:
 		void OnShow();									// 顯示這個狀態的遊戲畫面
 	private:
-		CMovingBitmap logo;								// csie的logo
-		CMovingBitmap text;
-		CMovingBitmap portrait;
+		enum class menu_state {
+			init,
+			select_character, 
+			select_map, 
+			start
+		};
+		TextDevice text_device;
+		menu_state STATE;
 		vector<Ui> players;
 		vector<Ui> maps;
  		Ui button_start;
 		Ui select_bg;
-		Ui confirm_button;
+		Ui ✅;
+		Ui ❌;
 		Ui start_button;
-		Ui cancel_button;
 		VSObject background;
 	};
 
