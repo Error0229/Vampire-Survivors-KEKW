@@ -57,10 +57,15 @@ void CGameStateRun::OnBeginState()
 	// player.acquire_weapon(WHIP);
 	// player.acquire_passive(POWER);
 	map = Map();
-	// map = Map(game->Get🗺️())
-	// map.load_map({ "resources/map/bg_forest.bmp" });
-	map.load_map({ "resources/map/dummy2.bmp" });
-	MAP_ID = 1;
+	MAP_ID = game->Get🗺️();
+	switch (MAP_ID) {
+	case 0:
+		map.load_map({ "resources/map/dummy1.bmp" });
+		break;
+	case 1:
+		map.load_map({ "resources/map/dummy2.bmp" });
+		break;
+	}
 	map.set_pos(0, 0);
 	event_background.set_base_pos(0, 0);
 	_gamerun_status = PLAYING;
