@@ -44,19 +44,35 @@ void LightSource::set_spawn(CPoint player_pos)
 	_hp = _hp_max;
     static vector<double> random_pos_weights(88, 1);
 	int i = poll(random_pos_weights);
-	if (i <= 21)
-		_position = player_pos + CPoint(-440 + i * 40, -330);
-	else if (i <= 43)
-		_position = player_pos + CPoint(440, -330 + (i - 21) * 30);
-	else if (i <= 65)
-		_position = player_pos + CPoint(440 - (i - 43) * 40, 330);
-	else
-		_position = player_pos + CPoint(-440, 330 - (i - 65) * 30);
+    _position = player_pos;
+    switch (MAP_ID) {
+    case 0:
+        if (i <= 21)
+            _position += CPoint(-440 + i * 40, -330);
+        else if (i <= 43)
+            _position += CPoint(440, -330 + (i - 21) * 30);
+        else if (i <= 65)
+            _position += CPoint(440 - (i - 43) * 40, 330);
+        else
+            _position += CPoint(-440, 330 - (i - 65) * 30);
+        break;
+    case 1:
+        i >>= 2;
+        if (i <= 11)
+            _position += CPoint(440, -330 + i * 30);
+        else
+            _position += CPoint(-440, 330 - (i - 11) * 30);
+        break;
+    }
 }
 
 void LightSource::update_pos(CPoint pos)
 {
     VSObject::update_pos(pos);
+    if (MAP_ID == 1) {
+        _position.y = (_position.y > 210) ? 210 : _position.y;
+        _position.y = (_position.y < -210) ? -210 : _position.y;
+    }
 }
 
 bool LightSource::hurt(int damage)
@@ -64,7 +80,7 @@ bool LightSource::hurt(int damage)
     Damage::damage_device()->add_damage(damage, _position);
     if(_is_enable){
         _hp -= damage;
-        game_framework::CAudio::Instance()->Play(2, false);
+        //game_framework::CAudio::Instance()->Play(2, false);
         if (_hp <= 0) {
             // unshow_skin();
             _is_enable = false;
@@ -137,7 +153,7 @@ void LightSourceFactory::update(clock_t tick, CPoint player_pos, int luck)
 
     //spawn new
     vector<double> weights(2, 0);
-    weights[1] = max(0.1 * luck / 100, 0.5);
+    weights[1] = min(0.1 * luck / 100, 0.5);
     weights[0] = 1 - weights[1];
     if (poll(weights)) {
         spawn_lightsource(player_pos);
