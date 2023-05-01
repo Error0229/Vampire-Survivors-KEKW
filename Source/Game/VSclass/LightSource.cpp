@@ -82,7 +82,6 @@ bool LightSource::hurt(int damage)
         _hp -= damage;
         //game_framework::CAudio::Instance()->Play(2, false);
         if (_hp <= 0) {
-            // unshow_skin();
             _is_enable = false;
             _hp = 0;
 
