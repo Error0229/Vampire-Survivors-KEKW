@@ -5,8 +5,10 @@
 #include "Passive.h"
 #include "Player.h"
 #include <string>
+#include <fstream>
+#include <sstream>
 using namespace game_framework;
-
+map<string, Player> Player::template_player;
 Player::Player()
 {
 	obj_type = PLAYER;
@@ -62,12 +64,45 @@ Player::Player()
 	//_bleed_animation.load_skin({ "resources/character/Blood1.bmp", "resources/character/Blood2.bmp", "resources/character/Blood3.bmp" });
 	//_bleed_animation.set_animation(50, false);
 }
+Player::Player(string name) {
+	*this = template_player[name];
+	acquire_weapon(_weapon_type);
+}
 Player::~Player()
 {
+}
+void Player::init_player() {
+
+	ifstream file("source/game/VSclass/player_data.csv");
+	string header, line, skin_file, name, token;
+	getline(file, header); // no use
+	while (getline(file, line)) {
+		Player p;
+		int cnt;
+		vector <string> skin_files;
+		stringstream ss(line);
+		getline(ss, skin_file, ',');
+		getline(ss, token, ',');
+		cnt = stoi(token);
+		getline(ss, name, ',');
+		getline(ss, token, ',');
+		p._weapon_type = stoi(token);
+		p._name = name;
+		for (int i = 1; i <= cnt; i++) {
+			skin_files.push_back("resources/character/" + skin_file + "_0" +to_string(i) + ".bmp");
+		}
+		p.load_skin(skin_files);
+		template_player[p._name] = p;
+	}
+
 }
 void Player::update_pos(CPoint target) {
 	CPoint pos = _position;
 	VSObject::update_pos(target);
+	if (MAP_ID == 1) {
+		_position.y = (_position.y > 210) ? 210 : _position.y;
+		_position.y = (_position.y < -210) ? -210 : _position.y;
+	}
 	VSObject::player_dx -= _position.x - pos.x ;
 	VSObject::player_dy -= _position.y - pos.y ;
 }
@@ -77,6 +112,7 @@ void Player::load_bleed() {
 	_bleed_animation.enable_animation();
 }
 void Player::show_skin(double factor) {
+	
 	VSObject::show_skin(factor);
 	if (_is_hurt && clock() - _last_time_got_hit < 300) {
 		_bleed_animation.set_pos(_position);

@@ -256,6 +256,7 @@
     <None Include="Resources\item_id.csv" />
     <None Include="RES\GAME.RC2" />
     <None Include="Source\Game\VSclass\enemy_stats.csv" />
+    <None Include="Source\Game\VSclass\player_data.csv" />
     <None Include="Source\Game\VSclass\stage1_wave_boss.csv" />
     <None Include="Source\Game\VSclass\stage1_wave_enemy.csv" />
     <None Include="Source\Game\VSclass\stage1_wave_swarm.csv" />

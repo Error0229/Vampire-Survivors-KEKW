@@ -241,7 +241,16 @@ namespace game_framework {
 		CSpecialEffect::SetCurrentTime();
 		running = true;
 	}
-
+	void CGame::Set🗺️🚹(int 🗺️, string 🚹) {
+		_🗺️ = 🗺️;
+		_🚹 = 🚹;
+	}
+	int CGame::Get🗺️() {
+		return _🗺️;
+	}
+	string CGame::Get🚹() {
+		return _🚹;
+	}
 	/////////////////////////////////////////////////////////////////////////////
 	// CSpecialEffect: Specail Effect functions
 	// 一般的遊戲並不需直接操作這個物件，因此可以全部略過不看

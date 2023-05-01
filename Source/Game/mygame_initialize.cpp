@@ -58,6 +58,7 @@ void CGameStateInit::OnLButtonDown(UINT nFlags, CPoint point)
 	CPoint mouse_pos = point - CPoint((OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1), (OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1));
 	if (button_start.is_hover(mouse_pos)) 
 	{
+		game->Set🗺️🚹(1, "The Dog");
 		GotoGameState(GAME_STATE_RUN);		// 切換至GAME_STATE_RUN
 	}
 }

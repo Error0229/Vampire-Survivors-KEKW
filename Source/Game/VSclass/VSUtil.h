@@ -89,3 +89,4 @@ enum pickup_types {
 const double MATH_PI = 3.1415926;
 constexpr int w_size_x = (OPEN_AS_FULLSCREEN ? RESOLUTION_X : SIZE_X);
 constexpr int w_size_y = (OPEN_AS_FULLSCREEN ? RESOLUTION_Y : SIZE_Y);
+extern int MAP_ID; // by using extern, can avoid static variable copy problem, and don't need getter and setter
