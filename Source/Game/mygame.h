@@ -97,6 +97,7 @@ namespace game_framework {
 		void update_mouse_pos();
 		int draw_level_up(bool);
 		int draw_open_chest(bool pull_evo=true);
+		int coin_count;
 		CPoint mouse_pos;								// 滑鼠的座標
 		Map map;
 		Player player;

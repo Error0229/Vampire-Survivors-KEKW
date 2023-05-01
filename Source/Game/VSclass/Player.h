@@ -46,6 +46,7 @@ public:
 	bool all_max();
 	bool full_inv();
 	void regen(double amount = 0);
+	void increase_luck(int amount);
 private:
 	VSObject _bleed_animation;
 	// vector<Weapon> _weapons;

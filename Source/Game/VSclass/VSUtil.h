@@ -72,20 +72,18 @@ enum evolution_weapon_names {
 	TRIASSO3, GUNS3, SILF3, VENTO2, SOLES, CANDYBOX2
 };
 enum pickup_types {
-	XP,
 	COIN,
 	COIN_BAG,
-	Rich_Coin_Bag, 		//capital
+	RICH_COIN_BAG,
 	ROSARY,
-	NDUJA_FRITTA_TANTO, // del
-	OROLOGION,			// del
 	VACUUM,
-	FLOOR_CHICKEN,
-	GILDED_CLOVER,      //del
-	LITTLE_COLVER,		
-	CHEST,				//move upward
-	GOLDEN_EGG			//del
+	CHICKEN,
+	LITTLE_CLOVER,
+	XP,
+	CHEST,
+	LSPICKUP
 };
+
 #define BLACK (RGB(0,0,0))
 #define WHITE (RGB(255,255,255))
 const double MATH_PI = 3.1415926;

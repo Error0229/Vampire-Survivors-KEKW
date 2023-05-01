@@ -182,7 +182,61 @@ void Chest::reset_chest()
 		pool.free_obj_ptr(chest);
 	}
 }
+
+
+LightSourcePickup::LightSourcePickup()
+{
+	_type = LSPICKUP;
+	_lightsource_pickup_type = 0;
+	load_skin({ "Resources/pickup/CoinGold.bmp", "Resources/pickup/MoneyBagRed.bmp", "Resources/pickup/MoneyBagColor.bmp", "Resources/pickup/Rosary1.bmp", "Resources/pickup/Vacuum1.bmp", "Resources/pickup/Roast.bmp", "Resources/pickup/Clover2.bmp"});
+}
+LightSourcePickup::~LightSourcePickup()
+{
+}
+void LightSourcePickup::spawn(CPoint pos, int lightsource_pickup_type)
+{
+	_lightsource_pickup_type = lightsource_pickup_type;
+	set_selector(_lightsource_pickup_type);
+	Pickup::spawn(pos);
+}
+int LightSourcePickup::get_lightsource_pickup_type()
+{
+	return _lightsource_pickup_type;
+}
+void LightSourcePickup::init_lightsource_pickup()
+{
+	pool.add_obj(LightSourcePickup(), 20);
+}
+void LightSourcePickup::spawn_lightsource_pickup(CPoint pos, int lightsource_pickup_type)
+{
+	LightSourcePickup* lspickup = pool.get_obj_ptr(LSPICKUP);
+	lspickup-> spawn(pos, lightsource_pickup_type);
+	LSPickup_all.emplace_back(lspickup);
+}
+void LightSourcePickup::show()
+{
+	for (auto lspickup : LSPickup_all) {
+		if (lspickup->is_enable()) {
+			lspickup->show_skin();
+		}
+		else {
+			pool.free_obj_ptr(lspickup);
+		}
+	}
+	auto iter = remove_if(LSPickup_all.begin(), LSPickup_all.end(), [](LightSourcePickup* lspickup) {return !lspickup->is_enable(); });
+	LSPickup_all.erase(iter, LSPickup_all.end());
+}
+void LightSourcePickup::reset()
+{
+	for (auto lspickup : LSPickup_all) {
+		pool.free_obj_ptr(lspickup);
+	}
+}
+
+
 deque<Xp*> Xp::xp_all = {};
 ObjPool<Xp> Xp::pool(XP);
 deque<Chest*> Chest::chest_all = {};
 ObjPool<Chest> Chest::pool(CHEST);
+deque<LightSourcePickup*> LightSourcePickup::LSPickup_all = {};
+ObjPool<LightSourcePickup> LightSourcePickup::pool(LSPICKUP);

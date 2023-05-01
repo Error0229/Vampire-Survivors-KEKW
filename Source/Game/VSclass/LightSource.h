@@ -28,7 +28,7 @@ class LightSourceFactory {
     int get_number_all();
 	void init();
 	void reset();
-    void update(clock_t tick, CPoint player_pos);
+    void update(clock_t tick, CPoint player_pos, int luck);
     void spawn_lightsource(CPoint player_pos);
     static deque<LightSource*> light_sourse_all;
 

@@ -40,6 +40,7 @@ void CGameStateRun::OnBeginState()
 	Projectile::reset();
 	Xp::reset_XP();
 	Chest::reset_chest();
+	LightSourcePickup::reset();
 	enemy_factory.reset();
 	light_source_factory.reset();
 	timer.reset();
@@ -61,6 +62,7 @@ void CGameStateRun::OnBeginState()
 	event_background.set_base_pos(0, 0);
 	_gamerun_status = PLAYING;
 	_next_status = PLAYING;
+	coin_count = 0;
 }
 
 
@@ -72,6 +74,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	Icon::load_filename();
 	Xp::init_XP();
 	Chest::init_chest();
+	LightSourcePickup::init_lightsource_pickup();
 	Damage::damage_device()->init();
 
 
@@ -173,12 +176,19 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		player.pick_up_xp(20);
 		break;
 	case('C'):
-		Chest::spawnChest(player.get_pos(), 1, 100, 100);
+		Chest::spawnChest(player.get_pos() + CPoint(0, -100), 1, 100, 100);
 		break;
 	case('D'):
 		timer.add_time(10000);
 		break;
+	case('E'):
+		static int type = 0;
+		LightSourcePickup::spawn_lightsource_pickup(player.get_pos() + CPoint(0, -100), type++);
+		if (type == 7)
+			type = 0;
+		break;
 	}
+	
 
 }
 
@@ -458,6 +468,36 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 				_next_status = OPEN_CHEST;
 			}
 		}
+		for (auto i : LightSourcePickup::LSPickup_all) {
+			if (i->is_enable() && is_overlapped(player, *i)) {
+				i->despawn();
+				switch (i->get_lightsource_pickup_type()) {
+				case COIN:
+					coin_count += 1;
+					break;
+				case COIN_BAG:
+					coin_count += 10;
+					break;
+				case RICH_COIN_BAG:
+					coin_count += 100;
+					break;
+				case ROSARY:
+					for (auto 😈 : enemy_factory.live_enemy) {
+						😈->hurt(1000);
+					}
+					break;
+				case VACUUM:
+					Xp::update_XP_pos(1000);
+					break;
+				case CHICKEN:
+					player.regen(30);
+					break;
+				case LITTLE_CLOVER:
+					player.increase_luck(10);
+					break;
+				}
+			}
+		}
 
 		if (!player.is_hurt())
 			player.regen();
@@ -542,11 +582,12 @@ void CGameStateRun::OnShow()
 	Weapon::show();
 	Xp::show();
 	Chest::show();
+	LightSourcePickup::show();
 	player.show_skin();
 	for(auto 😈: enemy_factory.live_enemy)
 		😈->show_skin();
 	enemy_factory.update(timer.get_ticks(), player.get_pos(), player.get_level(), player.get_luck(), player.get_curse());
-	light_source_factory.update(timer.get_ticks(), player.get_pos());
+	light_source_factory.update(timer.get_ticks(), player.get_pos(), player.get_luck());
 	for (auto i : light_source_factory.light_sourse_all)
 		i->show_skin();
 	Damage::damage_device()->show_damage();

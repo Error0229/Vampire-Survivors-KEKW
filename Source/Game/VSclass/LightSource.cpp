@@ -15,7 +15,7 @@ LightSource::LightSource()
     _last_time_got_hit_by_projectile.resize(100, -1000000);
 	_last_time_got_hit = -1000000;
     _is_enable = false;
-    _hp_max = 50;
+    _hp_max = 10;
     _hp = 0;
     load_skin({"Resources/Enemy/Brazier1.bmp", "Resources/Enemy/Brazier2.bmp", "Resources/Enemy/Brazier3.bmp"});
     _hit_animation.load_skin({ "Resources/hit_effect/Shockwave3.bmp" });
@@ -72,7 +72,9 @@ bool LightSource::hurt(int damage)
             _hp = 0;
 
             // SPAWN SOMETHING
-
+            static vector<double> weights = {50, 10, 1, 1, 2, 12, 1};
+            LightSourcePickup::spawn_lightsource_pickup(_position, poll(weights));
+            
             return true;
         }
     }
@@ -113,7 +115,7 @@ void LightSourceFactory::reset()
 	}
 }
 
-void LightSourceFactory::update(clock_t tick, CPoint player_pos)
+void LightSourceFactory::update(clock_t tick, CPoint player_pos, int luck)
 {
     // check exist
     bool is_clear = false;
@@ -135,12 +137,16 @@ void LightSourceFactory::update(clock_t tick, CPoint player_pos)
         return;
 
     //spawn new
-    spawn_lightsource(player_pos);
+    vector<double> weights(2, 0);
+    weights[1] = max(0.1 * luck / 100, 0.5);
+    weights[0] = 1 - weights[1];
+    if (poll(weights)) {
+        spawn_lightsource(player_pos);
+    }
 }
 
 void LightSourceFactory::spawn_lightsource(CPoint player_pos)
 {
-    TRACE("AAAAAAA\n");
     auto 🔥 = pool.get_obj_ptr(LIGHTSOURCE);
     🔥->set_spawn(player_pos);
     light_sourse_all.push_back(🔥);
