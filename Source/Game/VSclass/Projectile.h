@@ -18,6 +18,7 @@ public:
 	void set_angle(double angle);
 	CPoint get_parabola(double angle, double speed, int time);
 	void load_rotation();
+
 	static void init_projectile(int type, int count);
 	static void create_projectile(Projectile& proj, CPoint position, CPoint target_pos, int delay, int type, double area, double damage, int speed, int duration, int pierce, int proj_interval, int hitbox_delay, double knock_back, int pool_limit, int chance, int criti_multi, int block_by_wall, bool is_mirror);
 	static void create_projectile(Projectile p);
@@ -26,7 +27,7 @@ public:
 	static void reset();
 	static vector<reference_wrapper<Projectile>> all_proj;
 	static ObjPool<Projectile> pool;
-	static std::map<int, Projectile> template_proj;
+	static map<int, Projectile> template_proj;
 protected:
 	int _duration, _pierce, _proj_interval,
 		_hitbox_delay, _pool_limit, _chance,

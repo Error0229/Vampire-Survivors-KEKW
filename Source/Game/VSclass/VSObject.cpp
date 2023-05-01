@@ -59,8 +59,8 @@ void VSObject::load_animation(vector<char*> filename, COLORREF color)
 void VSObject::show_skin(double factor)
 {
 	_scaler = factor;
-	_skin.SetTopLeft(this->_position.x - (get_width() >> 1) + player_dx, this->_position.y - (this->get_height() >> 1) + player_dy);
 	
+	_skin.SetTopLeft(this->_position.x - (get_width() >> 1) + player_dx, this->_position.y - (this->get_height() >> 1) + player_dy);
 	if (mirror_loaded) {
 		if (_is_mirror) {
 			_m_skin.SetTopLeft(_position.x - (get_width() >> 1) + player_dx, _position.y - (get_height() >> 1) + player_dy);

@@ -71,6 +71,7 @@ void Projectile::create_projectile(Projectile& proj, CPoint position, CPoint tar
 	proj._is_mirror = is_mirror;
 	proj._is_start = (delay > 0 ? 0 : 1);
 	proj._is_over = false;
+	proj._collision = position;
 	proj.set_create_time(clock());
 	CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
 	proj._offset = proj._position - player_pos;
@@ -138,16 +139,17 @@ void Projectile::update_position() {
 			const double vertical = MATH_PI / 2;
 			if (!proj._is_start && (dt < 0 && dt > -100)) {
 				int min_dis = 1000000000;
-				CPoint target;
+				CPoint target = {0,0};
 				QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(&proj), min_dis);
 				proj.set_target_vec(target - proj._position);
+				proj._collision = player_pos;
 			}
 			else if (proj._is_start) {
 				CPoint par = proj.get_parabola(vertical, static_cast<double>(proj._speed), dt);
 				double vlen1 = sqrt(proj._target_vec.x * proj._target_vec.x + proj._target_vec.y * proj._target_vec.y);
 				double angle = acos(proj._target_vec.y / vlen1);
-				par.x -= proj._target.x;
-				par.y -= proj._target.y;
+				par.x -= proj._collision.x;
+				par.y -= proj._collision.y;
 				double x, y;
 				if (proj._target_vec.x > 0) {
 					x = par.x * cos(angle) - par.y * sin(angle);
@@ -157,7 +159,7 @@ void Projectile::update_position() {
 					x = -par.x * cos(angle) + par.y * sin(angle);
 					y = -par.x * sin(angle) - par.y * cos(angle);
 				}
-				proj.set_pos(CPoint(static_cast<int>(x), static_cast<int>(y)) + proj._target);
+				proj.set_pos(CPoint(static_cast<int>(x), static_cast<int>(y)) + proj._collision);
 				if (proj._is_top && !proj.is_animation()) {
 					proj.enable_animation();
 				}
@@ -311,8 +313,8 @@ CPoint Projectile::get_parabola(double angle, double speed, int time) {
 	static double pre_y = 100000000;
 	speed = speed / (1000.0 / GAME_CYCLE_TIME) * 50; // 50 depends on game cycle time
 	// since projectile using this function don't need target so we use it as a tmp
-	double x = _target.x + speed * dt * cos(angle);
-	double y = _target.y - speed * dt * sin(angle) + 0.5 * 980 * dt * dt;
+	double x = _collision.x + speed * dt * cos(angle);
+	double y = _collision.y - speed * dt * sin(angle) + 0.5 * 980 * dt * dt;
 	if (!_is_top && y > pre_y) {
 		_is_top = true;
 	}
