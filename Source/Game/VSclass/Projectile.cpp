@@ -139,17 +139,17 @@ void Projectile::update_position() {
 			const double vertical = MATH_PI / 2;
 			if (!proj._is_start && (dt < 0 && dt > -100)) {
 				int min_dis = 1000000000;
-				CPoint target;
+				CPoint target = {0,0};
 				QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(&proj), min_dis);
 				proj.set_target_vec(target - proj._position);
-				proj. _collision = player_pos;
+				proj._collision = player_pos;
 			}
 			else if (proj._is_start) {
 				CPoint par = proj.get_parabola(vertical, static_cast<double>(proj._speed), dt);
 				double vlen1 = sqrt(proj._target_vec.x * proj._target_vec.x + proj._target_vec.y * proj._target_vec.y);
 				double angle = acos(proj._target_vec.y / vlen1);
-				par.x -= proj._target.x;
-				par.y -= proj._target.y;
+				par.x -= proj._collision.x;
+				par.y -= proj._collision.y;
 				double x, y;
 				if (proj._target_vec.x > 0) {
 					x = par.x * cos(angle) - par.y * sin(angle);
@@ -159,7 +159,7 @@ void Projectile::update_position() {
 					x = -par.x * cos(angle) + par.y * sin(angle);
 					y = -par.x * sin(angle) - par.y * cos(angle);
 				}
-				proj.set_pos(CPoint(static_cast<int>(x), static_cast<int>(y)) + proj._target);
+				proj.set_pos(CPoint(static_cast<int>(x), static_cast<int>(y)) + proj._collision);
 				if (proj._is_top && !proj.is_animation()) {
 					proj.enable_animation();
 				}
