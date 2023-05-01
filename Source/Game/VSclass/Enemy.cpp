@@ -111,6 +111,10 @@ void Enemy::update_pos(CPoint pos, clock_t tick) {
 			VSObject::update_pos(pos);
 		}
 	}
+	if (get_map_id() == 1) {
+		_position.y = (_position.y > 210) ? 210 : _position.y;
+		_position.y = (_position.y < -210) ? -210 : _position.y;
+	}
 }
 
 bool Enemy::hurt(int damage) 
@@ -118,7 +122,7 @@ bool Enemy::hurt(int damage)
 	Damage::damage_device()->add_damage(damage, _position);
 	if (!is_dead()) {
 		_hp -= damage;
-		game_framework::CAudio::Instance()->Play(2, false);
+		// game_framework::CAudio::Instance()->Play(2, false);
 		if (is_dead()) {
 			unshow_skin();
 			Xp::spawnXP(this->_position, static_cast<int>(_xp_value));
@@ -189,14 +193,26 @@ void Enemy::set_spawn_pos(int count, int amount)
 	static vector<double> random_pos_weights(88, 1);
 	if(_swarm_type == NOT_SWARM){
 		int i = poll(random_pos_weights);
-		if (i <= 21)
-			_position += CPoint(-440 + i * 40, -330);
-		else if (i <= 43)
-			_position += CPoint(440, -330 + (i - 21) * 30);
-		else if (i <= 65)
-			_position += CPoint(440 - (i - 43) * 40, 330);
-		else
-			_position += CPoint(-440, 330 - (i - 65) * 30);
+		int map_id = get_map_id();
+		switch (map_id) {
+		case 0: 
+			if (i <= 21)
+				_position += CPoint(-440 + i * 40, -330);
+			else if (i <= 43)
+				_position += CPoint(440, -330 + (i - 21) * 30);
+			else if (i <= 65)
+				_position += CPoint(440 - (i - 43) * 40, 330);
+			else
+				_position += CPoint(-440, 330 - (i - 65) * 30);
+			break;
+		case 1:
+			i >>= 2;
+			if (i <= 11)
+				_position += CPoint(440, -330 + i * 30);
+			else
+				_position += CPoint(-440, 330 - (i - 11) * 30);
+			break;
+		}
 	}
 	else if(_swarm_type == SWARM){
 		//set target

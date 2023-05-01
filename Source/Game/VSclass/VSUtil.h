@@ -90,3 +90,6 @@ enum pickup_types {
 const double MATH_PI = 3.1415926;
 constexpr int w_size_x = (OPEN_AS_FULLSCREEN ? RESOLUTION_X : SIZE_X);
 constexpr int w_size_y = (OPEN_AS_FULLSCREEN ? RESOLUTION_Y : SIZE_Y);
+static int MAP_ID ;
+void set_map_id(int id);
+int get_map_id();

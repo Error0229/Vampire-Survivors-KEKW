@@ -137,3 +137,9 @@ void VSTimer::add_time(clock_t t)
 {
     start_ticks -= t;
 }
+void set_map_id(int id) {
+    MAP_ID = id;
+}
+int get_map_id() {
+	return MAP_ID;
+}

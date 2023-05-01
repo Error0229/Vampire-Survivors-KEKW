@@ -99,6 +99,10 @@ void Player::init_player() {
 void Player::update_pos(CPoint target) {
 	CPoint pos = _position;
 	VSObject::update_pos(target);
+	if (get_map_id() == 1) {
+		_position.y = (_position.y > 210) ? 210 : _position.y;
+		_position.y = (_position.y < -210) ? -210 : _position.y;
+	}
 	VSObject::player_dx -= _position.x - pos.x ;
 	VSObject::player_dy -= _position.y - pos.y ;
 }
@@ -108,6 +112,7 @@ void Player::load_bleed() {
 	_bleed_animation.enable_animation();
 }
 void Player::show_skin(double factor) {
+	
 	VSObject::show_skin(factor);
 	if (_is_hurt && clock() - _last_time_got_hit < 300) {
 		_bleed_animation.set_pos(_position);
