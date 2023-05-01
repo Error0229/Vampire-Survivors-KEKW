@@ -111,7 +111,7 @@ void Enemy::update_pos(CPoint pos, clock_t tick) {
 			VSObject::update_pos(pos);
 		}
 	}
-	if (get_map_id() == 1) {
+	if (MAP_ID == 1) {
 		_position.y = (_position.y > 210) ? 210 : _position.y;
 		_position.y = (_position.y < -210) ? -210 : _position.y;
 	}
@@ -193,8 +193,7 @@ void Enemy::set_spawn_pos(int count, int amount)
 	static vector<double> random_pos_weights(88, 1);
 	if(_swarm_type == NOT_SWARM){
 		int i = poll(random_pos_weights);
-		int map_id = get_map_id();
-		switch (map_id) {
+		switch (MAP_ID) {
 		case 0: 
 			if (i <= 21)
 				_position += CPoint(-440 + i * 40, -330);

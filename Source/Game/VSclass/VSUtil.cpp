@@ -143,3 +143,4 @@ void set_map_id(int id) {
 int get_map_id() {
 	return MAP_ID;
 }
+int MAP_ID = 0;

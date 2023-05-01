@@ -58,7 +58,7 @@ void CGameStateRun::OnBeginState()
 	// map = Map(game->Get🗺️())
 	// map.load_map({ "resources/map/bg_forest.bmp" });
 	map.load_map({ "resources/map/dummy2.bmp" });
-	set_map_id(1);
+	MAP_ID = 1;
 	map.set_pos(0, 0);
 	event_background.set_base_pos(0, 0);
 	_gamerun_status = PLAYING;
