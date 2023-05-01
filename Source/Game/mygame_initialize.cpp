@@ -36,8 +36,8 @@ void CGameStateInit::OnInit()
 	button_start.load_skin({"resources/ui/button_start.bmp"});
 	background.load_skin({"resources/ui/background_1.bmp"});
 	select_bg.load_skin({"resources/ui/event_background.bmp"});
-	🆗.load_skin({"Resources/ui/button_c5_normal.bmp"});
-	🆖.load_skin({"Resources/ui/button_c8_normal.bmp"});
+	🆗.load_skin({"Resources/ui/ok.bmp"});
+	🆖.load_skin({"Resources/ui/no.bmp"});
 
 	button_start.activate_hover = true;
 	vector <string> character_skins;
