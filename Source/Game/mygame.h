@@ -72,6 +72,7 @@ namespace game_framework {
 			select_map, 
 			start
 		};
+		int map_selected;
 		TextDevice text_device;
 		menu_state STATE;
 		vector<Ui> characters;
@@ -81,6 +82,7 @@ namespace game_framework {
 		vector<string> character_short_name;
  		Ui button_start;
 		Ui select_bg;
+		Ui map_select_effect;
 		Ui 🆗;
 		Ui 🆖;
 		Ui start_button;

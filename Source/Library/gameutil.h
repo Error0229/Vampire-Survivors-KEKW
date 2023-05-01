@@ -145,6 +145,7 @@ enum font_styles {
 	FONT_24x18_B,
 	FONT_12x08,
 	FONT_NORM,
+	FONT_L
 };
 enum align_styles {
 	ALIGN_LEFT,
@@ -179,7 +180,7 @@ public:
 	void add_text(string str = "", CPoint pos = { 0, 0 }, int duration = 1, int font_id = FONT_24x18_B, int align_id = ALIGN_CENTER);
 private:
 	CDC* ptr_CDC;
-	VS_font fonts[3];
+	VS_font fonts[4];
 	deque<Text> texts;
 	void set_font(VS_font& font, int height, int width, int weight, bool italic, bool underline, string font_name="CourierNew");
 };

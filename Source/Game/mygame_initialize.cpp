@@ -77,12 +77,23 @@ void CGameStateInit::OnInit()
 		weapon.load_skin(vector<string>{weapon_icon[i]});
 		s_bg.load_skin({ "Resources/ui/character_bg.bmp", "Resources/ui/character_bg_s.bmp" });
 		weapon.set_pos(-60 + (i % 3) * 80, -93 + (i / 3) * 80);
-		s_bg.set_pos(-80 + (i % 3) * 80, -109 + (i / 3) * 80);
+		s_bg.set_pos(-80 + (i % 3) * 80, -110 + (i / 3) * 80);
 		s_bg.activate_hover = true;
 		weapons.emplace_back(weapon);
 		character_bg.push_back(s_bg);
 		characters[i].set_pos(-90 + (i % 3) * 80, -103 + (i / 3) * 80);
 	}
+	maps = { Ui(), Ui() };
+	maps[0].load_skin("Resources/ui/stage_forest.bmp");
+	maps[0].set_pos(0, -90);
+	maps[0].set_name("Mad Forest");
+	maps[0].activate_hover = true;
+	maps[1].load_skin("Resources/ui/stage_library.bmp");
+	maps[1].set_pos(0, 20);
+	maps[1].set_name("Inlaid Library");
+	maps[1].activate_hover = true;
+	map_select_effect.load_skin("Resources/ui/map_selected.bmp");
+	map_selected = -1;
 	🆗.activate_hover = true;
 	🆖.activate_hover = true;
 	background.set_pos(0, 0);
@@ -124,25 +135,37 @@ void CGameStateInit::OnLButtonDown(UINT nFlags, CPoint point)
 		else if (🆖.is_hover(mouse_pos)) {
 			STATE = menu_state::init;
 		}
-		static int selected = 1;
+		static int selected = -1;
 		for (int i = 0; i < 11; i++) {
 			if (character_bg[i].is_hover(mouse_pos)) {
-				character_bg[selected].set_selector(0);
-				character_bg[i].set_selector(1);
-				game->Set🚹(characters[i].get_name());
-				selected = i;
+				if (selected != -1)
+					character_bg[selected].set_selector(0);
+				if (selected == i) {
+					selected = -1;
+				}else{
+					character_bg[i].set_selector(1);
+					game->Set🚹(characters[i].get_name());
+					selected = i;
+				}
 				break;
 			}
 		}
 		break;
 	}
 	case menu_state::select_map: {
-		if (🆗.is_hover(mouse_pos)) {
-			game->Set🗺️(1);
+
+		if (🆗.is_hover(mouse_pos) && map_selected != -1) {
+			game->Set🗺️(map_selected);
 			STATE = menu_state::start;
 		}
 		else if (🆖.is_hover(mouse_pos)) {
 			STATE = menu_state::select_character;
+		}
+		for (int i = 0; i < static_cast<int>(maps.size()); i++) {
+			if (maps[i].is_hover(mouse_pos)) {
+				map_selected = map_selected == i ? -1 : i;
+				map_select_effect.set_pos(maps[i].get_pos());
+			}
 		}
 		break;
 	}
@@ -162,7 +185,7 @@ void CGameStateInit::OnShow()
 		break;
 	}
 	case menu_state::select_character: {
-		text_device.add_text("Character selection", CPoint(-150, -150), 1, FONT_24x18_B, ALIGN_LEFT);
+		text_device.add_text("Character selection", CPoint(0, -180), 1, FONT_24x18_B, ALIGN_CENTER);
 		select_bg.show_skin();
 		🆗.show_skin();
 		🆖.show_skin();
@@ -176,8 +199,15 @@ void CGameStateInit::OnShow()
 		break;
 	}
 	case menu_state::select_map: {
-		text_device.add_text("map selection", CPoint(-120, -150), 1, FONT_24x18_B, ALIGN_LEFT);
+		text_device.add_text("Map selection", CPoint(0, -180), 1, FONT_24x18_B, ALIGN_CENTER);
 		select_bg.show_skin();
+		if (map_selected != -1) {
+			map_select_effect.show_skin();
+		}
+		for (auto& m : maps) {
+			m.show_skin();
+			text_device.add_text(m.get_name(), m.get_pos() + CPoint(10, -30), 1, FONT_L, ALIGN_CENTER);
+		}
 		🆗.show_skin();
 		🆖.show_skin();
 		break;
