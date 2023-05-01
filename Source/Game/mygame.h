@@ -78,8 +78,8 @@ namespace game_framework {
 		vector<Ui> maps;
  		Ui button_start;
 		Ui select_bg;
-		Ui ✅;
-		Ui ❌;
+		Ui 🆗;
+		Ui 🆖;
 		Ui start_button;
 		VSObject background;
 	};

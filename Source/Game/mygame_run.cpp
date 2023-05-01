@@ -45,7 +45,7 @@ void CGameStateRun::OnBeginState()
 	light_source_factory.reset();
 	timer.reset();
 	timer.start();
-	// CAudio::Instance()->Play(0, true); // 🉑
+	// CAudio::Instance()->Play(0, true); // 🆗
 	player = Player(game->Get🚹());
 	player.set_default_direct(RIGHT);
 	player.set_animation(150, false);
@@ -118,7 +118,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	}
 	game_over_frame.load_skin("Resources/ui/gameOver.bmp");
 	game_over_frame.set_base_pos(0, 0);
-	game_over_button.load_skin("Resources/ui/button_c8_normal.bmp");
+	game_over_button.load_skin("Resources/ui/button_play_again.bmp");
 	game_over_button.set_base_pos(0, 80);
 	game_over_button.activate_hover = true;
 

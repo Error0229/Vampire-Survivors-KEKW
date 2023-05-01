@@ -32,13 +32,17 @@ void CGameStateInit::OnInit()
 	// 此OnInit動作會接到CGameStaterRun::OnInit()，所以進度還沒到100%
 	//
 	button_start.load_skin({"resources/ui/button_start.bmp"});
-	button_start.activate_hover = true;
 	background.load_skin({"resources/ui/background_1.bmp"});
 	select_bg.load_skin({"resources/ui/event_background.bmp"});
-	✅.load_skin({"Resources/ui/button_c5_normal.bmp"});
-	❌.load_skin({"resources/ui/button_start.bmp"});
+	🆗.load_skin({"Resources/ui/button_c5_normal.bmp"});
+	🆖.load_skin({"Resources/ui/button_c8_normal.bmp"});
+
+	button_start.activate_hover = true;
+
 	background.set_pos(0, 0);
 	button_start.set_pos(0, 0);
+	🆗.set_pos(100, -100);
+	🆖.set_pos(100, 100);
 	select_bg.set_pos(0, 0);
 
 }
@@ -68,20 +72,20 @@ void CGameStateInit::OnLButtonDown(UINT nFlags, CPoint point)
 		break;
 	}
 	case menu_state::select_character :{
-		if (confirm_button.is_hover(mouse_pos)) {
+		if (🆗.is_hover(mouse_pos)) {
 			STATE = menu_state::select_map;
 		}
-		else if (cancel_button.is_hover(mouse_pos)) {
+		else if (🆖.is_hover(mouse_pos)) {
 			STATE = menu_state::init;
 		}
 		break;
 	}
 	case menu_state::select_map: {
-		if (confirm_button.is_hover(mouse_pos)) {
+		if (🆗.is_hover(mouse_pos)) {
 			game->Set🗺️🚹(1, "The Dog");
 			STATE = menu_state::start;
 		}
-		else if (cancel_button.is_hover(mouse_pos)) {
+		else if (🆖.is_hover(mouse_pos)) {
 			STATE = menu_state::select_character;
 		}
 		break;
@@ -108,11 +112,15 @@ void CGameStateInit::OnShow()
 	case menu_state::select_character: {
 		text_device.add_text("Character selection", CPoint(0, -150), 1, FONT_12x08, ALIGN_LEFT);
 		select_bg.show_skin();
+		🆗.show_skin();
+		🆖.show_skin();
 		break;
 	}
 	case menu_state::select_map: {
 		text_device.add_text("map selection", CPoint(0, -150), 1, FONT_12x08, ALIGN_LEFT);
 		select_bg.show_skin();
+		🆗.show_skin();
+		🆖.show_skin();
 		break;
 	}
 	case menu_state::start:{
