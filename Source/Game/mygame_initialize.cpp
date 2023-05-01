@@ -129,13 +129,13 @@ void CGameStateInit::OnLButtonDown(UINT nFlags, CPoint point)
 		break;
 	}
 	case menu_state::select_character :{
-		if (🆗.is_hover(mouse_pos)) {
+		static int selected = -1;
+		if (🆗.is_hover(mouse_pos) && selected != -1) {
 			STATE = menu_state::select_map;
 		}
 		else if (🆖.is_hover(mouse_pos)) {
 			STATE = menu_state::init;
 		}
-		static int selected = -1;
 		for (int i = 0; i < 11; i++) {
 			if (character_bg[i].is_hover(mouse_pos)) {
 				if (selected != -1)
