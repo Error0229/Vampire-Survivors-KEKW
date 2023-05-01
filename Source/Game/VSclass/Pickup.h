@@ -12,7 +12,6 @@ public:
 protected:
 	int _weight;
 	bool _is_enable;
-	static vector<Pickup> template_pickup;
 };
 
 class Xp : public Pickup {
@@ -54,3 +53,19 @@ private:
 	int _upgrade_chance_0;
 	int _upgrade_chance_1;
 };
+
+class LightSourcePickup : public Pickup {
+public:
+	LightSourcePickup();
+	~LightSourcePickup();
+	void spawn(CPoint, int lightsource_pickup_type);
+	int get_lightsource_pickup_type();
+	static void init_lightsource_pickup();
+	static void spawn_lightsource_pickup(CPoint, int lightsource_pickup_type);
+	static void show();
+	static void reset();
+	static deque<LightSourcePickup*> LSPickup_all;
+	static ObjPool< LightSourcePickup> pool;
+private:
+	int _lightsource_pickup_type;
+ };

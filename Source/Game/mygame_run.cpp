@@ -40,7 +40,9 @@ void CGameStateRun::OnBeginState()
 	Projectile::reset();
 	Xp::reset_XP();
 	Chest::reset_chest();
+	LightSourcePickup::reset();
 	enemy_factory.reset();
+	light_source_factory.reset();
 	timer.reset();
 	timer.start();
 	// CAudio::Instance()->Play(0, true); // 🉑
@@ -63,6 +65,7 @@ void CGameStateRun::OnBeginState()
 	event_background.set_base_pos(0, 0);
 	_gamerun_status = PLAYING;
 	_next_status = PLAYING;
+	coin_count = 0;
 }
 
 
@@ -70,9 +73,11 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 {
 	Weapon::load_weapon_stats();
 	enemy_factory.init();
+	light_source_factory.init();
 	Icon::load_filename();
 	Xp::init_XP();
 	Chest::init_chest();
+	LightSourcePickup::init_lightsource_pickup();
 	Damage::damage_device()->init();
 	Player::init_player();
 	map.load_map({ "resources/map/dummy1.bmp" });
@@ -153,6 +158,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 
 	hp_bar.load_skin({ "resources/ui/hp_bar_0.bmp", "resources/ui/hp_bar_1.bmp", "resources/ui/hp_bar_2.bmp", "resources/ui/hp_bar_3.bmp", "resources/ui/hp_bar_4.bmp", "resources/ui/hp_bar_5.bmp", "resources/ui/hp_bar_6.bmp", "resources/ui/hp_bar_7.bmp", "resources/ui/hp_bar_8.bmp", "resources/ui/hp_bar_9.bmp", "resources/ui/hp_bar_10.bmp", "resources/ui/hp_bar_11.bmp", "resources/ui/hp_bar_12.bmp", "resources/ui/hp_bar_13.bmp", "resources/ui/hp_bar_14.bmp", "resources/ui/hp_bar_15.bmp", "resources/ui/hp_bar_16.bmp", "resources/ui/hp_bar_17.bmp", "resources/ui/hp_bar_18.bmp", "resources/ui/hp_bar_19.bmp" });;
 	hp_bar.set_base_pos(0, 15);
+
 }
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -172,12 +178,19 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		player.pick_up_xp(20);
 		break;
 	case('C'):
-		Chest::spawnChest(player.get_pos(), 1, 100, 100);
+		Chest::spawnChest(player.get_pos() + CPoint(0, -100), 1, 100, 100);
 		break;
 	case('D'):
 		timer.add_time(10000);
 		break;
+	case('E'):
+		static int type = 0;
+		LightSourcePickup::spawn_lightsource_pickup(player.get_pos() + CPoint(0, -100), type++);
+		if (type == 7)
+			type = 0;
+		break;
 	}
+	
 
 }
 
@@ -420,6 +433,24 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 				}
 			}
 		}
+
+		// light source collision
+		QuadTree::VSPlain.clear();
+		for (auto i : light_source_factory.light_sourse_all){
+			if(i->is_enable()){
+				QuadTree::VSPlain.insert((VSObject*)(i));
+			}
+		}
+		for (Projectile& proj : Projectile::all_proj) {
+			plain_result.clear();
+			QuadTree::VSPlain.query_by_type(plain_result, (VSObject*)(&proj), LIGHTSOURCE);
+			for (VSObject* obj : plain_result) {
+				proj.collide_with_lightsource(*((LightSource*)obj), player.get_duration());
+			}
+		}
+		for(auto i: light_source_factory.light_sourse_all)
+			i->update_pos(player.get_pos());
+		
 		QuadTree::VSPlain.clear();
 		// suck xp
 		Xp::update_XP_pos(player.get_pickup_range());
@@ -437,6 +468,36 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 				chest_upgrade_chance_0 = i->get_upgrade_chance_0();
 				chest_upgrade_chance_1 = i->get_upgrade_chance_1();
 				_next_status = OPEN_CHEST;
+			}
+		}
+		for (auto i : LightSourcePickup::LSPickup_all) {
+			if (i->is_enable() && is_overlapped(player, *i)) {
+				i->despawn();
+				switch (i->get_lightsource_pickup_type()) {
+				case COIN:
+					coin_count += 1;
+					break;
+				case COIN_BAG:
+					coin_count += 10;
+					break;
+				case RICH_COIN_BAG:
+					coin_count += 100;
+					break;
+				case ROSARY:
+					for (auto 😈 : enemy_factory.live_enemy) {
+						😈->hurt(1000);
+					}
+					break;
+				case VACUUM:
+					Xp::update_XP_pos(1000);
+					break;
+				case CHICKEN:
+					player.regen(30);
+					break;
+				case LITTLE_CLOVER:
+					player.increase_luck(10);
+					break;
+				}
 			}
 		}
 
@@ -523,10 +584,14 @@ void CGameStateRun::OnShow()
 	Weapon::show();
 	Xp::show();
 	Chest::show();
+	LightSourcePickup::show();
 	player.show_skin();
 	for(auto 😈: enemy_factory.live_enemy)
 		😈->show_skin();
 	enemy_factory.update(timer.get_ticks(), player.get_pos(), player.get_level(), player.get_luck(), player.get_curse());
+	light_source_factory.update(timer.get_ticks(), player.get_pos(), player.get_luck());
+	for (auto i : light_source_factory.light_sourse_all)
+		i->show_skin();
 	Damage::damage_device()->show_damage();
 	xp_bar_cover.show();
 	xp_bar.set_base_pos(-8 - (xp_bar.get_width() * (100 - player.get_exp_percent()) / 100), -300 + (xp_bar.get_height() >> 1));
@@ -548,7 +613,6 @@ void CGameStateRun::OnShow()
 			inv_icon[i].show(Weapon::all_weapon[i].get_type());
 		for (int i = 0; i < Passive::passive_count(); i++)
 			inv_icon[i + 6].show(Passive::all_passive[i].get_type());
-
 		hp_bar.set_selector((player.get_hp_percent() - 1) / 5);
 		hp_bar.show();
 		break;
