@@ -241,8 +241,10 @@ namespace game_framework {
 		CSpecialEffect::SetCurrentTime();
 		running = true;
 	}
-	void CGame::Set🗺️🚹(int 🗺️, string 🚹) {
+	void CGame::Set🗺️(int 🗺️) {
 		_🗺️ = 🗺️;
+	}
+	void CGame::Set🚹(string 🚹) {
 		_🚹 = 🚹;
 	}
 	int CGame::Get🗺️() {

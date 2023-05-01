@@ -74,8 +74,11 @@ namespace game_framework {
 		};
 		TextDevice text_device;
 		menu_state STATE;
-		vector<Ui> players;
+		vector<Ui> characters;
+		vector<Ui> weapons;
 		vector<Ui> maps;
+		vector<Ui> character_bg;
+		vector<string> character_short_name;
  		Ui button_start;
 		Ui select_bg;
 		Ui 🆗;

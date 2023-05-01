@@ -822,9 +822,7 @@ int Weapon::get_pierce() {
 double Weapon::get_kb() {
 	return _knock_back;
 }
-string Weapon::get_name() {
-	return _name;
-}
+
 int Weapon::get_evo_passive() {
 	return _evolution_require;
 }

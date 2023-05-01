@@ -7,6 +7,8 @@
 #include "../Library/gamecore.h"
 #include "mygame.h"
 #include "config.h"
+#include <fstream>
+#include <sstream>
 
 using namespace game_framework;
 /////////////////////////////////////////////////////////////////////////////
@@ -38,11 +40,55 @@ void CGameStateInit::OnInit()
 	🆖.load_skin({"Resources/ui/button_c8_normal.bmp"});
 
 	button_start.activate_hover = true;
+	vector <string> character_skins;
+	vector <string> weapon_icon = {
+		"resources/weapon/whip.bmp", 
+		"resources/weapon/wandholy.bmp", 
+		"resources/weapon/Diamond2.bmp",
+		"resources/weapon/knife.bmp", 
+		"resources/weapon/wandfire.bmp", 
+		"resources/weapon/axe.bmp", 
+		"resources/weapon/garlic.bmp",
+		"resources/weapon/holywater.bmp",
+		"resources/weapon/holybook.bmp",
+		"resources/weapon/cross.bmp",
+		"resources/weapon/heavensword.bmp"
+	};
 
+	ifstream file("source/game/VSclass/player_data.csv");
+	string line, skin_file, token;
+	getline(file, token); // no use
+	while (getline(file, line)) {
+		Ui 🧝;
+		stringstream ss(line);
+		getline(ss, skin_file, ',');
+		getline(ss, token, ',');
+		getline(ss, token, ',');
+		🧝.set_name(token);
+		character_short_name.emplace_back(token.substr(0, token.find_first_of(' ')));
+		getline(ss, token, ',');
+		skin_file = "resources/character/" + skin_file + "_01.bmp";
+		🧝.load_skin(vector<string>{skin_file});
+		character_skins.push_back(skin_file);
+		characters.push_back(🧝);
+	}
+	for (int i = 0; i < 11; i++) {
+		Ui weapon, s_bg;
+		weapon.load_skin(vector<string>{weapon_icon[i]});
+		s_bg.load_skin({ "Resources/ui/character_bg.bmp", "Resources/ui/character_bg_s.bmp" });
+		weapon.set_pos(-60 + (i % 3) * 80, -93 + (i / 3) * 80);
+		s_bg.set_pos(-80 + (i % 3) * 80, -109 + (i / 3) * 80);
+		s_bg.activate_hover = true;
+		weapons.emplace_back(weapon);
+		character_bg.push_back(s_bg);
+		characters[i].set_pos(-90 + (i % 3) * 80, -103 + (i / 3) * 80);
+	}
+	🆗.activate_hover = true;
+	🆖.activate_hover = true;
 	background.set_pos(0, 0);
 	button_start.set_pos(0, 0);
-	🆗.set_pos(100, -100);
-	🆖.set_pos(100, 100);
+	🆗.set_pos( 100, 200);
+	🆖.set_pos(-100, 200);
 	select_bg.set_pos(0, 0);
 
 }
@@ -50,7 +96,7 @@ void CGameStateInit::OnInit()
 void CGameStateInit::OnBeginState()
 {
 	 // load backgrond (開始頁面)
-	STATE = menu_state::start;
+	STATE = menu_state::init;
 	VSObject::player_dx = w_size_x >> 1;
 	VSObject::player_dy = w_size_y >> 1;
 }
@@ -78,11 +124,21 @@ void CGameStateInit::OnLButtonDown(UINT nFlags, CPoint point)
 		else if (🆖.is_hover(mouse_pos)) {
 			STATE = menu_state::init;
 		}
+		static int selected = 1;
+		for (int i = 0; i < 11; i++) {
+			if (character_bg[i].is_hover(mouse_pos)) {
+				character_bg[selected].set_selector(0);
+				character_bg[i].set_selector(1);
+				game->Set🚹(characters[i].get_name());
+				selected = i;
+				break;
+			}
+		}
 		break;
 	}
 	case menu_state::select_map: {
 		if (🆗.is_hover(mouse_pos)) {
-			game->Set🗺️🚹(1, "The Dog");
+			game->Set🗺️(1);
 			STATE = menu_state::start;
 		}
 		else if (🆖.is_hover(mouse_pos)) {
@@ -92,11 +148,7 @@ void CGameStateInit::OnLButtonDown(UINT nFlags, CPoint point)
 	}
 	}
 
-	//if (button_start.is_hover(mouse_pos)) 
-	//{
-	//	game->Set🗺️🚹(1, "The Dog");
-	//	GotoGameState(GAME_STATE_RUN);		// 切換至GAME_STATE_RUN
-	//}
+
 }
 
 void CGameStateInit::OnShow()
@@ -110,14 +162,21 @@ void CGameStateInit::OnShow()
 		break;
 	}
 	case menu_state::select_character: {
-		text_device.add_text("Character selection", CPoint(0, -150), 1, FONT_12x08, ALIGN_LEFT);
+		text_device.add_text("Character selection", CPoint(-150, -150), 1, FONT_24x18_B, ALIGN_LEFT);
 		select_bg.show_skin();
 		🆗.show_skin();
 		🆖.show_skin();
+		for (int i = 0; i < 11; i++) {
+			character_bg[i].show_skin();
+			characters[i].show_skin();
+			weapons[i].show_skin();
+			text_device.add_text(character_short_name[i], characters[i].get_pos() + CPoint(-20, -30), 1, FONT_NORM, ALIGN_LEFT);
+		}
+		
 		break;
 	}
 	case menu_state::select_map: {
-		text_device.add_text("map selection", CPoint(0, -150), 1, FONT_12x08, ALIGN_LEFT);
+		text_device.add_text("map selection", CPoint(-120, -150), 1, FONT_24x18_B, ALIGN_LEFT);
 		select_bg.show_skin();
 		🆗.show_skin();
 		🆖.show_skin();
@@ -128,4 +187,5 @@ void CGameStateInit::OnShow()
 		break;
 	}
 	}
+	text_device.print_all();
 }

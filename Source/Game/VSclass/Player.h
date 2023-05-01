@@ -56,7 +56,6 @@ private:
 	// vector<Passive> _passives;
 	vector<int> stats;
 	unordered_map <string, any> _base_stats;
-	string _name;
 	int _armor, _max_health, _revival, _magnet, _amount, _base_max_health, _base_magnet, _base_speed;
 	int _coef_might, _coef_max_health, _coef_magnet, 
 		_coef_cooldown, _coef_area, _coef_proj_speed, 
