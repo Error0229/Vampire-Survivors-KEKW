@@ -69,7 +69,13 @@ namespace game_framework {
 		CMovingBitmap logo;								// csie的logo
 		CMovingBitmap text;
 		CMovingBitmap portrait;
-		Ui button_start;
+		vector<Ui> players;
+		vector<Ui> maps;
+ 		Ui button_start;
+		Ui select_bg;
+		Ui confirm_button;
+		Ui start_button;
+		Ui cancel_button;
 		VSObject background;
 	};
 
