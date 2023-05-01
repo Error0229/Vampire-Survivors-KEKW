@@ -12,7 +12,6 @@ LightSource::LightSource()
 {
     obj_type = LIGHTSOURCE;
     _type = LIGHTSOURCE;
-    _last_time_got_hit_by_projectile.resize(100, -1000000);
 	_last_time_got_hit = -1000000;
     _is_enable = false;
     _hp_max = 10;

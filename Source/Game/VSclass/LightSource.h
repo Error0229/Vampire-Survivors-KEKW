@@ -14,7 +14,6 @@ class LightSource : public VSObject {
 
     private:
     clock_t _last_time_got_hit = -100000;
-	vector <clock_t> _last_time_got_hit_by_projectile;
     int _hp_max, _hp;
     bool _is_enable;
     VSObject _hit_animation;
