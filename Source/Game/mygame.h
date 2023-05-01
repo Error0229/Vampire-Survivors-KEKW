@@ -103,10 +103,12 @@ namespace game_framework {
 		void update_mouse_pos();
 		int draw_level_up(bool);
 		int draw_open_chest(bool pull_evo=true);
+		int coin_count;
 		CPoint mouse_pos;								// 滑鼠的座標
 		Map map;
 		Player player;
 		EnemyFactory enemy_factory;
+		LightSourceFactory light_source_factory;
 		int _gamerun_status, _next_status;
 		VSTimer timer;
 		Ui game_over_frame;
@@ -138,6 +140,7 @@ namespace game_framework {
 		TextDevice text_device;
 
 		Ui hp_bar;
+
 	};
 
 	/////////////////////////////////////////////////////////////////////////////

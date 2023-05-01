@@ -48,6 +48,7 @@ public:
 	bool all_max();
 	bool full_inv();
 	void regen(double amount = 0);
+	void increase_luck(int amount);
 private:
 	static map<string,Player> template_player;
 	VSObject _bleed_animation;

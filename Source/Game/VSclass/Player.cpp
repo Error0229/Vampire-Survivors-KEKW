@@ -382,3 +382,8 @@ void Player::regen(double amount)
 		}
 	}
 }
+
+void Player::increase_luck(int amount)
+{
+	_coef_luck += amount;
+}
