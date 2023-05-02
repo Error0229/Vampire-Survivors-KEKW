@@ -49,13 +49,10 @@ void CGameStateRun::OnBeginState()
 	player = Player(game->Get🚹());
 	player.set_default_direct(RIGHT);
 	player.set_animation(150, false);
-	// player.load_skin({ "resources/character/Dog_01.bmp", "resources/character/Dog_02.bmp" ,"resources/character/Dog_03.bmp" ,"resources/character/Dog_04.bmp" ,"resources/character/Dog_05.bmp" });
 	player.load_mirror_skin();
 	player.load_bleed();
 	player.set_pos(0, 0);
 	player.set_speed(300);
-	// player.acquire_weapon(WHIP);
-	// player.acquire_passive(POWER);
 	map = Map();
 	MAP_ID = game->Get🗺️();
 	switch (MAP_ID) {
