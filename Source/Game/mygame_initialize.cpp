@@ -307,9 +307,12 @@ void CGameStateInit::OnShow()
 		button_upgrade.show_skin();
 		money_bg.show_skin();
 		text_device.add_text(to_string(coin), CPoint(0, -220), 1, FONT_NORM, ALIGN_CENTER);
-		if (passive_selected != -1) {
+		if (passive_selected != -1 && passive_levels[passive_selected] == passive_max_level[passive_selected]) {
+			text_device.add_text("Level Max", CPoint(0, 155), 1, FONT_NORM, ALIGN_CENTER);
+		}
+		else if (passive_selected != -1) {
 			double sum = static_cast<double> (reduce(passive_levels.begin(), passive_levels.end()));
-			string s = "Price: " + to_string(init_price[passive_selected] * (1 + passive_levels[passive_selected]) + (sum > 0.1) * 20 * static_cast<int>(pow(1.1, sum)));
+			string s = "Price: " + to_string(init_price[passive_selected] * (1 + passive_levels[passive_selected]) + (sum > 0.1) * static_cast<int>(20.0 * pow(1.1, sum)));
 			text_device.add_text(s,  CPoint(0, 155), 1, FONT_NORM, ALIGN_CENTER);
 		}
 		for (int i = 0; i < 16; i++) {
