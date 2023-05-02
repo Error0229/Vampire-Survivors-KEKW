@@ -13,7 +13,6 @@ public:
 	int get_max_level();
 	string get_level_up_msg(bool is_new=false);
 	int get_rarity();
-	string get_name();
 	void upgrade();
 	static void upgrade(int type);
 	static deque<Passive> all_passive;
@@ -23,7 +22,6 @@ private:
 	int _type, _rarity,  _max_level;
 	vector<int> _effect_by_level;
 	vector<string> _level_up_msg;
-	string _name;
 };
 enum passive_type {
 	POWER = 63, ARMOR, MAXHEALTH, REGEN, COOLDOWN,

@@ -39,8 +39,9 @@ public:
 	void show(CPoint, int, double factor = 1.0);
 	static void load_filename();
 	static vector<string> icon_filename;
+	static vector<string> icon_name;
+	static bool file_loaded;
 private:
-
 };
 class Damage : public Ui {
 public:

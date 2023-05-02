@@ -24,6 +24,16 @@ void CGameStateOver::OnMove()
 
 void CGameStateOver::OnBeginState()
 {
+	ifstream p_data("save/save_data.csv");
+	string header, line;
+	getline(p_data, header);
+	getline(p_data, line);
+	p_data.close();
+	ofstream r_data("save/save_data.csv", std::ofstream::trunc);
+	r_data << header << '\n';
+	GOLD_NUM += stoi(line.substr(0, line.find_first_of(',')));
+	r_data << GOLD_NUM << line.substr(line.find_first_of(','));
+	r_data.close();
 }
 
 void CGameStateOver::OnInit()

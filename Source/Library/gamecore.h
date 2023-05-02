@@ -181,7 +181,8 @@ namespace game_framework {
 		void OnSetFocus();								// 處理Focus
 		void OnSuspend();								// 處理「待命」的動作
 		void SetGameState(int);
-		void Set🗺️🚹(int, string);
+		void Set🗺️(int);
+		void Set🚹(string);
 		int  Get🗺️();
 		string  Get🚹();
 		static CGame *Instance();

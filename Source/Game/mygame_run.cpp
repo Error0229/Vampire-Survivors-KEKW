@@ -17,7 +17,9 @@ enum gamerun_status {
 	PLAYING,
 	LEVEL_UP,
 	OPEN_CHEST,
-	GAME_OVER
+	GAME_OVER,
+	PAUSE,
+	REVIVE
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -45,27 +47,30 @@ void CGameStateRun::OnBeginState()
 	light_source_factory.reset();
 	timer.reset();
 	timer.start();
-	// CAudio::Instance()->Play(0, true); // 🉑
+	// CAudio::Instance()->Play(0, true); // 🆗
 	player = Player(game->Get🚹());
 	player.set_default_direct(RIGHT);
 	player.set_animation(150, false);
-	// player.load_skin({ "resources/character/Dog_01.bmp", "resources/character/Dog_02.bmp" ,"resources/character/Dog_03.bmp" ,"resources/character/Dog_04.bmp" ,"resources/character/Dog_05.bmp" });
 	player.load_mirror_skin();
 	player.load_bleed();
 	player.set_pos(0, 0);
 	player.set_speed(300);
-	// player.acquire_weapon(WHIP);
-	// player.acquire_passive(POWER);
 	map = Map();
-	// map = Map(game->Get🗺️())
-	// map.load_map({ "resources/map/bg_forest.bmp" });
-	map.load_map({ "resources/map/dummy2.bmp" });
-	MAP_ID = 1;
+	MAP_ID = game->Get🗺️();
+	GOLD_NUM = 0;
+	KILL_NUM = 0;
+	switch (MAP_ID) {
+	case 0:
+		map.load_map({ "resources/map/dummy1.bmp" });
+		break;
+	case 1:
+		map.load_map({ "resources/map/dummy2.bmp" });
+		break;
+	}
 	map.set_pos(0, 0);
 	event_background.set_base_pos(0, 0);
 	_gamerun_status = PLAYING;
 	_next_status = PLAYING;
-	coin_count = 0;
 }
 
 
@@ -82,6 +87,18 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	Player::init_player();
 	map.load_map({ "resources/map/dummy1.bmp" });
 	event_background.load_skin("resources/ui/event_background.bmp");
+	coin.load_skin("Resources/pickup/CoinGold.bmp");
+	skull.load_skin("Resources/ui/SkullToken.bmp");
+	button_pause.load_skin("Resources/ui/pause.bmp");
+	button_resume.load_skin("Resources/ui/button_resume.bmp");
+	evolution_chart.load_skin("Resources/ui/evolutions.bmp");
+	coin.set_base_pos(373, -260);
+	skull.set_base_pos(373, -240);
+	button_pause.set_base_pos(370, -210);
+	button_resume.set_base_pos(0 , 200);
+	evolution_chart.set_base_pos(0, 0);
+	button_pause.activate_hover = true;
+	button_resume.activate_hover = true;
 	for (int i = 0; i < 4; i++) {
 		level_up_button[i].load_skin("resources/ui/event_button.bmp");
 		level_up_icon_frame[i].load_skin("resources/ui/frameB.bmp");
@@ -118,7 +135,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	}
 	game_over_frame.load_skin("Resources/ui/gameOver.bmp");
 	game_over_frame.set_base_pos(0, 0);
-	game_over_button.load_skin("Resources/ui/button_c8_normal.bmp");
+	game_over_button.load_skin("Resources/ui/button_play_again.bmp");
 	game_over_button.set_base_pos(0, 80);
 	game_over_button.activate_hover = true;
 
@@ -158,7 +175,9 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 
 	hp_bar.load_skin({ "resources/ui/hp_bar_0.bmp", "resources/ui/hp_bar_1.bmp", "resources/ui/hp_bar_2.bmp", "resources/ui/hp_bar_3.bmp", "resources/ui/hp_bar_4.bmp", "resources/ui/hp_bar_5.bmp", "resources/ui/hp_bar_6.bmp", "resources/ui/hp_bar_7.bmp", "resources/ui/hp_bar_8.bmp", "resources/ui/hp_bar_9.bmp", "resources/ui/hp_bar_10.bmp", "resources/ui/hp_bar_11.bmp", "resources/ui/hp_bar_12.bmp", "resources/ui/hp_bar_13.bmp", "resources/ui/hp_bar_14.bmp", "resources/ui/hp_bar_15.bmp", "resources/ui/hp_bar_16.bmp", "resources/ui/hp_bar_17.bmp", "resources/ui/hp_bar_18.bmp", "resources/ui/hp_bar_19.bmp" });;
 	hp_bar.set_base_pos(0, 15);
-
+	button_revive.load_skin("resources/ui/button_revive.bmp");
+	button_revive.set_base_pos(0, 80);
+	button_revive.activate_hover = true;
 }
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -204,6 +223,14 @@ void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的
 	update_mouse_pos();
 	switch (_gamerun_status) {
 	case(PLAYING):
+		if (button_pause.is_hover(mouse_pos)) {
+			_next_status = PAUSE;
+			timer.pause();
+		}
+		break;
+	case(PAUSE):
+		if (button_resume.is_hover(mouse_pos)) 
+			_next_status = PLAYING;
 		break;
 	case(LEVEL_UP):
 		for (int i = 0; i < 4; i++) {
@@ -233,6 +260,13 @@ void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的
 		chest_animation.set_animation(30, true);
 		_next_status = PLAYING;
 		break;
+	case (REVIVE): {
+		if (button_revive.is_hover(mouse_pos)) {
+			_next_status = PLAYING;
+			player.revive();
+		}
+		break;
+	}
 	case(GAME_OVER):
 		if (game_over_button.is_hover(mouse_pos)) {
 			GotoGameState(GAME_STATE_OVER);
@@ -247,7 +281,6 @@ void CGameStateRun::OnLButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動
 
 void CGameStateRun::OnMouseMove(UINT nFlags, CPoint point)	// 處理滑鼠的動作
 {
-	// mouse_pos = CPoint(point.x - VSObject::player_dx, point.y - VSObject::player_dy);
 }
 
 void CGameStateRun::OnRButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
@@ -365,7 +398,32 @@ int CGameStateRun::draw_open_chest(bool pull_evo)
 	}
 	return index_to_type[poll(weights)];
 }
-
+void CGameStateRun::show_inv() {
+	inv_detail_frame.show();
+	for (int i = 0; i < Weapon::weapon_count(); i++) {
+		inv_detail_item_icons[i].show(Weapon::all_weapon[i].get_type());
+		for (int j = 0; j < Weapon::all_weapon[i].get_max_level(); j++)
+			inv_detail_item_knots[i][j][Weapon::all_weapon[i].get_level() > j].show();
+	}
+	for (int i = 0; i < Passive::passive_count(); i++) {
+		inv_detail_item_icons[i + 6].show(Passive::all_passive[i].get_type());
+		for (int j = 0; j < Passive::all_passive[i].get_max_level(); j++)
+			inv_detail_item_knots[i + 6][j][Passive::all_passive[i].get_level() > j].show();
+	}
+}
+void CGameStateRun::show_stat(vector<stat_struct> &player_stats, CPoint player_pos) {
+	stat_frame.show();
+	player_stats = player.get_stats_string();
+	int cnt = 0;
+	for (int i = 0; i < 16; i++) {
+		text_device.add_text(player_stats[i].name_string, CPoint(-375, -130 + 16 * cnt) + player_pos, 1, FONT_12x08, ALIGN_LEFT);
+		text_device.add_text(player_stats[i].val_string, CPoint(-235, -130 + 16 * cnt) + player_pos, 1, FONT_12x08, ALIGN_RIGHT);
+		stat_icon[i].set_base_pos(-385, -130 + 16 * cnt);
+		stat_icon[i].show(player_stats[i].type);
+		cnt++;
+		cnt += (i % 4 == 3); //empty line
+	}
+}
 void CGameStateRun::update_mouse_pos()
 {
 	CPoint p;
@@ -428,7 +486,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 				😈->update_collide();
 				player.hurt(😈->get_power());
 				if (player.get_hp_percent() == 0) {
-					_next_status = GAME_OVER;
+					_next_status = player.get_revival() > 0 ? REVIVE : GAME_OVER;
 					return;
 				}
 			}
@@ -473,15 +531,16 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		for (auto i : LightSourcePickup::LSPickup_all) {
 			if (i->is_enable() && is_overlapped(player, *i)) {
 				i->despawn();
+				double greed = static_cast<double>(player.get_greed()) / 100.0;
 				switch (i->get_lightsource_pickup_type()) {
 				case COIN:
-					coin_count += 1;
+					GOLD_NUM += static_cast<int> (1. * greed);
 					break;
 				case COIN_BAG:
-					coin_count += 10;
+					GOLD_NUM += static_cast<int> (10. * greed);
 					break;
 				case RICH_COIN_BAG:
-					coin_count += 100;
+					GOLD_NUM += static_cast<int> (100. * greed);
 					break;
 				case ROSARY:
 					for (auto 😈 : enemy_factory.live_enemy) {
@@ -573,23 +632,28 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			}
 		}
 		break;
-	case (GAME_OVER):
+	case (GAME_OVER): case (REVIVE):
 		break;
 	}
 }
 void CGameStateRun::OnShow()
 {
-	map.map_padding(player.get_pos());
+	CPoint player_pos = player.get_pos();
+	map.map_padding(player_pos);
 	map.show_map();
 	Weapon::show();
 	Xp::show();
 	Chest::show();
 	LightSourcePickup::show();
+	coin.show();
+	skull.show();
+	text_device.add_text(to_string(GOLD_NUM), CPoint(368, -260) + player_pos, 1, FONT_NORM, ALIGN_RIGHT);
+	text_device.add_text(to_string(KILL_NUM), CPoint(368, -240) + player_pos, 1, FONT_NORM, ALIGN_RIGHT);
 	player.show_skin();
 	for(auto 😈: enemy_factory.live_enemy)
 		😈->show_skin();
-	enemy_factory.update(timer.get_ticks(), player.get_pos(), player.get_level(), player.get_luck(), player.get_curse());
-	light_source_factory.update(timer.get_ticks(), player.get_pos(), player.get_luck());
+	enemy_factory.update(timer.get_ticks(), player_pos, player.get_level(), player.get_luck(), player.get_curse());
+	light_source_factory.update(timer.get_ticks(), player_pos, player.get_luck());
 	for (auto i : light_source_factory.light_sourse_all)
 		i->show_skin();
 	Damage::damage_device()->show_damage();
@@ -602,19 +666,27 @@ void CGameStateRun::OnShow()
 	string level_up_desc, level_text, type_text;
 
 	vector<stat_struct> player_stats;
-	int cnt;
 	string 🍆;
 	switch (_gamerun_status) {
 	case(PLAYING):
 		inv_slot.show();
 		xp_bar.set_selector(0);
 		xp_bar.disable_animation();
+		button_pause.show();
 		for (int i = 0; i < Weapon::weapon_count(); i++)
 			inv_icon[i].show(Weapon::all_weapon[i].get_type());
 		for (int i = 0; i < Passive::passive_count(); i++)
 			inv_icon[i + 6].show(Passive::all_passive[i].get_type());
 		hp_bar.set_selector((player.get_hp_percent() - 1) / 5);
 		hp_bar.show();
+		break;
+	case(PAUSE):
+		button_resume.show();
+		evolution_chart.show(0.4);
+		inv_detail_frame.show();
+		show_inv();
+		stat_frame.show();
+		show_stat(player_stats, player_pos);
 		break;
 	case(LEVEL_UP):
 		xp_bar.enable_animation();
@@ -660,39 +732,21 @@ void CGameStateRun::OnShow()
 						level_up_desc = Passive(level_up_choice[i]).get_level_up_msg(true);
 					}
 				}
-				text_device.add_text(type_text, CPoint(-85, -95 + 75 * i) + player.get_pos(), 1, FONT_12x08, ALIGN_LEFT);
-				text_device.add_text(level_text, CPoint(70, -95 + 75 * i) + player.get_pos(), 1, FONT_12x08, ALIGN_LEFT);
-				text_device.add_text(level_up_desc, CPoint(-130, -70 + 75 * i) + player.get_pos(), 1, FONT_12x08, MULTILINE_LEFT);
+				text_device.add_text(type_text, CPoint(-85, -95 + 75 * i) + player_pos, 1, FONT_12x08, ALIGN_LEFT);
+				text_device.add_text(level_text, CPoint(70, -95 + 75 * i) + player_pos, 1, FONT_12x08, ALIGN_LEFT);
+				text_device.add_text(level_up_desc, CPoint(-130, -70 + 75 * i) + player_pos, 1, FONT_12x08, MULTILINE_LEFT);
 			}
 		}
-		text_device.add_text("Level Up!", CPoint(0, -150) + player.get_pos(), 1, FONT_24x18_B, ALIGN_CENTER);
+		text_device.add_text("Level Up!", CPoint(0, -150) + player_pos, 1, FONT_24x18_B, ALIGN_CENTER);
 		if ((level_up_choice[0] > -1) && (level_up_choice[1] > -1) && (level_up_choice[2] > -1) && (level_up_choice[3] == -1)) {
-			text_device.add_text("Increase your luck", CPoint(0, 140) + player.get_pos(), 1, FONT_12x08, ALIGN_CENTER);
-			text_device.add_text("  for a chance to get 4 choices.", CPoint(0, 160) + player.get_pos(), 1, FONT_12x08, ALIGN_CENTER);
+			text_device.add_text("Increase your luck", CPoint(0, 140) + player_pos, 1, FONT_12x08, ALIGN_CENTER);
+			text_device.add_text("  for a chance to get 4 choices.", CPoint(0, 160) + player_pos, 1, FONT_12x08, ALIGN_CENTER);
 		}
 		//inventory detail 
-		for (int i = 0; i < Weapon::weapon_count(); i++) {
-			inv_detail_item_icons[i].show(Weapon::all_weapon[i].get_type());
-			for (int j = 0; j < Weapon::all_weapon[i].get_max_level(); j++)
-				inv_detail_item_knots[i][j][Weapon::all_weapon[i].get_level() > j].show();
-		}
-		for (int i = 0; i < Passive::passive_count(); i++) {
-			inv_detail_item_icons[i + 6].show(Passive::all_passive[i].get_type());
-			for (int j = 0; j < Passive::all_passive[i].get_max_level(); j++)
-				inv_detail_item_knots[i + 6][j][Passive::all_passive[i].get_level() > j].show();
-		}
+		show_inv();
 		// player stat text
 		stat_frame.show();
-		player_stats = player.get_stats_string();
-		cnt = 0;
-		for (int i = 0; i < 16; i++) {
-			text_device.add_text(player_stats[i].name_string, CPoint(-375, -130 + 16 * cnt) + player.get_pos(), 1, FONT_12x08, ALIGN_LEFT);
-			text_device.add_text(player_stats[i].val_string, CPoint(-235, -130 + 16 * cnt) + player.get_pos(), 1, FONT_12x08, ALIGN_RIGHT);
-			stat_icon[i].set_base_pos(-385, -130 + 16 * cnt);
-			stat_icon[i].show(player_stats[i].type);
-			cnt++;
-			cnt += (i % 4 == 3); //empty line
-		}
+		show_stat(player_stats, player_pos);
 		break;
 	case(OPEN_CHEST):
 		event_background.show();
@@ -711,8 +765,12 @@ void CGameStateRun::OnShow()
 		game_over_frame.show();
 		game_over_button.show();
 		break;
+	case (REVIVE):
+		game_over_frame.show();
+		button_revive.show();
+		break;
 	}
-	text_device.add_text(timer.get_minute_string() + ":" + timer.get_second_string(), CPoint(0, -265) + player.get_pos(), 1, FONT_24x18_B, ALIGN_CENTER);
-	text_device.add_text("LV " + to_string(player.get_level()), CPoint(380, -287) + player.get_pos(), 1, FONT_24x18_B, ALIGN_RIGHT);
+	text_device.add_text(timer.get_minute_string() + ":" + timer.get_second_string(), CPoint(0, -265) + player_pos, 1, FONT_24x18_B, ALIGN_CENTER);
+	text_device.add_text("LV " + to_string(player.get_level()), CPoint(380, -287) + player_pos, 1, FONT_24x18_B, ALIGN_RIGHT);
 	text_device.print_all();
 }

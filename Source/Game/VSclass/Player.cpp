@@ -11,29 +11,40 @@ using namespace game_framework;
 map<string, Player> Player::template_player;
 Player::Player()
 {
+	static array<int, 16> power_up = {5, 1, 1, 1, 3, 5, 10, 15, 1, 5, 25, 10, 3, 10, 1, 10};
+	ifstream fin("save/save_data.csv");
+	static vector <int> data;
+	string line, token;
+	getline(fin, line); // header
+	getline(fin, line);
+	stringstream ss(line);
+	getline(ss, token, ',');
+	while (getline(ss, token, ',')) {
+		data.push_back(stoi(token));
+	}
+	auto f = [=](int x) throw() -> int {return data[x] * power_up[x];};
+	fin.close();
 	obj_type = PLAYER;
-	_coef_magnet = 100;
-	_coef_max_health = 100;
-	_coef_move_speed = 100; // 100%
-	_coef_might = 100; // 100%
-	_coef_area = 100;
-	_coef_proj_speed = 100;
-	_coef_duration = 100;
-	_coef_cooldown = 100; // 100%
-	_coef_luck = 100;
-	_coef_growth = 100;
-	_coef_greed = 100;
-	_coef_curse = 100;
-	_coef_magnet = 100; // base value is 30
-
-	_amount = 0;
-	_armor = 0;
-	_revival = 0;
-	_recovery = 0;
+	_coef_might = 100 + f(0); 
+	_armor = f(1);
+	_coef_max_health = 100 + f(2);
+	_recovery = static_cast<double>(f(3)) / 10;
+	_coef_cooldown = 100 + f(4); 
+	_coef_area = 100 + f(5);
+	_coef_proj_speed = 100 + f(6);
+	_coef_duration = 100 + f(7);
+	_amount = f(8);
+	_coef_move_speed = 100 + f(9); 
+	_coef_magnet = 100 + f(10);
+	_coef_luck = 100 + f(11);
+	_coef_growth = 100 + f(12);
+	_coef_greed = 100 + f(13);
+	_revival = f(14);
+	_coef_curse = 100 + f(15);
 	_reroll = 0;
 	_exp = 0;
 	_base_speed = 300;
-	_base_max_health = 130;
+	_base_max_health = 150;
 	_base_magnet = 30;
 	_max_exp = 5;
 	_level = 1;
@@ -60,11 +71,8 @@ Player::Player()
 		{"curse", _coef_curse }
 	};
 	update_all_passive_effect();
-	//for some reason, load skin in constructor will cause the some error
-	//_bleed_animation.load_skin({ "resources/character/Blood1.bmp", "resources/character/Blood2.bmp", "resources/character/Blood3.bmp" });
-	//_bleed_animation.set_animation(50, false);
 }
-Player::Player(string name) {
+Player::Player(string name) : Player(){
 	*this = template_player[name];
 	acquire_weapon(_weapon_type);
 }
@@ -253,6 +261,16 @@ int Player::get_curse()
 }
 int Player::get_duration() {
 	return _coef_duration;
+}
+int Player::get_revival() {
+	return _revival;
+}
+int Player::get_greed() {
+	return _coef_greed;
+}
+void Player::revive() {
+	_hp = _max_health;
+	_revival -= 1;
 }
 vector<stat_struct> Player::get_stats_string()
 {
