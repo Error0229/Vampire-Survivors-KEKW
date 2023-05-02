@@ -81,6 +81,8 @@
 #include <random>
 #include <algorithm>
 #include <numeric>
+#include <fstream>
+#include <sstream>
 using namespace std;
 
 namespace game_framework {

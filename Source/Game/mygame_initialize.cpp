@@ -7,9 +7,7 @@
 #include "../Library/gamecore.h"
 #include "mygame.h"
 #include "config.h"
-#include <array>
-#include <fstream>
-#include <sstream>
+
 
 using namespace game_framework;
 /////////////////////////////////////////////////////////////////////////////
