@@ -23,7 +23,7 @@ public:
 	void level_up_passive(int type);
 	void update_all_passive_effect();
 	void obtain_item(int);
-	
+	void revive();
 	//getter
 	int get_level();
 	int get_exp_percent();
@@ -33,6 +33,7 @@ public:
 	int get_curse();
 	int get_pickup_range();
 	int get_duration();
+	int get_revival();
 	vector<stat_struct> get_stats_string();
 	int get_hp_percent();
 	bool is_hurt();

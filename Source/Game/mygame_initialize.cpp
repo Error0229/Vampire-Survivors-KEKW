@@ -216,6 +216,7 @@ void CGameStateInit::OnLButtonDown(UINT nFlags, CPoint point)
 	}
 	case menu_state::upgrade_passive: {
 		static int passive_selected = -1;
+		static array<int, 16> init_price = { 200, 600, 200, 200, 900, 300, 300, 300, 5000, 300, 300, 600, 900, 200, 1666, 10000 };
 		if (🆖.is_hover(mouse_pos)) {
 			if (passive_selected != -1) {
 				character_bg[passive_selected].set_selector(0);
@@ -235,8 +236,10 @@ void CGameStateInit::OnLButtonDown(UINT nFlags, CPoint point)
 			r_data.close();
 		}
 		else if (button_upgrade.is_hover(mouse_pos)) {
+			int price;
 			if (passive_selected != -1 && passive_levels[passive_selected] < passive_max_level[passive_selected] && coin >= 100 + passive_levels[passive_selected] * 100) {
-				coin -= 100 + passive_levels[passive_selected] * 100;
+				price = init_price[passive_selected] * (1 - passive_levels[passive_selected]) + 20 * static_cast<int>(pow(1.1, static_cast<double> (reduce(passive_levels.begin(), passive_levels.end()))));
+				coin -= price;
 				passive_checkbox[passive_selected][passive_levels[passive_selected]].set_selector(1);
 				passive_levels[passive_selected]++;
 			}
@@ -245,7 +248,7 @@ void CGameStateInit::OnLButtonDown(UINT nFlags, CPoint point)
 			for (int i = 0; i < 16; i++) {
 				for (int j = 0; j < passive_levels[i]; j++) {
 					passive_checkbox[i][j].set_selector(0);
-					coin += (j + 1) * 100;
+					coin += (j + 1) * init_price[i];
 				}
 				passive_levels[i] = 0;
 			}
@@ -349,6 +352,10 @@ void CGameStateInit::OnShow()
 		break;
 	}
 	case menu_state::start:{
+		for (int i = 0; i < 16; i++) {
+			character_bg[i].set_selector(0);
+		}
+		map_selected = -1;
 		GotoGameState(GAME_STATE_RUN);
 		break;
 	}

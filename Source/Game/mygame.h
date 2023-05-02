@@ -74,7 +74,7 @@ namespace game_framework {
 			start
 		};
 
-		const array<int, 16> passive_max_level = { 5,3,3,5,2,2,2,2,1,2,2,3,5,5,5,1 };
+		const array<int, 16> passive_max_level = { 5,3,3,5,2,2,2,2,1,2,2,3,5,5,1,5 };
 		int map_selected;
 		int coin;
 		TextDevice text_device;
@@ -162,6 +162,7 @@ namespace game_framework {
 		TextDevice text_device;
 
 		Ui hp_bar;
+		Ui button_revive;
 
 	};
 

@@ -17,7 +17,9 @@ enum gamerun_status {
 	PLAYING,
 	LEVEL_UP,
 	OPEN_CHEST,
-	GAME_OVER
+	GAME_OVER,
+	PAUSE,
+	REVIVE
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -160,7 +162,9 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 
 	hp_bar.load_skin({ "resources/ui/hp_bar_0.bmp", "resources/ui/hp_bar_1.bmp", "resources/ui/hp_bar_2.bmp", "resources/ui/hp_bar_3.bmp", "resources/ui/hp_bar_4.bmp", "resources/ui/hp_bar_5.bmp", "resources/ui/hp_bar_6.bmp", "resources/ui/hp_bar_7.bmp", "resources/ui/hp_bar_8.bmp", "resources/ui/hp_bar_9.bmp", "resources/ui/hp_bar_10.bmp", "resources/ui/hp_bar_11.bmp", "resources/ui/hp_bar_12.bmp", "resources/ui/hp_bar_13.bmp", "resources/ui/hp_bar_14.bmp", "resources/ui/hp_bar_15.bmp", "resources/ui/hp_bar_16.bmp", "resources/ui/hp_bar_17.bmp", "resources/ui/hp_bar_18.bmp", "resources/ui/hp_bar_19.bmp" });;
 	hp_bar.set_base_pos(0, 15);
-
+	button_revive.load_skin("resources/ui/button_revive.bmp");
+	button_revive.set_base_pos(0, 80);
+	button_revive.activate_hover = true;
 }
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -235,6 +239,13 @@ void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的
 		chest_animation.set_animation(30, true);
 		_next_status = PLAYING;
 		break;
+	case (REVIVE): {
+		if (button_revive.is_hover(mouse_pos)) {
+			_next_status = PLAYING;
+			player.revive();
+		}
+		break;
+	}
 	case(GAME_OVER):
 		if (game_over_button.is_hover(mouse_pos)) {
 			GotoGameState(GAME_STATE_OVER);
@@ -249,7 +260,6 @@ void CGameStateRun::OnLButtonUp(UINT nFlags, CPoint point)	// 處理滑鼠的動
 
 void CGameStateRun::OnMouseMove(UINT nFlags, CPoint point)	// 處理滑鼠的動作
 {
-	// mouse_pos = CPoint(point.x - VSObject::player_dx, point.y - VSObject::player_dy);
 }
 
 void CGameStateRun::OnRButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的動作
@@ -430,7 +440,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 				😈->update_collide();
 				player.hurt(😈->get_power());
 				if (player.get_hp_percent() == 0) {
-					_next_status = GAME_OVER;
+					_next_status = player.get_revival() > 0 ? REVIVE : GAME_OVER;
 					return;
 				}
 			}
@@ -575,7 +585,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			}
 		}
 		break;
-	case (GAME_OVER):
+	case (GAME_OVER): case (REVIVE):
 		break;
 	}
 }
@@ -712,6 +722,10 @@ void CGameStateRun::OnShow()
 	case (GAME_OVER):
 		game_over_frame.show();
 		game_over_button.show();
+		break;
+	case (REVIVE):
+		game_over_frame.show();
+		button_revive.show();
 		break;
 	}
 	text_device.add_text(timer.get_minute_string() + ":" + timer.get_second_string(), CPoint(0, -265) + player.get_pos(), 1, FONT_24x18_B, ALIGN_CENTER);

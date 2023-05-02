@@ -79,6 +79,8 @@
 #include <vector>
 #include <map>
 #include <random>
+#include <algorithm>
+#include <numeric>
 using namespace std;
 
 namespace game_framework {
