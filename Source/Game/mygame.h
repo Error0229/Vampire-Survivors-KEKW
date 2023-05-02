@@ -73,9 +73,10 @@ namespace game_framework {
 			upgrade_passive,
 			start
 		};
-
+		const array<int, 16> init_price = { 200, 600, 200, 200, 900, 300, 300, 300, 5000, 300, 300, 600, 900, 200, 10000, 1666 };
 		const array<int, 16> passive_max_level = { 5,3,3,5,2,2,2,2,1,2,2,3,5,5,1,5 };
 		int map_selected;
+		int passive_selected = -1;
 		int coin;
 		TextDevice text_device;
 		menu_state STATE;

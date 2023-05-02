@@ -215,8 +215,7 @@ void CGameStateInit::OnLButtonDown(UINT nFlags, CPoint point)
 		break;
 	}
 	case menu_state::upgrade_passive: {
-		static int passive_selected = -1;
-		static array<int, 16> init_price = { 200, 600, 200, 200, 900, 300, 300, 300, 5000, 300, 300, 600, 900, 200, 1666, 10000 };
+		
 		if (🆖.is_hover(mouse_pos)) {
 			if (passive_selected != -1) {
 				character_bg[passive_selected].set_selector(0);
@@ -238,7 +237,7 @@ void CGameStateInit::OnLButtonDown(UINT nFlags, CPoint point)
 		else if (button_upgrade.is_hover(mouse_pos)) {
 			int price;
 			if (passive_selected != -1 && passive_levels[passive_selected] < passive_max_level[passive_selected] && coin >= 100 + passive_levels[passive_selected] * 100) {
-				price = init_price[passive_selected] * (1 - passive_levels[passive_selected]) + 20 * static_cast<int>(pow(1.1, static_cast<double> (reduce(passive_levels.begin(), passive_levels.end()))));
+				price = init_price[passive_selected] * (1 + passive_levels[passive_selected]) + 20 * static_cast<int>(pow(1.1, static_cast<double> (reduce(passive_levels.begin(), passive_levels.end()))));
 				coin -= price;
 				passive_checkbox[passive_selected][passive_levels[passive_selected]].set_selector(1);
 				passive_levels[passive_selected]++;
@@ -310,6 +309,11 @@ void CGameStateInit::OnShow()
 		button_upgrade.show_skin();
 		money_bg.show_skin();
 		text_device.add_text(to_string(coin), CPoint(0, -220), 1, FONT_NORM, ALIGN_CENTER);
+		if (passive_selected != -1) {
+			double sum = static_cast<double> (reduce(passive_levels.begin(), passive_levels.end()));
+			string s = "Price: " + to_string(init_price[passive_selected] * (1 + passive_levels[passive_selected]) + (sum > 0.1) * 20 * static_cast<int>(pow(1.1, sum)));
+			text_device.add_text(s,  CPoint(0, 155), 1, FONT_NORM, ALIGN_CENTER);
+		}
 		for (int i = 0; i < 16; i++) {
 			character_bg[i].set_pos(-110 + (i % 4) * 73, -110 + (i / 4) * 73);
 			character_bg[i].show_skin();
