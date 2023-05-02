@@ -126,6 +126,9 @@ namespace game_framework {
 		void update_mouse_pos();
 		int draw_level_up(bool);
 		int draw_open_chest(bool pull_evo=true);
+		void show_inv();
+		void show_stat(vector<stat_struct>&, CPoint);
+
 		CPoint mouse_pos;								// 滑鼠的座標
 		Map map;
 		Player player;
@@ -165,6 +168,9 @@ namespace game_framework {
 		Ui button_revive;
 		Ui coin;
 		Ui skull;
+		Ui button_pause;
+		Ui button_resume;
+		Ui evolution_chart;
 	};
 
 	/////////////////////////////////////////////////////////////////////////////

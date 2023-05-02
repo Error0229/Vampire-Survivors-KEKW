@@ -89,8 +89,16 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	event_background.load_skin("resources/ui/event_background.bmp");
 	coin.load_skin("Resources/pickup/CoinGold.bmp");
 	skull.load_skin("Resources/ui/SkullToken.bmp");
+	button_pause.load_skin("Resources/ui/pause.bmp");
+	button_resume.load_skin("Resources/ui/button_resume.bmp");
+	evolution_chart.load_skin("Resources/ui/evolutions.bmp");
 	coin.set_base_pos(373, -260);
 	skull.set_base_pos(373, -240);
+	button_pause.set_base_pos(370, -210);
+	button_resume.set_base_pos(0 , 200);
+	evolution_chart.set_base_pos(0, 0);
+	button_pause.activate_hover = true;
+	button_resume.activate_hover = true;
 	for (int i = 0; i < 4; i++) {
 		level_up_button[i].load_skin("resources/ui/event_button.bmp");
 		level_up_icon_frame[i].load_skin("resources/ui/frameB.bmp");
@@ -215,6 +223,14 @@ void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的
 	update_mouse_pos();
 	switch (_gamerun_status) {
 	case(PLAYING):
+		if (button_pause.is_hover(mouse_pos)) {
+			_next_status = PAUSE;
+			timer.pause();
+		}
+		break;
+	case(PAUSE):
+		if (button_resume.is_hover(mouse_pos)) 
+			_next_status = PLAYING;
 		break;
 	case(LEVEL_UP):
 		for (int i = 0; i < 4; i++) {
@@ -382,7 +398,32 @@ int CGameStateRun::draw_open_chest(bool pull_evo)
 	}
 	return index_to_type[poll(weights)];
 }
-
+void CGameStateRun::show_inv() {
+	inv_detail_frame.show();
+	for (int i = 0; i < Weapon::weapon_count(); i++) {
+		inv_detail_item_icons[i].show(Weapon::all_weapon[i].get_type());
+		for (int j = 0; j < Weapon::all_weapon[i].get_max_level(); j++)
+			inv_detail_item_knots[i][j][Weapon::all_weapon[i].get_level() > j].show();
+	}
+	for (int i = 0; i < Passive::passive_count(); i++) {
+		inv_detail_item_icons[i + 6].show(Passive::all_passive[i].get_type());
+		for (int j = 0; j < Passive::all_passive[i].get_max_level(); j++)
+			inv_detail_item_knots[i + 6][j][Passive::all_passive[i].get_level() > j].show();
+	}
+}
+void CGameStateRun::show_stat(vector<stat_struct> &player_stats, CPoint player_pos) {
+	stat_frame.show();
+	player_stats = player.get_stats_string();
+	int cnt = 0;
+	for (int i = 0; i < 16; i++) {
+		text_device.add_text(player_stats[i].name_string, CPoint(-375, -130 + 16 * cnt) + player_pos, 1, FONT_12x08, ALIGN_LEFT);
+		text_device.add_text(player_stats[i].val_string, CPoint(-235, -130 + 16 * cnt) + player_pos, 1, FONT_12x08, ALIGN_RIGHT);
+		stat_icon[i].set_base_pos(-385, -130 + 16 * cnt);
+		stat_icon[i].show(player_stats[i].type);
+		cnt++;
+		cnt += (i % 4 == 3); //empty line
+	}
+}
 void CGameStateRun::update_mouse_pos()
 {
 	CPoint p;
@@ -625,19 +666,27 @@ void CGameStateRun::OnShow()
 	string level_up_desc, level_text, type_text;
 
 	vector<stat_struct> player_stats;
-	int cnt;
 	string 🍆;
 	switch (_gamerun_status) {
 	case(PLAYING):
 		inv_slot.show();
 		xp_bar.set_selector(0);
 		xp_bar.disable_animation();
+		button_pause.show();
 		for (int i = 0; i < Weapon::weapon_count(); i++)
 			inv_icon[i].show(Weapon::all_weapon[i].get_type());
 		for (int i = 0; i < Passive::passive_count(); i++)
 			inv_icon[i + 6].show(Passive::all_passive[i].get_type());
 		hp_bar.set_selector((player.get_hp_percent() - 1) / 5);
 		hp_bar.show();
+		break;
+	case(PAUSE):
+		button_resume.show();
+		evolution_chart.show(0.4);
+		inv_detail_frame.show();
+		show_inv();
+		stat_frame.show();
+		show_stat(player_stats, player_pos);
 		break;
 	case(LEVEL_UP):
 		xp_bar.enable_animation();
@@ -694,28 +743,10 @@ void CGameStateRun::OnShow()
 			text_device.add_text("  for a chance to get 4 choices.", CPoint(0, 160) + player_pos, 1, FONT_12x08, ALIGN_CENTER);
 		}
 		//inventory detail 
-		for (int i = 0; i < Weapon::weapon_count(); i++) {
-			inv_detail_item_icons[i].show(Weapon::all_weapon[i].get_type());
-			for (int j = 0; j < Weapon::all_weapon[i].get_max_level(); j++)
-				inv_detail_item_knots[i][j][Weapon::all_weapon[i].get_level() > j].show();
-		}
-		for (int i = 0; i < Passive::passive_count(); i++) {
-			inv_detail_item_icons[i + 6].show(Passive::all_passive[i].get_type());
-			for (int j = 0; j < Passive::all_passive[i].get_max_level(); j++)
-				inv_detail_item_knots[i + 6][j][Passive::all_passive[i].get_level() > j].show();
-		}
+		show_inv();
 		// player stat text
 		stat_frame.show();
-		player_stats = player.get_stats_string();
-		cnt = 0;
-		for (int i = 0; i < 16; i++) {
-			text_device.add_text(player_stats[i].name_string, CPoint(-375, -130 + 16 * cnt) + player_pos, 1, FONT_12x08, ALIGN_LEFT);
-			text_device.add_text(player_stats[i].val_string, CPoint(-235, -130 + 16 * cnt) + player_pos, 1, FONT_12x08, ALIGN_RIGHT);
-			stat_icon[i].set_base_pos(-385, -130 + 16 * cnt);
-			stat_icon[i].show(player_stats[i].type);
-			cnt++;
-			cnt += (i % 4 == 3); //empty line
-		}
+		show_stat(player_stats, player_pos);
 		break;
 	case(OPEN_CHEST):
 		event_background.show();
