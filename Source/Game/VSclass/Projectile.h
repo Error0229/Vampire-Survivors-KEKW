@@ -18,7 +18,7 @@ public:
 	void collide_with_lightsource(LightSource&, int duration);
 	void set_rotation(double);
 	void set_angle(double angle);
-	CPoint get_parabola(double angle, double speed, int time);
+	CPoint get_parabola(double angle, double speed, int time, int pre_y = 1 << 20);
 	void load_rotation();
 
 	static void init_projectile(int type, int count);
@@ -35,9 +35,10 @@ protected:
 		_hitbox_delay, _pool_limit, _chance,
 		_crit_multi, _block_by_wall;
 	int _delay = 0;
+	int pre_y = 1<<20;
 	std::map<int, game_framework::CMovingBitmap> _rotation_skin;
 	double _area, _damage, _knock_back, _angle;
-	bool _is_over = 0, _is_start = 0, _is_top = 0;
+	bool _is_over = false, _is_start = false, _is_top = false;
 	clock_t _create_time;
 	// life cycle means after how many frames the projectile will be destroyed -1 means infinite or until it hits something
 	CPoint _offset;
