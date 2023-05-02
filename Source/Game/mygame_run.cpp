@@ -57,6 +57,8 @@ void CGameStateRun::OnBeginState()
 	player.set_speed(300);
 	map = Map();
 	MAP_ID = game->Get🗺️();
+	GOLD_NUM = 0;
+	KILL_NUM = 0;
 	switch (MAP_ID) {
 	case 0:
 		map.load_map({ "resources/map/dummy1.bmp" });
@@ -69,7 +71,6 @@ void CGameStateRun::OnBeginState()
 	event_background.set_base_pos(0, 0);
 	_gamerun_status = PLAYING;
 	_next_status = PLAYING;
-	coin_count = 0;
 }
 
 
@@ -86,6 +87,10 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	Player::init_player();
 	map.load_map({ "resources/map/dummy1.bmp" });
 	event_background.load_skin("resources/ui/event_background.bmp");
+	coin.load_skin("Resources/pickup/CoinGold.bmp");
+	skull.load_skin("Resources/ui/SkullToken.bmp");
+	coin.set_base_pos(373, -260);
+	skull.set_base_pos(373, -240);
 	for (int i = 0; i < 4; i++) {
 		level_up_button[i].load_skin("resources/ui/event_button.bmp");
 		level_up_icon_frame[i].load_skin("resources/ui/frameB.bmp");
@@ -485,15 +490,16 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		for (auto i : LightSourcePickup::LSPickup_all) {
 			if (i->is_enable() && is_overlapped(player, *i)) {
 				i->despawn();
+				double greed = static_cast<double>(player.get_greed()) / 100.0;
 				switch (i->get_lightsource_pickup_type()) {
 				case COIN:
-					coin_count += 1;
+					GOLD_NUM += static_cast<int> (1. * greed);
 					break;
 				case COIN_BAG:
-					coin_count += 10;
+					GOLD_NUM += static_cast<int> (10. * greed);
 					break;
 				case RICH_COIN_BAG:
-					coin_count += 100;
+					GOLD_NUM += static_cast<int> (100. * greed);
 					break;
 				case ROSARY:
 					for (auto 😈 : enemy_factory.live_enemy) {
@@ -591,17 +597,22 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 }
 void CGameStateRun::OnShow()
 {
-	map.map_padding(player.get_pos());
+	CPoint player_pos = player.get_pos();
+	map.map_padding(player_pos);
 	map.show_map();
 	Weapon::show();
 	Xp::show();
 	Chest::show();
 	LightSourcePickup::show();
+	coin.show();
+	skull.show();
+	text_device.add_text(to_string(GOLD_NUM), CPoint(368, -260) + player_pos, 1, FONT_NORM, ALIGN_RIGHT);
+	text_device.add_text(to_string(KILL_NUM), CPoint(368, -240) + player_pos, 1, FONT_NORM, ALIGN_RIGHT);
 	player.show_skin();
 	for(auto 😈: enemy_factory.live_enemy)
 		😈->show_skin();
-	enemy_factory.update(timer.get_ticks(), player.get_pos(), player.get_level(), player.get_luck(), player.get_curse());
-	light_source_factory.update(timer.get_ticks(), player.get_pos(), player.get_luck());
+	enemy_factory.update(timer.get_ticks(), player_pos, player.get_level(), player.get_luck(), player.get_curse());
+	light_source_factory.update(timer.get_ticks(), player_pos, player.get_luck());
 	for (auto i : light_source_factory.light_sourse_all)
 		i->show_skin();
 	Damage::damage_device()->show_damage();
@@ -672,15 +683,15 @@ void CGameStateRun::OnShow()
 						level_up_desc = Passive(level_up_choice[i]).get_level_up_msg(true);
 					}
 				}
-				text_device.add_text(type_text, CPoint(-85, -95 + 75 * i) + player.get_pos(), 1, FONT_12x08, ALIGN_LEFT);
-				text_device.add_text(level_text, CPoint(70, -95 + 75 * i) + player.get_pos(), 1, FONT_12x08, ALIGN_LEFT);
-				text_device.add_text(level_up_desc, CPoint(-130, -70 + 75 * i) + player.get_pos(), 1, FONT_12x08, MULTILINE_LEFT);
+				text_device.add_text(type_text, CPoint(-85, -95 + 75 * i) + player_pos, 1, FONT_12x08, ALIGN_LEFT);
+				text_device.add_text(level_text, CPoint(70, -95 + 75 * i) + player_pos, 1, FONT_12x08, ALIGN_LEFT);
+				text_device.add_text(level_up_desc, CPoint(-130, -70 + 75 * i) + player_pos, 1, FONT_12x08, MULTILINE_LEFT);
 			}
 		}
-		text_device.add_text("Level Up!", CPoint(0, -150) + player.get_pos(), 1, FONT_24x18_B, ALIGN_CENTER);
+		text_device.add_text("Level Up!", CPoint(0, -150) + player_pos, 1, FONT_24x18_B, ALIGN_CENTER);
 		if ((level_up_choice[0] > -1) && (level_up_choice[1] > -1) && (level_up_choice[2] > -1) && (level_up_choice[3] == -1)) {
-			text_device.add_text("Increase your luck", CPoint(0, 140) + player.get_pos(), 1, FONT_12x08, ALIGN_CENTER);
-			text_device.add_text("  for a chance to get 4 choices.", CPoint(0, 160) + player.get_pos(), 1, FONT_12x08, ALIGN_CENTER);
+			text_device.add_text("Increase your luck", CPoint(0, 140) + player_pos, 1, FONT_12x08, ALIGN_CENTER);
+			text_device.add_text("  for a chance to get 4 choices.", CPoint(0, 160) + player_pos, 1, FONT_12x08, ALIGN_CENTER);
 		}
 		//inventory detail 
 		for (int i = 0; i < Weapon::weapon_count(); i++) {
@@ -698,8 +709,8 @@ void CGameStateRun::OnShow()
 		player_stats = player.get_stats_string();
 		cnt = 0;
 		for (int i = 0; i < 16; i++) {
-			text_device.add_text(player_stats[i].name_string, CPoint(-375, -130 + 16 * cnt) + player.get_pos(), 1, FONT_12x08, ALIGN_LEFT);
-			text_device.add_text(player_stats[i].val_string, CPoint(-235, -130 + 16 * cnt) + player.get_pos(), 1, FONT_12x08, ALIGN_RIGHT);
+			text_device.add_text(player_stats[i].name_string, CPoint(-375, -130 + 16 * cnt) + player_pos, 1, FONT_12x08, ALIGN_LEFT);
+			text_device.add_text(player_stats[i].val_string, CPoint(-235, -130 + 16 * cnt) + player_pos, 1, FONT_12x08, ALIGN_RIGHT);
 			stat_icon[i].set_base_pos(-385, -130 + 16 * cnt);
 			stat_icon[i].show(player_stats[i].type);
 			cnt++;
@@ -728,7 +739,7 @@ void CGameStateRun::OnShow()
 		button_revive.show();
 		break;
 	}
-	text_device.add_text(timer.get_minute_string() + ":" + timer.get_second_string(), CPoint(0, -265) + player.get_pos(), 1, FONT_24x18_B, ALIGN_CENTER);
-	text_device.add_text("LV " + to_string(player.get_level()), CPoint(380, -287) + player.get_pos(), 1, FONT_24x18_B, ALIGN_RIGHT);
+	text_device.add_text(timer.get_minute_string() + ":" + timer.get_second_string(), CPoint(0, -265) + player_pos, 1, FONT_24x18_B, ALIGN_CENTER);
+	text_device.add_text("LV " + to_string(player.get_level()), CPoint(380, -287) + player_pos, 1, FONT_24x18_B, ALIGN_RIGHT);
 	text_device.print_all();
 }

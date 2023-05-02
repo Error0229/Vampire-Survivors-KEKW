@@ -124,6 +124,7 @@ bool Enemy::hurt(int damage)
 		_hp -= damage;
 		// game_framework::CAudio::Instance()->Play(2, false);
 		if (is_dead()) {
+			KILL_NUM += 1;
 			unshow_skin();
 			Xp::spawnXP(this->_position, static_cast<int>(_xp_value));
 			if (_is_drop_chest) 

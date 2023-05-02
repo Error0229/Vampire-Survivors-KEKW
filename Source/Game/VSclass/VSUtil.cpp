@@ -145,3 +145,4 @@ int get_map_id() {
 }
 int MAP_ID = 0;
 int GOLD_NUM = 0;
+int KILL_NUM = 0;

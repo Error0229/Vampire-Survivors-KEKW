@@ -34,6 +34,7 @@ public:
 	int get_pickup_range();
 	int get_duration();
 	int get_revival();
+	int get_greed();
 	vector<stat_struct> get_stats_string();
 	int get_hp_percent();
 	bool is_hurt();
@@ -68,7 +69,6 @@ private:
 	int _exp, _max_exp;
 	int _level;
 	int _direction;
-	int _money;
 	int _reroll;
 	bool _is_hurt = false;
 	int _weapon_type;

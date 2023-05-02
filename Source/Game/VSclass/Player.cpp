@@ -41,7 +41,6 @@ Player::Player()
 	_coef_greed = 100 + f(13);
 	_revival = f(14);
 	_coef_curse = 100 + f(15);
-	_money = 0;
 	_reroll = 0;
 	_exp = 0;
 	_base_speed = 300;
@@ -265,6 +264,9 @@ int Player::get_duration() {
 }
 int Player::get_revival() {
 	return _revival;
+}
+int Player::get_greed() {
+	return _coef_greed;
 }
 void Player::revive() {
 	_hp = _max_health;
