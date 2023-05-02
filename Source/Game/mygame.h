@@ -76,6 +76,7 @@ namespace game_framework {
 
 		const array<int, 16> passive_max_level = { 5,3,3,5,2,2,2,2,1,2,2,3,5,5,5,1 };
 		int map_selected;
+		int coin;
 		TextDevice text_device;
 		menu_state STATE;
 		vector<Icon> passive_icon;
@@ -92,6 +93,7 @@ namespace game_framework {
  		Ui button_start;
 		Ui button_restore;
 		Ui select_bg;
+		Ui money_bg;
 		Ui map_select_effect;
 		Ui 🆗;
 		Ui 🆖;

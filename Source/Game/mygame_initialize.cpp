@@ -34,12 +34,13 @@ void CGameStateInit::OnInit()
 	//
 	// 此OnInit動作會接到CGameStaterRun::OnInit()，所以進度還沒到100%
 	//
-	button_start.load_skin({"resources/ui/button_start.bmp"});
-	button_upgrade.load_skin({"resources/ui/button_upgrade.bmp"});
-	button_go_upgrade.load_skin({"resources/ui/button_go_upgrade.bmp"});
-	button_restore.load_skin({ "resources/ui/money_restore.bmp" });
-	background.load_skin({"resources/ui/background_1.bmp"});
-	select_bg.load_skin({"resources/ui/event_background.bmp"});
+	button_start.load_skin("resources/ui/button_start.bmp");
+	button_upgrade.load_skin("resources/ui/button_upgrade.bmp");
+	button_go_upgrade.load_skin("resources/ui/button_go_upgrade.bmp");
+	button_restore.load_skin("resources/ui/money_restore.bmp");
+	background.load_skin("resources/ui/background_1.bmp");
+	select_bg.load_skin("resources/ui/event_background.bmp");
+	money_bg.load_skin("Resources/ui/button_c9_normal_mini.bmp");
 	🆗.load_skin({"Resources/ui/ok.bmp"});
 	🆖.load_skin({"Resources/ui/no.bmp"});
 	Icon::load_filename();
@@ -61,6 +62,25 @@ void CGameStateInit::OnInit()
 		"resources/weapon/cross.bmp",
 		"resources/weapon/heavensword.bmp"
 	};
+	ifstream file("source/game/VSclass/player_data.csv");
+	string line, skin_file, token;
+	getline(file, token); // no use
+	passive_levels = vector<int>(16);
+	while (getline(file, line)) {
+		Ui 🧝;
+		stringstream ss(line);
+		getline(ss, skin_file, ',');
+		getline(ss, token, ',');
+		getline(ss, token, ',');
+		🧝.set_name(token);
+		character_short_name.emplace_back(token.substr(0, token.find_first_of(' ')));
+		getline(ss, token, ',');
+		skin_file = "resources/character/" + skin_file + "_01.bmp";
+		🧝.load_skin(vector<string>{skin_file});
+		character_skins.push_back(skin_file);
+		characters.push_back(🧝);
+	}
+	file.close();
 	for (int i = 0; i < 16; i++) {
 		vector<Ui> tmp;
 		for (int j = 0; j < passive_max_level[i]; j++) {
@@ -83,33 +103,6 @@ void CGameStateInit::OnInit()
 		tmp.set_name(Icon::icon_name[63 + i]);
 		passive_bg.emplace_back(p_bg);
 		passive_icon.emplace_back(tmp);
-	}
-	ifstream file("source/game/VSclass/player_data.csv");
-	ifstream player_data("save/save_data.csv");
-	string line, skin_file, token;
-	getline(file, token); // no use
-	while (getline(file, line)) {
-		Ui 🧝;
-		stringstream ss(line);
-		getline(ss, skin_file, ',');
-		getline(ss, token, ',');
-		getline(ss, token, ',');
-		🧝.set_name(token);
-		character_short_name.emplace_back(token.substr(0, token.find_first_of(' ')));
-		getline(ss, token, ',');
-		skin_file = "resources/character/" + skin_file + "_01.bmp";
-		🧝.load_skin(vector<string>{skin_file});
-		character_skins.push_back(skin_file);
-		characters.push_back(🧝);
-	}
-	getline(player_data, line);
-	getline(player_data, line);
-	stringstream ss (line);
-	getline(ss, token, ',');
-	GOLD_NUM = stoi(token);
-	for (int i = 0; i < 16; i++) {
-		getline(ss, token, ',');
-		passive_levels.push_back(stoi(token));
 	}
 	Ui s_bg;
 	s_bg.load_skin({ "Resources/ui/character_bg.bmp", "Resources/ui/character_bg_s.bmp" });
@@ -139,10 +132,11 @@ void CGameStateInit::OnInit()
 	🆗.activate_hover = true;
 	🆖.activate_hover = true;
 	background.set_pos(0, 0);
+	money_bg.set_pos(0, -220);
 	button_start.set_pos(0, 0);
 	button_upgrade.set_pos(100, 200);
 	button_go_upgrade.set_pos(0, 150);
-	button_restore.set_pos(0, -140);
+	button_restore.set_pos(0, -170);
 	🆗.set_pos( 100, 200);
 	🆖.set_pos(-100, 200);
 	select_bg.set_pos(0, 0);
@@ -173,6 +167,22 @@ void CGameStateInit::OnLButtonDown(UINT nFlags, CPoint point)
 		}
 		else if (button_go_upgrade.is_hover(mouse_pos)) {
 			STATE = menu_state::upgrade_passive;
+			ifstream player_data("save/save_data.csv");
+			string line, token;
+			getline(player_data, line);
+			getline(player_data, line);
+			stringstream ss(line);
+			getline(ss, token, ',');
+			coin = stoi(token);
+			for (int i = 0; i < 16; i++) {
+				getline(ss, token, ',');
+				passive_levels[i] = (stoi(token));
+				for (int j = 0; j < passive_levels[i]; j++) {
+					passive_checkbox[i][j].set_selector(1);
+				}
+			}
+			player_data.close();
+
 		}
 		break;
 	}
@@ -183,6 +193,10 @@ void CGameStateInit::OnLButtonDown(UINT nFlags, CPoint point)
 		}
 		else if (🆖.is_hover(mouse_pos)) {
 			STATE = menu_state::init;
+			if (selected != -1) {
+				character_bg[selected].set_selector(0);
+				selected = -1;
+			}
 		}
 		for (int i = 0; i < 11; i++) {
 			if (character_bg[i].is_hover(mouse_pos)) {
@@ -203,7 +217,38 @@ void CGameStateInit::OnLButtonDown(UINT nFlags, CPoint point)
 	case menu_state::upgrade_passive: {
 		static int passive_selected = -1;
 		if (🆖.is_hover(mouse_pos)) {
+			if (passive_selected != -1) {
+				character_bg[passive_selected].set_selector(0);
+				passive_selected = -1;
+			}
 			STATE = menu_state::init;
+			ifstream p_data("save/save_data.csv");
+			string header, line;
+			getline(p_data, header);
+			p_data.close();
+			ofstream r_data("save/save_data.csv", std::ofstream::trunc);
+			r_data << header << '\n';
+			r_data << coin << ',';
+			for (int i = 0; i < 16; i++) {
+				r_data << passive_levels[i] << ", "[i == 15];
+			}
+			r_data.close();
+		}
+		else if (button_upgrade.is_hover(mouse_pos)) {
+			if (passive_selected != -1 && passive_levels[passive_selected] < passive_max_level[passive_selected] && coin >= 100 + passive_levels[passive_selected] * 100) {
+				coin -= 100 + passive_levels[passive_selected] * 100;
+				passive_checkbox[passive_selected][passive_levels[passive_selected]].set_selector(1);
+				passive_levels[passive_selected]++;
+			}
+		}
+		else if (button_restore.is_hover(mouse_pos)) {
+			for (int i = 0; i < 16; i++) {
+				for (int j = 0; j < passive_levels[i]; j++) {
+					passive_checkbox[i][j].set_selector(0);
+					coin += (j + 1) * 100;
+				}
+				passive_levels[i] = 0;
+			}
 		}
 		for (int i = 0; i < 16; i++) {
 			if (character_bg[i].is_hover(mouse_pos)) {
@@ -228,6 +273,8 @@ void CGameStateInit::OnLButtonDown(UINT nFlags, CPoint point)
 		}
 		else if (🆖.is_hover(mouse_pos)) {
 			STATE = menu_state::select_character;
+			if (map_selected != -1)
+				map_selected = -1;
 		}
 		for (int i = 0; i < static_cast<int>(maps.size()); i++) {
 			if (maps[i].is_hover(mouse_pos)) {
@@ -246,7 +293,6 @@ void CGameStateInit::OnShow()
 {
 	// show background
 	background.show_skin();
-	//button_start->show_button();
 	switch (STATE) {
 	case menu_state::init: {
 		button_start.show_skin();
@@ -259,6 +305,8 @@ void CGameStateInit::OnShow()
 		🆖.show_skin();
 		button_restore.show_skin();
 		button_upgrade.show_skin();
+		money_bg.show_skin();
+		text_device.add_text(to_string(coin), CPoint(0, -220), 1, FONT_NORM, ALIGN_CENTER);
 		for (int i = 0; i < 16; i++) {
 			character_bg[i].set_pos(-110 + (i % 4) * 73, -110 + (i / 4) * 73);
 			character_bg[i].show_skin();
