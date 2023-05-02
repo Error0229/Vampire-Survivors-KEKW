@@ -39,7 +39,7 @@
 */
 #include "config.h"
 #include "VSclass/VS.h"
-
+#include <array>
 namespace game_framework {
 	/////////////////////////////////////////////////////////////////////////////
 	// Constants
@@ -70,17 +70,27 @@ namespace game_framework {
 			init,
 			select_character, 
 			select_map, 
+			upgrade_passive,
 			start
 		};
+
+		const array<int, 16> passive_max_level = { 5,3,3,5,2,2,2,2,1,2,2,3,5,5,5,1 };
 		int map_selected;
 		TextDevice text_device;
 		menu_state STATE;
+		vector<Icon> passive_icon;
 		vector<Ui> characters;
 		vector<Ui> weapons;
 		vector<Ui> maps;
 		vector<Ui> character_bg;
+		vector<Ui> passive_bg;
+		vector< vector<Ui> > passive_checkbox;
 		vector<string> character_short_name;
+		vector<int> passive_levels;
+		Ui button_upgrade;
+		Ui button_go_upgrade;
  		Ui button_start;
+		Ui button_restore;
 		Ui select_bg;
 		Ui map_select_effect;
 		Ui 🆗;

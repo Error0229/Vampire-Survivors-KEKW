@@ -111,8 +111,11 @@ void Icon::show(CPoint pos, int item_id, double factor)
 	set_selector(item_id);
 	Ui::show(pos, factor);
 }
+bool Icon::file_loaded = false;
 void Icon::load_filename()
 {
+	if(file_loaded)
+		return;
 	ifstream file("resources/item_id.csv");
 	string header, line;
 	string number, id, old_id, filename, type;
@@ -132,10 +135,15 @@ void Icon::load_filename()
 			sprintf(🍆, "resources/weapon/%s.bmp", filename.c_str());
 		else if (type == "passive")
 			sprintf(🍆, "resources/passive/%s.bmp", filename.c_str());
+		for (int i = 1; i < (int)id.size(); i++)
+			id[i] = tolower(id[i]);
+		icon_name.emplace_back(id);
 		icon_filename.push_back(🍆);
 	}
+	Icon::file_loaded = true;
 }
 vector<string> Icon::icon_filename;
+vector<string> Icon::icon_name;
 vector<Damage*> Damage::all_dmg;
 ObjPool<Damage> Damage::pool(DAMAGE);
 Damage Damage::dmg;

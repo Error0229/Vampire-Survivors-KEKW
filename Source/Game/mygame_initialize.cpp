@@ -7,6 +7,7 @@
 #include "../Library/gamecore.h"
 #include "mygame.h"
 #include "config.h"
+#include <array>
 #include <fstream>
 #include <sstream>
 
@@ -34,12 +35,18 @@ void CGameStateInit::OnInit()
 	// 此OnInit動作會接到CGameStaterRun::OnInit()，所以進度還沒到100%
 	//
 	button_start.load_skin({"resources/ui/button_start.bmp"});
+	button_upgrade.load_skin({"resources/ui/button_upgrade.bmp"});
+	button_go_upgrade.load_skin({"resources/ui/button_go_upgrade.bmp"});
+	button_restore.load_skin({ "resources/ui/money_restore.bmp" });
 	background.load_skin({"resources/ui/background_1.bmp"});
 	select_bg.load_skin({"resources/ui/event_background.bmp"});
 	🆗.load_skin({"Resources/ui/ok.bmp"});
 	🆖.load_skin({"Resources/ui/no.bmp"});
-
+	Icon::load_filename();
 	button_start.activate_hover = true;
+	button_upgrade.activate_hover = true;
+	button_go_upgrade.activate_hover = true;
+	button_restore.activate_hover = true;
 	vector <string> character_skins;
 	vector <string> weapon_icon = {
 		"resources/weapon/whip.bmp", 
@@ -54,8 +61,31 @@ void CGameStateInit::OnInit()
 		"resources/weapon/cross.bmp",
 		"resources/weapon/heavensword.bmp"
 	};
-
+	for (int i = 0; i < 16; i++) {
+		vector<Ui> tmp;
+		for (int j = 0; j < passive_max_level[i]; j++) {
+			Ui p;
+			p.load_skin({ "Resources/ui/s_checkbox_empty_b.bmp","Resources/ui/s_checkbox_checked_b.bmp" });
+			int offset = (passive_max_level[i] - 1) * 4;
+			p.set_pos(-110 + (i % 4) * 73 - offset + j * 8, -87 + (i / 4) * 73);
+			tmp.emplace_back(p);
+		}	
+		passive_checkbox.emplace_back(tmp);
+	}
+	Ui p_bg;
+	p_bg.load_skin("Resources/ui/frameB.bmp");
+	Icon tmp;
+	tmp.load_icon();
+	for (int i = 0; i < 16; i++) {
+		tmp.set_selector(63 + i);
+		tmp.set_pos(-110 + (i % 4) * 73, -110 + (i / 4) * 73);
+		p_bg.set_pos(-110 + (i % 4) * 73, -110 + (i / 4) * 73);
+		tmp.set_name(Icon::icon_name[63 + i]);
+		passive_bg.emplace_back(p_bg);
+		passive_icon.emplace_back(tmp);
+	}
 	ifstream file("source/game/VSclass/player_data.csv");
+	ifstream player_data("save/save_data.csv");
 	string line, skin_file, token;
 	getline(file, token); // no use
 	while (getline(file, line)) {
@@ -72,15 +102,27 @@ void CGameStateInit::OnInit()
 		character_skins.push_back(skin_file);
 		characters.push_back(🧝);
 	}
-	for (int i = 0; i < 11; i++) {
-		Ui weapon, s_bg;
-		weapon.load_skin(vector<string>{weapon_icon[i]});
-		s_bg.load_skin({ "Resources/ui/character_bg.bmp", "Resources/ui/character_bg_s.bmp" });
-		weapon.set_pos(-60 + (i % 3) * 80, -93 + (i / 3) * 80);
+	getline(player_data, line);
+	getline(player_data, line);
+	stringstream ss (line);
+	getline(ss, token, ',');
+	GOLD_NUM = stoi(token);
+	for (int i = 0; i < 16; i++) {
+		getline(ss, token, ',');
+		passive_levels.push_back(stoi(token));
+	}
+	Ui s_bg;
+	s_bg.load_skin({ "Resources/ui/character_bg.bmp", "Resources/ui/character_bg_s.bmp" });
+	s_bg.activate_hover = true;
+	for (int i = 0; i < 16; i++) {
 		s_bg.set_pos(-80 + (i % 3) * 80, -110 + (i / 3) * 80);
-		s_bg.activate_hover = true;
-		weapons.emplace_back(weapon);
 		character_bg.push_back(s_bg);
+		if (i >= 11)
+			continue;
+		Ui weapon;
+		weapon.load_skin(vector<string>{weapon_icon[i]});
+		weapon.set_pos(-60 + (i % 3) * 80, -93 + (i / 3) * 80);
+		weapons.emplace_back(weapon);
 		characters[i].set_pos(-90 + (i % 3) * 80, -103 + (i / 3) * 80);
 	}
 	maps = { Ui(), Ui() };
@@ -98,6 +140,9 @@ void CGameStateInit::OnInit()
 	🆖.activate_hover = true;
 	background.set_pos(0, 0);
 	button_start.set_pos(0, 0);
+	button_upgrade.set_pos(100, 200);
+	button_go_upgrade.set_pos(0, 150);
+	button_restore.set_pos(0, -140);
 	🆗.set_pos( 100, 200);
 	🆖.set_pos(-100, 200);
 	select_bg.set_pos(0, 0);
@@ -126,6 +171,9 @@ void CGameStateInit::OnLButtonDown(UINT nFlags, CPoint point)
 		if (button_start.is_hover(mouse_pos)) {
 			STATE = menu_state::select_character;
 		}
+		else if (button_go_upgrade.is_hover(mouse_pos)) {
+			STATE = menu_state::upgrade_passive;
+		}
 		break;
 	}
 	case menu_state::select_character :{
@@ -148,6 +196,26 @@ void CGameStateInit::OnLButtonDown(UINT nFlags, CPoint point)
 					selected = i;
 				}
 				break;
+			}
+		}
+		break;
+	}
+	case menu_state::upgrade_passive: {
+		static int passive_selected = -1;
+		if (🆖.is_hover(mouse_pos)) {
+			STATE = menu_state::init;
+		}
+		for (int i = 0; i < 16; i++) {
+			if (character_bg[i].is_hover(mouse_pos)) {
+				if (passive_selected != -1)
+					character_bg[passive_selected].set_selector(0);
+				if (passive_selected == i) {
+					passive_selected = -1;
+				}
+				else {
+					character_bg[i].set_selector(1);
+					passive_selected = i;
+				}
 			}
 		}
 		break;
@@ -182,6 +250,25 @@ void CGameStateInit::OnShow()
 	switch (STATE) {
 	case menu_state::init: {
 		button_start.show_skin();
+		button_go_upgrade.show_skin();
+		break;
+	}
+	case menu_state::upgrade_passive:{
+		select_bg.show_skin();
+		button_upgrade.show_skin();
+		🆖.show_skin();
+		button_restore.show_skin();
+		button_upgrade.show_skin();
+		for (int i = 0; i < 16; i++) {
+			character_bg[i].set_pos(-110 + (i % 4) * 73, -110 + (i / 4) * 73);
+			character_bg[i].show_skin();
+			passive_bg[i].show_skin();
+			passive_icon[i].show_skin();
+			for (int j = 0; j < passive_max_level[i]; j++) {
+				passive_checkbox[i][j].show_skin();
+			}
+			text_device.add_text(passive_icon[i].get_name(), passive_icon[i].get_pos() + CPoint(0, -25), 1, FONT_NORM, ALIGN_CENTER);
+		}
 		break;
 	}
 	case menu_state::select_character: {
@@ -190,6 +277,7 @@ void CGameStateInit::OnShow()
 		🆗.show_skin();
 		🆖.show_skin();
 		for (int i = 0; i < 11; i++) {
+			character_bg[i].set_pos(-80 + (i % 3) * 80, -110 + (i / 3) * 80);
 			character_bg[i].show_skin();
 			characters[i].show_skin();
 			weapons[i].show_skin();
