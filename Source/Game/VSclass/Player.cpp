@@ -11,29 +11,39 @@ using namespace game_framework;
 map<string, Player> Player::template_player;
 Player::Player()
 {
+	static array<double, 16> power_up = {5, 1, 1, 1, 3, 5, 10, 15, 1, 5, 25, 10, 3, 10, 10, 1};
+	ifstream fin("save/save_data.csv");
+	static vector <int> data;
+	string line, token;
+	getline(fin, line); // header
+	getline(fin, line);
+	stringstream ss(line);
+	while (getline(ss, token, ',')) {
+		data.push_back(stoi(token));
+	}
+	fin.close();
 	obj_type = PLAYER;
-	_coef_magnet = 100;
-	_coef_max_health = 100;
-	_coef_move_speed = 100; // 100%
-	_coef_might = 100; // 100%
-	_coef_area = 100;
-	_coef_proj_speed = 100;
-	_coef_duration = 100;
-	_coef_cooldown = 100; // 100%
-	_coef_luck = 100;
-	_coef_growth = 100;
-	_coef_greed = 100;
-	_coef_curse = 100;
-	_coef_magnet = 100; // base value is 30
-
-	_amount = 0;
-	_armor = 0;
-	_revival = 0;
-	_recovery = 0;
+	_coef_might = 100 + data[0]; 
+	_armor = data[1];
+	_coef_max_health = 100 + data[2];
+	_recovery = static_cast<double>(data[3]) / 10;
+	_coef_cooldown = 100 + data[4]; 
+	_coef_area = 100 + data[5];
+	_coef_proj_speed = 100 + data[6];
+	_coef_duration = 100 + data[7];
+	_amount = data[8];
+	_coef_move_speed = 100 + data[9]; 
+	_coef_magnet = 100 + data[10];
+	_coef_luck = 100 + data[11];
+	_coef_growth = 100 + data[12];
+	_coef_greed = 100 + data[13];
+	_coef_curse = 100 + data[14];
+	_revival = data[15];
+	 
 	_reroll = 0;
 	_exp = 0;
 	_base_speed = 300;
-	_base_max_health = 130;
+	_base_max_health = 150;
 	_base_magnet = 30;
 	_max_exp = 5;
 	_level = 1;
@@ -60,9 +70,6 @@ Player::Player()
 		{"curse", _coef_curse }
 	};
 	update_all_passive_effect();
-	//for some reason, load skin in constructor will cause the some error
-	//_bleed_animation.load_skin({ "resources/character/Blood1.bmp", "resources/character/Blood2.bmp", "resources/character/Blood3.bmp" });
-	//_bleed_animation.set_animation(50, false);
 }
 Player::Player(string name) {
 	*this = template_player[name];
