@@ -9,8 +9,14 @@
 #include <sstream>
 using namespace game_framework;
 map<string, Player> Player::template_player;
-Player::Player()
-{
+Player::Player() = default;
+Player::~Player() = default;
+Player::Player(string name) {
+	*this = template_player[name];
+	init_stats();
+	acquire_weapon(_weapon_type);
+}
+void Player::init_stats() {
 	static array<int, 16> power_up = {5, 1, 1, 1, 3, 5, 10, 15, 1, 5, 25, 10, 3, 10, 1, 10};
 	ifstream fin("save/save_data.csv");
 	static vector <int> data;
@@ -72,14 +78,6 @@ Player::Player()
 	};
 	update_all_passive_effect();
 }
-Player::Player(string name) {
-	*this = template_player[name];
-	Player::Player();
-	acquire_weapon(_weapon_type);
-}
-Player::~Player()
-{
-}
 void Player::init_player() {
 
 	ifstream file("source/game/VSclass/player_data.csv");
@@ -103,7 +101,6 @@ void Player::init_player() {
 		p.load_skin(skin_files);
 		template_player[p._name] = p;
 	}
-
 }
 void Player::update_pos(CPoint target) {
 	CPoint pos = _position;

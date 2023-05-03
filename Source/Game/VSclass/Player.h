@@ -13,7 +13,7 @@ public:
 	void update_pos(CPoint) override;
 	void show_skin(double factor = 1.0);
 	static void init_player();
-
+	void init_stats();
 	//weapon & passive
 	void acquire_weapon(Weapon&);
 	void acquire_weapon(int type);
