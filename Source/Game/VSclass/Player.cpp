@@ -363,18 +363,18 @@ bool Player::full_inv()
 }
 string Player::stat_to_string(int val, bool percent)
 {
-	string 🍆;
+	string 🍆_;
 	if (percent) {
 		if(val >= 100)
-			🍆 = "+" + to_string(val - 100) + "%";
+			🍆_ = "+" + to_string(val - 100) + "%";
 		else
-			🍆 = to_string(val - 100) + "%";
+			🍆_ = to_string(val - 100) + "%";
 	}
 	else if(val >= 0)
-		🍆 = "+" + to_string(val);
+		🍆_ = "+" + to_string(val);
 	else
-		🍆 = to_string(val);
-	return 🍆;
+		🍆_ = to_string(val);
+	return 🍆_;
 }
 void Player::regen(double amount)
 {
