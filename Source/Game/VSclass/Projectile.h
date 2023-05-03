@@ -15,7 +15,7 @@ public:
 	void show_skin(double factor = 1.0) override;
 	void set_offset(CPoint);
 	void collide_with_enemy(Enemy&, int duration);
-	void collide_with_lightsource(LightSource&, int duration);
+	void collide_with_lightsource(LightSource&);
 	void set_rotation(double);
 	void set_angle(double angle);
 	CPoint get_parabola(double angle, double speed, int time, int pre_y = 1 << 20);

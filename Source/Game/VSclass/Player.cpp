@@ -9,8 +9,14 @@
 #include <sstream>
 using namespace game_framework;
 map<string, Player> Player::template_player;
-Player::Player()
-{
+Player::Player() = default;
+Player::~Player() = default;
+Player::Player(string name) {
+	*this = template_player[name];
+	init_stats();
+	acquire_weapon(_weapon_type);
+}
+void Player::init_stats() {
 	static array<int, 16> power_up = {5, 1, 1, 1, 3, 5, 10, 15, 1, 5, 25, 10, 3, 10, 1, 10};
 	ifstream fin("save/save_data.csv");
 	static vector <int> data;
@@ -22,7 +28,7 @@ Player::Player()
 	while (getline(ss, token, ',')) {
 		data.push_back(stoi(token));
 	}
-	auto f = [=](int x) throw() -> int {return data[x] * power_up[x];};
+	auto f = [=](int x) noexcept -> int {return data[x] * power_up[x];};
 	fin.close();
 	obj_type = PLAYER;
 	_coef_might = 100 + f(0); 
@@ -72,13 +78,6 @@ Player::Player()
 	};
 	update_all_passive_effect();
 }
-Player::Player(string name) : Player(){
-	*this = template_player[name];
-	acquire_weapon(_weapon_type);
-}
-Player::~Player()
-{
-}
 void Player::init_player() {
 
 	ifstream file("source/game/VSclass/player_data.csv");
@@ -102,7 +101,6 @@ void Player::init_player() {
 		p.load_skin(skin_files);
 		template_player[p._name] = p;
 	}
-
 }
 void Player::update_pos(CPoint target) {
 	CPoint pos = _position;
@@ -363,18 +361,18 @@ bool Player::full_inv()
 }
 string Player::stat_to_string(int val, bool percent)
 {
-	string 🍆;
+	string 🍆_;
 	if (percent) {
 		if(val >= 100)
-			🍆 = "+" + to_string(val - 100) + "%";
+			🍆_ = "+" + to_string(val - 100) + "%";
 		else
-			🍆 = to_string(val - 100) + "%";
+			🍆_ = to_string(val - 100) + "%";
 	}
 	else if(val >= 0)
-		🍆 = "+" + to_string(val);
+		🍆_ = "+" + to_string(val);
 	else
-		🍆 = to_string(val);
-	return 🍆;
+		🍆_ = to_string(val);
+	return 🍆_;
 }
 void Player::regen(double amount)
 {

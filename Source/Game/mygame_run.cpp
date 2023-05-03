@@ -503,7 +503,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			plain_result.clear();
 			QuadTree::VSPlain.query_by_type(plain_result, (VSObject*)(&proj), LIGHTSOURCE);
 			for (VSObject* obj : plain_result) {
-				proj.collide_with_lightsource(*((LightSource*)obj), player.get_duration());
+				proj.collide_with_lightsource(*((LightSource*)obj));
 			}
 		}
 		for(auto i: light_source_factory.light_sourse_all)

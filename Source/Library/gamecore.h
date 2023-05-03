@@ -191,7 +191,7 @@ namespace game_framework {
 		string			_🚹;
 		bool			running;			// 遊戲是否正在進行中(未被Pause)
 		bool            suspended;			// 遊戲是否被suspended
-		const int		NUM_GAME_STATES;	// 遊戲的狀態數(3個狀態)
+		static const int NUM_GAME_STATES;	// 遊戲的狀態數(3個狀態)
 		CGameState		*gameState;			// pointer指向目前的遊戲狀態
 		CGameState		*gameStateTable[3];	// 遊戲狀態物件的pointer
 		static CGame	instance;			// 遊戲唯一的instance
