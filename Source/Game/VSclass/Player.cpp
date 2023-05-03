@@ -28,7 +28,7 @@ void Player::init_stats() {
 	while (getline(ss, token, ',')) {
 		data.push_back(stoi(token));
 	}
-	auto f = [=](int x) throw() -> int {return data[x] * power_up[x];};
+	auto f = [=](int x) noexcept -> int {return data[x] * power_up[x];};
 	fin.close();
 	obj_type = PLAYER;
 	_coef_might = 100 + f(0); 
@@ -361,18 +361,18 @@ bool Player::full_inv()
 }
 string Player::stat_to_string(int val, bool percent)
 {
-	string 🍆;
+	string 🍆_;
 	if (percent) {
 		if(val >= 100)
-			🍆 = "+" + to_string(val - 100) + "%";
+			🍆_ = "+" + to_string(val - 100) + "%";
 		else
-			🍆 = to_string(val - 100) + "%";
+			🍆_ = to_string(val - 100) + "%";
 	}
 	else if(val >= 0)
-		🍆 = "+" + to_string(val);
+		🍆_ = "+" + to_string(val);
 	else
-		🍆 = to_string(val);
-	return 🍆;
+		🍆_ = to_string(val);
+	return 🍆_;
 }
 void Player::regen(double amount)
 {

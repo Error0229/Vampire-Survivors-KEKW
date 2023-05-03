@@ -378,7 +378,7 @@ void TextDevice::print_all()
 	ptr_CDC = game_framework::CDDraw::GetBackCDC();
 	ptr_CDC->SetBkMode(TRANSPARENT);
 	ptr_CDC->SetTextColor(RGB(255, 255, 255));
-	int x, y;
+	int x = 0, y = 0;
 	Text* ptext;
 	VS_font* pfont;
 	RECT rc;
