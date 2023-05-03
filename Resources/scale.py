@@ -1,7 +1,7 @@
 # scale up bitmap by nearest neighbor
 import os
 import cv2
-directorys = ['damage/']
+directorys = ['enemy/']
 
 for directory in directorys:
     for filename in os.listdir(directory):

@@ -180,7 +180,6 @@ void EnemyFactory::update_enemy(clock_t tick, CPoint player_pos, int player_lvl,
 		vector<double> weights = { wave_enemy[min].weight[0], wave_enemy[min].weight[1], wave_enemy[min].weight[2]};
 		for(int i=0; i<amount - get_number_all(); i++){
 			😈 = add_enemy(wave_enemy[min].type[poll(weights)], player_pos, 1, player_lvl, curse)[0];
-			😈->set_scale(player_lvl, curse);
 			😈->set_spawn_pos();
 		}
 	}
@@ -189,7 +188,6 @@ void EnemyFactory::update_enemy(clock_t tick, CPoint player_pos, int player_lvl,
 		for(int i=0; i<3; i++){
 			if(wave_enemy[min].weight[i]){
 				😈 = add_enemy(wave_enemy[min].type[i], player_pos, 1, player_lvl, curse)[0];
-				😈->set_scale(player_lvl, curse);
 				😈->set_spawn_pos();
 			}
 		}
@@ -235,7 +233,6 @@ void EnemyFactory::update_swarm(clock_t tick, CPoint player_pos, int player_lvl,
 					int amount = wave_swarm[swarm_cnt].amount[i] * curse / 100;
 					for (int j = 0; j < amount; j++) {
 						😈 = add_enemy(wave_swarm[swarm_cnt].type[i][j & 1], player_pos, 1, player_lvl, curse)[0];
-						😈->set_scale(player_lvl, curse);
 						😈->set_swarm(wave_swarm[swarm_cnt].swarm_type, wave_swarm[swarm_cnt].duration[i], tick, swarm_pos_i);
 						😈->set_spawn_pos(j, amount);
 					}
@@ -244,7 +241,6 @@ void EnemyFactory::update_swarm(clock_t tick, CPoint player_pos, int player_lvl,
 					//one enemy type
 					😈😈😈 = add_enemy(wave_swarm[swarm_cnt].type[i][0], player_pos, wave_swarm[swarm_cnt].amount[i] * curse / 100, player_lvl, curse);
 					for (auto 😈 : 😈😈😈) {
-						😈->set_scale(player_lvl, curse);
 						😈->set_swarm(wave_swarm[swarm_cnt].swarm_type, wave_swarm[swarm_cnt].duration[i], tick, swarm_pos_i);
 						😈->set_spawn_pos();
 					}

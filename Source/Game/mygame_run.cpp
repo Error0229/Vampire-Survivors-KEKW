@@ -159,6 +159,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	hp_bar.load_skin({ "resources/ui/hp_bar_0.bmp", "resources/ui/hp_bar_1.bmp", "resources/ui/hp_bar_2.bmp", "resources/ui/hp_bar_3.bmp", "resources/ui/hp_bar_4.bmp", "resources/ui/hp_bar_5.bmp", "resources/ui/hp_bar_6.bmp", "resources/ui/hp_bar_7.bmp", "resources/ui/hp_bar_8.bmp", "resources/ui/hp_bar_9.bmp", "resources/ui/hp_bar_10.bmp", "resources/ui/hp_bar_11.bmp", "resources/ui/hp_bar_12.bmp", "resources/ui/hp_bar_13.bmp", "resources/ui/hp_bar_14.bmp", "resources/ui/hp_bar_15.bmp", "resources/ui/hp_bar_16.bmp", "resources/ui/hp_bar_17.bmp", "resources/ui/hp_bar_18.bmp", "resources/ui/hp_bar_19.bmp" });;
 	hp_bar.set_base_pos(0, 15);
 
+	
 }
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -168,6 +169,7 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	// C: spawn a chest above player
 
 	static int chest_cnt = 0; //tmp
+	static int type = 0;
 	switch (nChar) {
 	case('A'):
 		for (auto 😈 : enemy_factory.live_enemy) {
@@ -184,14 +186,17 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		timer.add_time(10000);
 		break;
 	case('E'):
-		static int type = 0;
 		LightSourcePickup::spawn_lightsource_pickup(player.get_pos() + CPoint(0, -100), type++);
 		if (type == 7)
 			type = 0;
 		break;
+	case('F'):
+		for (int i = 0; i <= 48; i++) {
+			Enemy* a = enemy_factory.add_enemy(i, player.get_pos(), 1, 1, 1)[0]; //curse set to 1 to reduce speed/hp of enemies
+			a->set_spawn_pos();
+		}
+		break;
 	}
-	
-
 }
 
 void CGameStateRun::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
