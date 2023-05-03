@@ -72,8 +72,9 @@ Player::Player()
 	};
 	update_all_passive_effect();
 }
-Player::Player(string name) : Player(){
+Player::Player(string name) {
 	*this = template_player[name];
+	Player::Player();
 	acquire_weapon(_weapon_type);
 }
 Player::~Player()
