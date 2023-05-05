@@ -45,11 +45,14 @@ enum enemy_names {
 	XLMEDUSA,
 	SWARM_SHADERED,
 	SWARM_SKULL2,
+	BOSS_ECTO,
 	BOSS_MUD,
 	BOSS_BUER,
 	BOSS_XLMEDUSA,
+	BOSS_MEDUSA,
 	BOSS_COUNT,
-	BOSS_HAG
+	BOSS_HAG,
+	SWARM_MEDUSA
 };
 
 class Enemy : public VSObject {

@@ -34,6 +34,7 @@ CGameStateRun::~CGameStateRun()
 
 void CGameStateRun::OnBeginState()
 {
+	MAP_ID = 1;
 	QuadTree::VSPlain.clear();
 	Weapon::all_weapon.clear();
 	Passive::all_passive.clear();
@@ -41,7 +42,7 @@ void CGameStateRun::OnBeginState()
 	Xp::reset_XP();
 	Chest::reset_chest();
 	LightSourcePickup::reset();
-	enemy_factory.reset();
+	enemy_factory.init();
 	light_source_factory.reset();
 	timer.reset();
 	timer.start();
@@ -60,7 +61,6 @@ void CGameStateRun::OnBeginState()
 	// map = Map(game->Get🗺️())
 	// map.load_map({ "resources/map/bg_forest.bmp" });
 	map.load_map({ "resources/map/dummy2.bmp" });
-	MAP_ID = 1;
 	map.set_pos(0, 0);
 	event_background.set_base_pos(0, 0);
 	_gamerun_status = PLAYING;
@@ -72,7 +72,6 @@ void CGameStateRun::OnBeginState()
 void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 {
 	Weapon::load_weapon_stats();
-	enemy_factory.init();
 	light_source_factory.init();
 	Icon::load_filename();
 	Xp::init_XP();
