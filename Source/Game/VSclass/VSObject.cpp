@@ -103,6 +103,7 @@ void VSObject::set_animation(int delay, bool _once, int cooldown)
 void VSObject::set_selector(int selector)
 {
 	_skin.SelectShowBitmap(selector);
+	_selector = selector;
 	if (mirror_loaded)
 		_m_skin.SelectShowBitmap(selector);
 }
@@ -143,6 +144,12 @@ void VSObject::set_speed(double speed) {
 void VSObject::set_speed(int speed)
 {
 	this->_speed = speed;
+}
+void VSObject::set_name(string name) {
+	_name = name;
+}
+string VSObject::get_name() {
+	return _name;
 }
 void VSObject::select_show_animation(int index)
 {

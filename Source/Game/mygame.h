@@ -39,7 +39,7 @@
 */
 #include "config.h"
 #include "VSclass/VS.h"
-
+#include <array>
 namespace game_framework {
 	/////////////////////////////////////////////////////////////////////////////
 	// Constants
@@ -66,10 +66,39 @@ namespace game_framework {
 	protected:
 		void OnShow();									// 顯示這個狀態的遊戲畫面
 	private:
-		CMovingBitmap logo;								// csie的logo
-		CMovingBitmap text;
-		CMovingBitmap portrait;
-		Ui button_start;
+		enum class menu_state {
+			init,
+			select_character, 
+			select_map, 
+			upgrade_passive,
+			start
+		};
+		const array<int, 16> init_price = { 200, 600, 200, 200, 900, 300, 300, 300, 5000, 300, 300, 600, 900, 200, 10000, 1666 };
+		const array<int, 16> passive_max_level = { 5,3,3,5,2,2,2,2,1,2,2,3,5,5,1,5 };
+		int map_selected;
+		int passive_selected = -1;
+		int coin;
+		TextDevice text_device;
+		menu_state STATE;
+		vector<Icon> passive_icon;
+		vector<Ui> characters;
+		vector<Ui> weapons;
+		vector<Ui> maps;
+		vector<Ui> character_bg;
+		vector<Ui> passive_bg;
+		vector< vector<Ui> > passive_checkbox;
+		vector<string> character_short_name;
+		vector<int> passive_levels;
+		Ui button_upgrade;
+		Ui button_go_upgrade;
+ 		Ui button_start;
+		Ui button_restore;
+		Ui select_bg;
+		Ui money_bg;
+		Ui map_select_effect;
+		Ui 🆗;
+		Ui 🆖;
+		Ui start_button;
 		VSObject background;
 	};
 
@@ -97,7 +126,9 @@ namespace game_framework {
 		void update_mouse_pos();
 		int draw_level_up(bool);
 		int draw_open_chest(bool pull_evo=true);
-		int coin_count;
+		void show_inv();
+		void show_stat(vector<stat_struct>&, CPoint);
+
 		CPoint mouse_pos;								// 滑鼠的座標
 		Map map;
 		Player player;
@@ -134,7 +165,12 @@ namespace game_framework {
 		TextDevice text_device;
 
 		Ui hp_bar;
-
+		Ui button_revive;
+		Ui coin;
+		Ui skull;
+		Ui button_pause;
+		Ui button_resume;
+		Ui evolution_chart;
 	};
 
 	/////////////////////////////////////////////////////////////////////////////

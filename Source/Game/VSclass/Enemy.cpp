@@ -57,7 +57,7 @@ void Enemy::show_skin(double factor)
 	auto dt = clock() - _last_time_got_hit;
 	if (dt < 120) {
 		_hit_animation.set_pos(_position);
-		_hit_animation.show_skin(factor + static_cast<double>(dt) / 1000.0 -0.3);
+		_hit_animation.show_skin(factor + static_cast<double>(dt) / 500.0 -0.44);
 	}
 	if ( !_is_enable )
 		return;
@@ -124,6 +124,7 @@ bool Enemy::hurt(int damage)
 		_hp -= damage;
 		// game_framework::CAudio::Instance()->Play(2, false);
 		if (is_dead()) {
+			KILL_NUM += 1;
 			unshow_skin();
 			Xp::spawnXP(this->_position, static_cast<int>(_xp_value));
 			if (_is_drop_chest) 

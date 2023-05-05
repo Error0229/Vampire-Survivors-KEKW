@@ -181,7 +181,8 @@ namespace game_framework {
 		void OnSetFocus();								// 處理Focus
 		void OnSuspend();								// 處理「待命」的動作
 		void SetGameState(int);
-		void Set🗺️🚹(int, string);
+		void Set🗺️(int);
+		void Set🚹(string);
 		int  Get🗺️();
 		string  Get🚹();
 		static CGame *Instance();
@@ -190,7 +191,7 @@ namespace game_framework {
 		string			_🚹;
 		bool			running;			// 遊戲是否正在進行中(未被Pause)
 		bool            suspended;			// 遊戲是否被suspended
-		const int		NUM_GAME_STATES;	// 遊戲的狀態數(3個狀態)
+		static const int NUM_GAME_STATES;	// 遊戲的狀態數(3個狀態)
 		CGameState		*gameState;			// pointer指向目前的遊戲狀態
 		CGameState		*gameStateTable[3];	// 遊戲狀態物件的pointer
 		static CGame	instance;			// 遊戲唯一的instance

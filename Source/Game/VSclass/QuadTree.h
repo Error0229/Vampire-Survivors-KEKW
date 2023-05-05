@@ -5,7 +5,7 @@ public:
     ~QuadTree();
     QuadTree(int x, int y, int w, int h, int max_objects, int max_levels, int level);
     vector<VSObject*> objects;
-    QuadTree* children[4];
+    array<QuadTree*, 4> children;
     int w, h;
     int _x, _y;
     int max_objects;

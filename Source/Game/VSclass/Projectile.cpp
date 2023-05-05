@@ -51,7 +51,7 @@ void Projectile::collide_with_enemy(Enemy& 🥵, int player_duration) {
 		this->_is_over = true;
 	🥵.hurt(static_cast<int>(this->_damage));
 }
-void Projectile::collide_with_lightsource(LightSource& ls, int player_duration) {
+void Projectile::collide_with_lightsource(LightSource& ls) {
 	ls.hurt(static_cast<int>(this->_damage));
 }
 void Projectile::create_projectile(Projectile& proj, CPoint position, CPoint target_pos, int type, int delay, double area, double damage, int speed, int duration, int pierce, int proj_interval, int hitbox_delay, double knock_back, int pool_limit, int chance, int criti_multi, int block_by_wall, bool is_mirror) {
@@ -72,8 +72,9 @@ void Projectile::create_projectile(Projectile& proj, CPoint position, CPoint tar
 	proj._crit_multi = criti_multi;
 	proj._block_by_wall = block_by_wall;
 	proj._is_mirror = is_mirror;
-	proj._is_start = (delay > 0 ? 0 : 1);
+	proj._is_start = (delay > 0 ? false : true);
 	proj._is_over = false;
+	proj._is_top = false;
 	proj._collision = position;
 	proj.set_create_time(clock());
 	CPoint player_pos = { (OPEN_AS_FULLSCREEN ? RESOLUTION_X >> 1 : SIZE_X >> 1) - VSObject::player_dx,(OPEN_AS_FULLSCREEN ? RESOLUTION_Y >> 1 : SIZE_Y >> 1) - VSObject::player_dy };
@@ -145,10 +146,12 @@ void Projectile::update_position() {
 				CPoint target = {0,0};
 				QuadTree::VSPlain.query_nearest_enemy_pos(target, (VSObject*)(&proj), min_dis);
 				proj.set_target_vec(target - proj._position);
+				proj.set_rotation(atan2(proj._target_vec.y, proj._target_vec.x));
 				proj._collision = player_pos;
 			}
 			else if (proj._is_start) {
-				CPoint par = proj.get_parabola(vertical, static_cast<double>(proj._speed), dt);
+				CPoint par = proj.get_parabola(vertical, static_cast<double>(proj._speed), dt, proj.pre_y);
+				proj.pre_y = par.y;
 				double vlen1 = sqrt(proj._target_vec.x * proj._target_vec.x + proj._target_vec.y * proj._target_vec.y);
 				double angle = acos(proj._target_vec.y / vlen1);
 				par.x -= proj._collision.x;
@@ -311,9 +314,8 @@ void Projectile::load_rotation() { // only rotate first for some secret reason
 	this->_skin.ResetBitmap();
 	this->_skin.LoadBitmapByString(rotated_filename, RGB(1, 11, 111));
 }
-CPoint Projectile::get_parabola(double angle, double speed, int time) {
+CPoint Projectile::get_parabola(double angle, double speed, int time, int pre_y) {
 	double dt = static_cast<double>(time) / 1000.0;
-	static double pre_y = 100000000;
 	speed = speed / (1000.0 / GAME_CYCLE_TIME) * 50; // 50 depends on game cycle time
 	// since projectile using this function don't need target so we use it as a tmp
 	double x = _collision.x + speed * dt * cos(angle);
@@ -321,7 +323,6 @@ CPoint Projectile::get_parabola(double angle, double speed, int time) {
 	if (!_is_top && y > pre_y) {
 		_is_top = true;
 	}
-	pre_y = y;
 	return CPoint(static_cast<int>(x), static_cast<int>(y));
 }
 void Projectile::reset() {

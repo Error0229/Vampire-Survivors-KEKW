@@ -19,7 +19,7 @@
 #include <comdef.h>
 using namespace std::experimental::filesystem::v1;
 
-
+const int game_framework::CGame::NUM_GAME_STATES = 3;
 namespace game_framework {
 
 	/////////////////////////////////////////////////////////////////////////////
@@ -31,7 +31,6 @@ namespace game_framework {
 	CGame CGame::instance;
 
 	CGame::CGame()
-		: NUM_GAME_STATES(3)
 	{
 		running = true;
 		suspended = false;
@@ -241,8 +240,10 @@ namespace game_framework {
 		CSpecialEffect::SetCurrentTime();
 		running = true;
 	}
-	void CGame::Set🗺️🚹(int 🗺️, string 🚹) {
+	void CGame::Set🗺️(int 🗺️) {
 		_🗺️ = 🗺️;
+	}
+	void CGame::Set🚹(string 🚹) {
 		_🚹 = 🚹;
 	}
 	int CGame::Get🗺️() {

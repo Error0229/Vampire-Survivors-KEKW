@@ -26,7 +26,6 @@ public:
 	void modify_base(string type, double effect);
 	void update_weapon_stats(int might, int cooldown, int proj_speed, int duration, int amount, int area);
 	static void update_all_weapon_stats(int might, int cooldown, int proj_speed, int duration, int amount, int area);
-	string get_name();
 	static void evolution(int type);
 	static map <int, int> evolution_pair;
 	static map <int, int> evolution_pair_reverse;
@@ -39,7 +38,6 @@ protected:
 	Projectile _base_proj;
 	unordered_map<string, any> _base_stats;
 	unordered_map<string, int> _modifier;
-	string _name;
 	int _level, _max_level, _rarity,
 		_amount, _duration, _pierce, _cooldown, _proj_interval,
 		_hitbox_delay, _pool_limit, _chance,

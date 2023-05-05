@@ -13,7 +13,7 @@ public:
 	void update_pos(CPoint) override;
 	void show_skin(double factor = 1.0);
 	static void init_player();
-
+	void init_stats();
 	//weapon & passive
 	void acquire_weapon(Weapon&);
 	void acquire_weapon(int type);
@@ -23,7 +23,7 @@ public:
 	void level_up_passive(int type);
 	void update_all_passive_effect();
 	void obtain_item(int);
-	
+	void revive();
 	//getter
 	int get_level();
 	int get_exp_percent();
@@ -33,6 +33,8 @@ public:
 	int get_curse();
 	int get_pickup_range();
 	int get_duration();
+	int get_revival();
+	int get_greed();
 	vector<stat_struct> get_stats_string();
 	int get_hp_percent();
 	bool is_hurt();
@@ -56,7 +58,6 @@ private:
 	// vector<Passive> _passives;
 	vector<int> stats;
 	unordered_map <string, any> _base_stats;
-	string _name;
 	int _armor, _max_health, _revival, _magnet, _amount, _base_max_health, _base_magnet, _base_speed;
 	int _coef_might, _coef_max_health, _coef_magnet, 
 		_coef_cooldown, _coef_area, _coef_proj_speed, 
@@ -68,7 +69,6 @@ private:
 	int _exp, _max_exp;
 	int _level;
 	int _direction;
-	int _money;
 	int _reroll;
 	bool _is_hurt = false;
 	int _weapon_type;

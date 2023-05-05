@@ -29,6 +29,8 @@ public:
 	void set_type(int);
 	int get_type();
 	int get_pool_id();
+	void set_name(string);
+	string get_name();
 	virtual void set_speed(int);
 	virtual void set_speed(double);
 	void select_show_animation(int);
@@ -64,11 +66,11 @@ protected:
 	CPoint _target;
 	CPoint _collision;
 	CPoint _target_vec = {0,0};
+	string _name;
 	bool _is_mirror = false;
 	bool mirror_loaded = false;
 	bool last_mirror = false;
 	int _direct, _default_direct=LEFT;
-
 	int _speed = 0;
 	int _pool_id, _type;
 	double _scaler = 1;
