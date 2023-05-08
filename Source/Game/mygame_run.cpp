@@ -82,6 +82,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	Icon::load_filename();
 	Xp::init_XP();
 	Chest::init_chest();
+	Passive::init();
 	LightSourcePickup::init_lightsource_pickup();
 	Damage::damage_device()->init();
 	Player::init_player();
@@ -727,9 +728,9 @@ void CGameStateRun::OnShow()
 						}
 					}
 					if (!is_own) {
-						type_text = Passive(level_up_choice[i]).get_name();
+						type_text = Passive::base_passive.at(level_up_choice[i] - POWER).get_name(); //?
 						level_text = "New!";
-						level_up_desc = Passive(level_up_choice[i]).get_level_up_msg(true);
+						level_up_desc = Passive::base_passive.at(level_up_choice[i] - POWER).get_level_up_msg(true); // so bad
 					}
 				}
 				text_device.add_text(type_text, CPoint(-85, -95 + 75 * i) + player_pos, 1, FONT_12x08, ALIGN_LEFT);
