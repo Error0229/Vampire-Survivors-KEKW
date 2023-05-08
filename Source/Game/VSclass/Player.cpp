@@ -19,7 +19,7 @@ Player::Player(string name) {
 void Player::init_stats() {
 	static array<int, 16> power_up = {5, 1, 1, 1, 3, 5, 10, 15, 1, 5, 25, 10, 3, 10, 1, 10};
 	ifstream fin("save/save_data.csv");
-	static vector <int> data;
+	vector <int> data;
 	string line, token;
 	getline(fin, line); // header
 	getline(fin, line);
