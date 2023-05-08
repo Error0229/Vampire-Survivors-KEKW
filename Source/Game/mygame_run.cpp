@@ -85,6 +85,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	Passive::init();
 	LightSourcePickup::init_lightsource_pickup();
 	Damage::damage_device()->init();
+	RuntimeText::RTD()->init();
 	Player::init_player();
 	map.load_map({ "resources/map/dummy1.bmp" });
 	event_background.load_skin("resources/ui/event_background.bmp");
@@ -93,8 +94,8 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	button_pause.load_skin("Resources/ui/pause.bmp");
 	button_resume.load_skin("Resources/ui/button_resume.bmp");
 	evolution_chart.load_skin("Resources/ui/evolutions.bmp");
-	coin.set_base_pos(373, -260);
-	skull.set_base_pos(373, -240);
+	coin.set_base_pos(373, -258);
+	skull.set_base_pos(373, -237);
 	button_pause.set_base_pos(370, -210);
 	button_resume.set_base_pos(0 , 200);
 	evolution_chart.set_base_pos(0, 0);
@@ -648,8 +649,8 @@ void CGameStateRun::OnShow()
 	LightSourcePickup::show();
 	coin.show();
 	skull.show();
-	text_device.add_text(to_string(GOLD_NUM), CPoint(368, -260) + player_pos, 1, FONT_NORM, ALIGN_RIGHT);
-	text_device.add_text(to_string(KILL_NUM), CPoint(368, -240) + player_pos, 1, FONT_NORM, ALIGN_RIGHT);
+	RuntimeText::RTD()->add_text(to_string(GOLD_NUM), CPoint(368, -260), 1);
+	RuntimeText::RTD()->add_text(to_string(KILL_NUM), CPoint(368, -240), 1);
 	player.show_skin();
 	for(auto 😈: enemy_factory.live_enemy)
 		😈->show_skin();
@@ -771,7 +772,8 @@ void CGameStateRun::OnShow()
 		button_revive.show();
 		break;
 	}
-	text_device.add_text(timer.get_minute_string() + ":" + timer.get_second_string(), CPoint(0, -265) + player_pos, 1, FONT_24x18_B, ALIGN_CENTER);
-	text_device.add_text("LV " + to_string(player.get_level()), CPoint(380, -287) + player_pos, 1, FONT_24x18_B, ALIGN_RIGHT);
+	RuntimeText::RTD()->add_text(timer.get_minute_string() + ":" + timer.get_second_string(), CPoint(59, -265), 2);
+	RuntimeText::RTD()->add_text("LV " + to_string(player.get_level()), CPoint(380, -290), 1);
+	RuntimeText::RTD()->show_text();
 	text_device.print_all();
 }
