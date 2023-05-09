@@ -215,8 +215,6 @@ void VSObject::update_pos_by_vec(CPoint vec) {
 		dy += static_cast<int>(_fy);
 		_fy -= static_cast<int>(_fy);
 	}
-	if(_type == PLAYER)
-		TRACE(_T("dx = %d, dy = %d, _fx = %f, _fy = %f\n"), dx, dy, _fx, _fy);
 	this->_position.x += dx;
 	this->_position.y += dy;
 
@@ -234,6 +232,10 @@ bool is_overlapped(VSObject& obj1, VSObject& obj2, double overlap_bound)
 			dx < ((int)((obj1.get_width() + obj2.get_width()) >> 1) * overlap_bound) &&
 			dy < ((int)((obj1.get_height() + obj2.get_height()) >> 1) * overlap_bound)
 		);
+}
+bool is_overlapped(VSObject* obj1, VSObject* obj2)
+{
+	return is_overlapped(*obj1, *obj2, 1.0);
 }
 int VSObject::get_height()
 {

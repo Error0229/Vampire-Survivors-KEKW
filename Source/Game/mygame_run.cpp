@@ -450,7 +450,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 	static bool can_evo = false;
 	static int chest_upgrade_chance_0 = 0, chest_upgrade_chance_1 = 0;
 	int predx, predy;
-	CPoint origin_pos;
+	CPoint origin_pos, tmp_pos;
 	_gamerun_status = _next_status;
 	vector <VSObject*> plain_result = {};
 	int offset = 300;
@@ -468,12 +468,20 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			QuadTree::VSPlain.insert((VSObject*)(&obs));
 		}
 		player.update_pos(mouse_pos);
+		tmp_pos = player.get_pos();
 		QuadTree::VSPlain.query_by_type(plain_result, (VSObject*)(&player), OBSTACLE);
 		if (plain_result.size() > 0) {
-			player.set_pos(origin_pos);
-			Player::player_dx = predx;
-			Player::player_dy = predy;
+			player.set_pos(tmp_pos.x, origin_pos.y);
+			if (is_overlapped((VSObject*)(&player), plain_result[0])) {
+				player.set_pos(origin_pos.x, tmp_pos.y);
+				Player::player_dx = predx;
+			}
+			else {
+				Player::player_dy = predy;
+			}
 		}
+		plain_result.clear();
+		
 		plain_result.clear();
 		QuadTree::VSPlain.set_range(-Player::player_dx - offset, -Player::player_dy - offset, w_size_x + offset, w_size_y + offset);
 		for (auto i_enemy : enemy_factory.live_enemy) {
@@ -485,13 +493,28 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		Projectile::update_position();
 		for (Projectile& proj : Projectile::all_proj) {
 			plain_result.clear();
+			QuadTree::VSPlain.query_by_type(plain_result, (VSObject*)(&proj), OBSTACLE);
+			if (plain_result.size() > 0) {
+				proj.collide_with_obstacle();
+			}
+			plain_result.clear();
 			QuadTree::VSPlain.query_by_type(plain_result, (VSObject*)(&proj), ENEMY);
 			for (VSObject* obj : plain_result) {
 				proj.collide_with_enemy(*((Enemy*)obj), player.get_duration());
 			}
 		}
 		for (auto 😈: EnemyFactory::live_enemy) {
+			plain_result.clear();
+			origin_pos = 😈->get_pos();
 			😈->update_pos(player.get_pos(), timer.get_ticks());
+			tmp_pos = 😈->get_pos();
+			QuadTree::VSPlain.query_by_type(plain_result, (VSObject*)(😈), OBSTACLE);
+			if (plain_result.size() > 0) {
+				😈->set_pos(tmp_pos.x, origin_pos.y);
+				if (is_overlapped(😈, plain_result[0])) {
+					😈->set_pos(origin_pos.x, tmp_pos.y);
+				}
+			}
 			result = {};
 			QuadTree::VSPlain.query_by_type(result, (VSObject*)(😈), ENEMY);
 			for (VSObject* obj : result) {

@@ -51,7 +51,8 @@ public:
 	void is_collide_with(VSObject* other);
 	static int player_dx;
 	static int player_dy; // every time player move should update these
-	friend bool is_overlapped(VSObject&, VSObject&, double overlap_bound=1);
+	friend bool is_overlapped(VSObject&, VSObject&, double overlap_bound = 1.0);
+	friend bool is_overlapped(VSObject*, VSObject*);
 	static int distance(VSObject&, VSObject&);
 	static int distance(CPoint&, CPoint&);
 	friend class QuadTree; 
