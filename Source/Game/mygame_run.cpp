@@ -66,6 +66,11 @@ void CGameStateRun::OnBeginState()
 	case 1:
 		map.load_map({ "resources/map/dummy2.bmp" });
 		break;
+	case 2:
+		map.load_map({ "resources/map/dummy4.bmp" });
+		break;
+	default:
+		break;
 	}
 	map.set_pos(0, 0);
 	map.set_obstacle(MAP_ID);
@@ -440,8 +445,8 @@ void CGameStateRun::update_mouse_pos()
 void CGameStateRun::OnMove()							// 移動遊戲元素
 {
 	update_mouse_pos();
+	map.map_padding(get_player_pos());
 	vector <VSObject*> result;
-	
 	//polling
 	vector<double> weights(2, 0);
 
@@ -469,28 +474,27 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		//--------------------------------------------------------
 		timer.resume();
 		origin_pos = player.get_pos();
-		predx = Player::player_dx;
-		predy = Player::player_dy;
+		predx = VSObject::player_dx;
+		predy = VSObject::player_dy;
 		Damage::damage_device()->update();
 		for (auto& obs : Map::obs_all) {
 			QuadTree::VSPlain.insert((VSObject*)(&obs));
 		}
 		player.update_pos(mouse_pos);
-		map.map_padding(get_player_pos());
 		tmp_pos = player.get_pos();
 		QuadTree::VSPlain.query_by_type(plain_result, (VSObject*)(&player), OBSTACLE);
 		if (plain_result.size() > 0) {
 			player.set_pos(tmp_pos.x, origin_pos.y);
 			if(check_overlapped((VSObject*)(&player))){
 				player.set_pos(origin_pos.x, tmp_pos.y);
-				Player::player_dx = predx;
+				VSObject::player_dx = predx;
 				if (check_overlapped((VSObject*)(&player))) {
 					player.set_pos(origin_pos);
-					Player::player_dy = predy;
+					VSObject::player_dy = predy;
 				}
 			}
 			else {
-				Player::player_dy = predy;
+				VSObject::player_dy = predy;
 			}
 		}
 		plain_result.clear();
@@ -702,6 +706,7 @@ void CGameStateRun::OnShow()
 {
 	CPoint player_pos = player.get_pos();
 	
+	
 	map.show_map();
 	Weapon::show();
 	Xp::show();
@@ -828,6 +833,7 @@ void CGameStateRun::OnShow()
 		game_over_button.show();
 		break;
 	case (REVIVE):
+		timer.pause();
 		game_over_frame.show();
 		button_revive.show();
 		break;
