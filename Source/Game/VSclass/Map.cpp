@@ -32,30 +32,56 @@ void Map::load_map(vector<char*> filename, COLORREF color)
 	_maps[0]->_show_enable = true;
 	_maps[0]->set_pos(0, 0);
 	_map_pos_set.insert({ 0,0 });
+}
+void Map::set_obstacle(int map_id)
+{
+	switch (map_id) {
+	case 0: {
+		vector<RECT> tmp = {
+			{ 770, 1390, 260, 30 },
+			{ 770, 1420, 30, 130 },
+			{ 990, 1420, 30, 130 },
+			{ 770, 1520, 100, 30 },
+			{ 930, 1520, 100, 30 },
+			{ 130, 170, 25, 20 },
+			{ 355, 170, 25, 20 },
+			{ 425, 170, 25, 20 },
+			{ 485, 75, 25, 20 },
+			{ 455, 330, 25, 20 },
+			{ 295, 80, 25, 20 },
+			{ 230, 80, 25, 20 },
+			{ 197, 80, 25, 20 },
+			{ 230, 365, 25, 20 },
+			{ 550, 135, 25, 20 },
+			{ 290, 200, 25, 20 },
+			{ 1478, 266, 25, 20 },
+			{ 1769, 522, 50, 20 },
+			{ 1863, 522, 50, 20 },
+			{ 1959, 523, 50, 20 },
+			{ 1376, 965, 25, 20 },
+			{ 1414, 985, 25, 20 },
+			{ 1640, 967, 50, 40 },
+			{ 1700, 1802, 25, 20 },
+			{ 1603, 1546, 25, 20 },
+			{ 1733, 1545, 25, 20 }
+		};
+		obs_all.clear();
+		Obstacle obst;
+		for (auto& r : tmp) {
+			obst.set_base_pos(CPoint(r.left - 1024 + (r.right >> 1), r.top - 1024 + (r.bottom >> 1)));
+			obst.set_width(r.right);
+			obst.set_height(r.bottom);
+			obs_all.emplace_back(obst);
+		}
+		break;
+	}
+	case 1: {
 
-	vector<RECT> tmp = {
-	{ 770, 1390, 260, 30 },
-	{ 770, 1420, 30, 130 },
-	{ 990, 1420, 30, 130 },
-	{ 770, 1520, 100, 30 },
-	{ 930, 1520, 100, 30 },
-	{ 130, 170, 25, 20 },
-	{ 355, 170, 25, 20 },
-	{ 425, 170, 25, 20 },
-	{ 485, 75, 25, 20 },
-	{ 455, 330, 25, 20 },
-	{ 295, 80, 25, 20 },
-	{ 230, 80, 25, 20 },
-	{ 197, 80, 25, 20 },
-	{ 230, 365, 25, 20 },
-	{ 550, 135, 25, 20 },
-	{ 290, 200, 25, 20 } };
-	Obstacle obst;
-	for (auto& r : tmp) {
-		obst.set_base_pos(CPoint(r.left - 1024 + (r.right >> 1), r.top - 1024 + (r.bottom >> 1)));
-		obst.set_width(r.right);
-		obst.set_height(r.bottom);
-		obs_all.emplace_back(obst);
+		break;
+	}
+	case 2: {
+		break;
+	}	
 	}
 }
 void Map::set_map_center(CPoint p) {

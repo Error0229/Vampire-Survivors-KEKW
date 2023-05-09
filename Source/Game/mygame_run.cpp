@@ -68,6 +68,7 @@ void CGameStateRun::OnBeginState()
 		break;
 	}
 	map.set_pos(0, 0);
+	map.set_obstacle(MAP_ID);
 	event_background.set_base_pos(0, 0);
 	_gamerun_status = PLAYING;
 	_next_status = PLAYING;
