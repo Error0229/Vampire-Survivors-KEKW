@@ -193,26 +193,9 @@ void VSObject::update_pos()
 	this->_direct = (this->_target.x > this->_position.x) ? RIGHT : LEFT;
 	this->_is_mirror = (_direct != _default_direct);
 	update_pos_by_vec(_target_vec);
-	return;
-	int dis = distance(_target, this->_position);
-	if (dis < 1) return;
-	int dx = VSOM(this->_speed * square(this->_target.x - this->_position.x) / dis);
-	int dy = VSOM(this->_speed * square(this->_target.y - this->_position.y) / dis);
-	_fx += (_speed * (double)square(this->_target.x - this->_position.x) / (double)dis / 100) - (double)dx;
-	_fy += (_speed * (double)square(this->_target.y - this->_position.y) / (double)dis / 100) - (double)dy;
-	if (abs(_fx) > 1) {
-		dx += static_cast<int>(_fx);
-		_fx -= static_cast<int>(_fx);
-	}
-	if (abs(_fy) > 1) {
-		dy += static_cast<int>(_fy);
-		_fy -= static_cast<int>(_fy);
-	}
-	this->_position.x += dx;
-	this->_position.y += dy;
 }
 void VSObject::update_pos_by_vec(CPoint vec) {
-	double speed = static_cast<double>(_speed) / (1000.0 / GAME_CYCLE_TIME);
+	double speed = static_cast<double>(_speed) * (GAME_CYCLE_TIME / 1000.0);
 	if (_target_vec == CPoint{ 0, 0 })
 		return;
 	if (vec != CPoint{ 0, 0 })
