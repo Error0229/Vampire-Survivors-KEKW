@@ -36,6 +36,8 @@ public:
 	void select_show_animation(int);
 	void set_animation_frame(int);
 	CPoint get_pos();
+	double get_x();
+	double get_y();
 	virtual void update_pos(CPoint);
 	virtual void update_pos();
 	virtual void update_pos_by_vec(CPoint vec = {0,0});
@@ -75,7 +77,7 @@ protected:
 	int _speed = 0;
 	int _pool_id, _type;
 	double _scaler = 1;
-	double _fx, _fy;
+	double _true_x, _true_y;
 	int _file_size = 0;
 	clock_t _animation_cycle_time;
 };

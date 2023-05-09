@@ -457,9 +457,9 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 	static int chest_upgrade_chance_0 = 0, chest_upgrade_chance_1 = 0;
 	int predx, predy;
 	CPoint origin_pos, tmp_pos;
+	double ox, oy, tx, ty;
 	_gamerun_status = _next_status;
 	vector <VSObject*> plain_result = {};
-	int offset = 300;
 	auto check_overlapped = [&](VSObject* obj) noexcept -> bool {
 		for (auto& i : plain_result) {
 			if (is_overlapped(obj, i))
@@ -473,7 +473,8 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		//playing status
 		//--------------------------------------------------------
 		timer.resume();
-		origin_pos = player.get_pos();
+		ox = player.get_x();
+		oy = player.get_y();
 		predx = VSObject::player_dx;
 		predy = VSObject::player_dy;
 		Damage::damage_device()->update();
@@ -481,15 +482,17 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			QuadTree::VSPlain.insert((VSObject*)(&obs));
 		}
 		player.update_pos(mouse_pos);
-		tmp_pos = player.get_pos();
+		tx = player.get_x();
+		ty = player.get_y();
+
 		QuadTree::VSPlain.query_by_type(plain_result, (VSObject*)(&player), OBSTACLE);
-		if (plain_result.size() > 0) {
-			player.set_pos(tmp_pos.x, origin_pos.y);
+		if (!plain_result.empty()) {
+			player.set_pos(tx, oy);
 			if(check_overlapped((VSObject*)(&player))){
-				player.set_pos(origin_pos.x, tmp_pos.y);
+				player.set_pos(ox, ty);
 				VSObject::player_dx = predx;
 				if (check_overlapped((VSObject*)(&player))) {
-					player.set_pos(origin_pos);
+					player.set_pos(ox, oy);
 					VSObject::player_dy = predy;
 				}
 			}
