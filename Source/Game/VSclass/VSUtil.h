@@ -52,7 +52,6 @@ enum VSObject_types {
 	WEAPON,
 	PROJECTILE,
 	PICKUP,
-	WALL,
 	MAP,
 	DAMAGE,
 	UI,
@@ -85,7 +84,11 @@ enum pickup_types {
 	CHEST,
 	LSPICKUP
 };
-
+enum Swarm_type {
+	NOT_SWARM, // make sense rigth?
+	SWARM,
+	WALL
+};
 #define BLACK (RGB(0,0,0))
 #define WHITE (RGB(255,255,255))
 const double MATH_PI = 3.1415926;

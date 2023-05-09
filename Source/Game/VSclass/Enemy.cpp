@@ -111,10 +111,9 @@ void Enemy::update_pos(CPoint pos, clock_t tick) {
 			VSObject::update_pos(pos);
 		}
 	}
-	if (MAP_ID == 1 && _swarm_type == NOT_SWARM) {
-		_position.y = (_position.y > 210) ? 210 : _position.y;
-		_position.y = (_position.y < -210) ? -210 : _position.y;
-	}
+}
+int Enemy::get_swarm_type() {
+	return _swarm_type;
 }
 
 bool Enemy::hurt(int damage) 

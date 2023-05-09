@@ -447,6 +447,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 
 	//open chest
 	int chest_item_count;
+	bool flag = false;
 	static bool can_evo = false;
 	static int chest_upgrade_chance_0 = 0, chest_upgrade_chance_1 = 0;
 	int predx, predy;
@@ -454,6 +455,13 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 	_gamerun_status = _next_status;
 	vector <VSObject*> plain_result = {};
 	int offset = 300;
+	auto check_overlapped = [&](VSObject* obj) noexcept -> bool {
+		for (auto& i : plain_result) {
+			if (is_overlapped(obj, i))
+				return true;
+		}
+		return false;
+	};
 	switch (_gamerun_status) {
 	case(PLAYING):
 		//--------------------------------------------------------
@@ -472,9 +480,13 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		QuadTree::VSPlain.query_by_type(plain_result, (VSObject*)(&player), OBSTACLE);
 		if (plain_result.size() > 0) {
 			player.set_pos(tmp_pos.x, origin_pos.y);
-			if (is_overlapped((VSObject*)(&player), plain_result[0])) {
+			if(check_overlapped((VSObject*)(&player))){
 				player.set_pos(origin_pos.x, tmp_pos.y);
 				Player::player_dx = predx;
+				if (check_overlapped((VSObject*)(&player))) {
+					player.set_pos(origin_pos);
+					Player::player_dy = predy;
+				}
 			}
 			else {
 				Player::player_dy = predy;
@@ -509,10 +521,13 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			😈->update_pos(player.get_pos(), timer.get_ticks());
 			tmp_pos = 😈->get_pos();
 			QuadTree::VSPlain.query_by_type(plain_result, (VSObject*)(😈), OBSTACLE);
-			if (plain_result.size() > 0) {
+			if (😈->get_swarm_type() == NOT_SWARM && plain_result.size() > 0){  // its kinda cursed i am sorry
 				😈->set_pos(tmp_pos.x, origin_pos.y);
-				if (is_overlapped(😈, plain_result[0])) {
+				if (check_overlapped(😈)) {
 					😈->set_pos(origin_pos.x, tmp_pos.y);
+					if (check_overlapped(😈)) {
+						😈->set_pos(origin_pos);
+					}
 				}
 			}
 			result = {};

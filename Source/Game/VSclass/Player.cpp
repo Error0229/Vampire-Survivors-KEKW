@@ -108,10 +108,6 @@ void Player::init_player() {
 void Player::update_pos(CPoint target) {
 	CPoint pos = _position;
 	VSObject::update_pos(target);
-	if (MAP_ID == 1) {
-		_position.y = (_position.y > 210) ? 210 : _position.y;
-		_position.y = (_position.y < -210) ? -210 : _position.y;
-	}
 	VSObject::player_dx -= _position.x - pos.x ;
 	VSObject::player_dy -= _position.y - pos.y ;
 }

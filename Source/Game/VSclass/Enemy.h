@@ -50,6 +50,7 @@ public:
 	int get_xp_value();
 	int get_power();
 	int get_spawn_limit();
+	int get_swarm_type();
 	bool hurt(int damage); //this will return true if the enemy die from this damage, otherwise false
 	bool is_collide_with(VSObject&, double overlap_bound = 1);
 	bool is_collide_with(Enemy&, double overlap_bound = 0.5);
@@ -73,11 +74,6 @@ private:
 	bool _is_drop_chest, _chest_can_evo;
 	int _chest_upgrade_chance_0, _chest_upgrade_chance_1;
 	//swarm thing
-	enum Swarm_type {
-		NOT_SWARM, // make sense rigth?
-		SWARM,
-		WALL
-	};
 	int _swarm_type, _swarm_pos_i;
 	clock_t _swarm_duration, _swarm_start_time;
 	VSObject _death_animation;
