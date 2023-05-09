@@ -527,6 +527,13 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 					😈->set_pos(origin_pos.x, tmp_pos.y);
 					if (check_overlapped(😈)) {
 						😈->set_pos(origin_pos);
+						if (check_overlapped(😈)) {
+							for (int i = 2; i <= 16; i++) {
+								😈->set_pos(origin_pos + CPoint(rand()%i - rand()%i, rand()%i - rand()%i));
+								if (!check_overlapped(😈))
+									break;// im sorry lord
+							}
+						}
 					}
 				}
 			}
