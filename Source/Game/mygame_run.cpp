@@ -476,6 +476,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			QuadTree::VSPlain.insert((VSObject*)(&obs));
 		}
 		player.update_pos(mouse_pos);
+		map.map_padding(get_player_pos());
 		tmp_pos = player.get_pos();
 		QuadTree::VSPlain.query_by_type(plain_result, (VSObject*)(&player), OBSTACLE);
 		if (plain_result.size() > 0) {
@@ -493,9 +494,8 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			}
 		}
 		plain_result.clear();
-		
-		plain_result.clear();
-		QuadTree::VSPlain.set_range(-Player::player_dx - offset, -Player::player_dy - offset, w_size_x + offset, w_size_y + offset);
+
+		QuadTree::VSPlain.set_range(get_player_pos().x, get_player_pos().y, w_size_x + 2 * offset, w_size_y + 2 * offset);
 		for (auto i_enemy : enemy_factory.live_enemy) {
 			if (!i_enemy->is_dead()) {
 				QuadTree::VSPlain.insert((VSObject*)(i_enemy));
@@ -521,7 +521,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			😈->update_pos(player.get_pos(), timer.get_ticks());
 			tmp_pos = 😈->get_pos();
 			QuadTree::VSPlain.query_by_type(plain_result, (VSObject*)(😈), OBSTACLE);
-			if (😈->get_swarm_type() == NOT_SWARM && plain_result.size() > 0){  // its kinda cursed i am sorry
+			if (😈->get_swarm_type() == NOT_SWARM && plain_result.size() > 0){  // its kinda cursed i know sorry
 				😈->set_pos(tmp_pos.x, origin_pos.y);
 				if (check_overlapped(😈)) {
 					😈->set_pos(origin_pos.x, tmp_pos.y);
@@ -694,7 +694,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 void CGameStateRun::OnShow()
 {
 	CPoint player_pos = player.get_pos();
-	map.map_padding(player_pos);
+	
 	map.show_map();
 	Weapon::show();
 	Xp::show();

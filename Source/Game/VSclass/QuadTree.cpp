@@ -116,7 +116,7 @@ void QuadTree::query_by_type(vector<VSObject*>& result, VSObject* q, int type)
     for (VSObject* obj : objects) {
         if (obj->obj_type != type)
             continue;
-        if (is_overlapped(*(obj), *q)) {
+        if (is_overlapped(obj, q)) {
             result.push_back(obj);
         }
     }

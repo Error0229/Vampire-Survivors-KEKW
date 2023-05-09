@@ -112,7 +112,7 @@ void Map::show_map()
 		if (padd->_show_enable) {
 			padd->show_skin();
 		}
-	}
+	}\
 }
 void Map::map_padding(CPoint player_pos)
 {
