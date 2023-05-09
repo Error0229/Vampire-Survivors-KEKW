@@ -495,7 +495,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		}
 		plain_result.clear();
 
-		QuadTree::VSPlain.set_range(get_player_pos().x, get_player_pos().y, w_size_x + 2 * offset, w_size_y + 2 * offset);
+		QuadTree::VSPlain.set_range(get_player_pos().x -1000, get_player_pos().y - 1000, w_size_x + 2000, w_size_y + 2000);
 		for (auto i_enemy : enemy_factory.live_enemy) {
 			if (!i_enemy->is_dead()) {
 				QuadTree::VSPlain.insert((VSObject*)(i_enemy));
