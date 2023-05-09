@@ -173,7 +173,7 @@ void Projectile::update_position() {
 		}	break;
 		case (HOLYBOOK): case (VESPERS): {
 			double radius = proj._angle;
-			double speed = proj._speed / (1000.0 / GAME_CYCLE_TIME);
+			double speed = static_cast<double>(proj._speed) / (1000.0 / static_cast<double>(GAME_CYCLE_TIME));
 			CPoint origin_pos = player_pos + proj._offset;
 			double angular_velocity = speed / radius / 20;
 			double initial_angle = atan2(origin_pos.y - player_pos.y, origin_pos.x - player_pos.x);

@@ -195,28 +195,28 @@ void VSObject::update_pos()
 	update_pos_by_vec(_target_vec);
 }
 void VSObject::update_pos_by_vec(CPoint vec) {
-	double speed = static_cast<double>(_speed) * (GAME_CYCLE_TIME / 1000.0);
+	double speed = static_cast<double>(_speed) * (static_cast<double>(GAME_CYCLE_TIME) / 1000.0);
 	if (_target_vec == CPoint{ 0, 0 })
 		return;
 	if (vec != CPoint{ 0, 0 })
 		_target_vec = vec;
-	//this->_direct = (this->_target.x > this->_position.x) ? RIGHT : LEFT;
-	//this->_is_mirror = (_direct != _default_direct);
-	double dis = static_cast<double>((square(_target_vec.x) + square(_target_vec.y)));
-	double vx = (_target_vec.x > 0 ? 1.0 : -1.0) * speed * square(_target_vec.x) / dis;
-	double vy = (_target_vec.y > 0 ? 1.0 : -1.0) * speed * square(_target_vec.y) / dis;
+	double dis = static_cast<double>(_target_vec.x * _target_vec.x + _target_vec.y * _target_vec.y);
+	double vx = (_target_vec.x > 0 ? 1.0 : -1.0) * speed * static_cast<double>(_target_vec.x * _target_vec.x) / dis;
+	double vy = (_target_vec.y > 0 ? 1.0 : -1.0) * speed * static_cast<double>(_target_vec.y * _target_vec.y) / dis;
 	int dx = static_cast<int> (vx);
 	int dy = static_cast<int> (vy);
 	_fx += vx - (double)dx;
 	_fy += vy - (double)dy;
-	if (fabs(_fx) > 1) {
+	if (fabs(_fx) > 1.0) {
 		dx += static_cast<int>(_fx);
 		_fx -= static_cast<int>(_fx);
 	}
-	if (fabs(_fy) > 1) {
+	if (fabs(_fy) > 1.0) {
 		dy += static_cast<int>(_fy);
 		_fy -= static_cast<int>(_fy);
 	}
+	if(_type == PLAYER)
+		TRACE(_T("dx = %d, dy = %d, _fx = %f, _fy = %f\n"), dx, dy, _fx, _fy);
 	this->_position.x += dx;
 	this->_position.y += dy;
 

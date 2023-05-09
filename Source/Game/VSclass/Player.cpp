@@ -9,7 +9,9 @@
 #include <sstream>
 using namespace game_framework;
 map<string, Player> Player::template_player;
-Player::Player() = default;
+Player::Player() {
+	_type = PLAYER;
+};
 Player::~Player() = default;
 Player::Player(string name) {
 	*this = template_player[name];
