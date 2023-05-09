@@ -91,6 +91,7 @@ void Map::set_obstacle(int map_id)
 		break;
 	}
 	case 2: {
+		// TBD
 		break;
 	}	
 	}
