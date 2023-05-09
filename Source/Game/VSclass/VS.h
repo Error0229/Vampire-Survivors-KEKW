@@ -4,6 +4,7 @@
 #include "QuadTree.h"
 #include "UI.h"
 #include "Enemy.h"
+#include "Obstacle.h"
 #include "Map.h"
 #include "Passive.h"
 #include "Projectile.h"

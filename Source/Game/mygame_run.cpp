@@ -448,7 +448,8 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 	int chest_item_count;
 	static bool can_evo = false;
 	static int chest_upgrade_chance_0 = 0, chest_upgrade_chance_1 = 0;
-
+	int predx, predy;
+	CPoint origin_pos;
 	_gamerun_status = _next_status;
 	vector <VSObject*> plain_result = {};
 	int offset = 300;
@@ -458,9 +459,22 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		//playing status
 		//--------------------------------------------------------
 		timer.resume();
+		origin_pos = player.get_pos();
+		predx = Player::player_dx;
+		predy = Player::player_dy;
 		Damage::damage_device()->update();
+		for (auto& obs : Map::obs_all) {
+			QuadTree::VSPlain.insert((VSObject*)(&obs));
+		}
 		player.update_pos(mouse_pos);
-		QuadTree::VSPlain.set_range(-Player::player_dx - offset, -Player::player_dy - offset, (OPEN_AS_FULLSCREEN ? RESOLUTION_X : SIZE_X) + offset, (OPEN_AS_FULLSCREEN ? RESOLUTION_Y : SIZE_Y) + offset);
+		QuadTree::VSPlain.query_by_type(plain_result, (VSObject*)(&player), OBSTACLE);
+		if (plain_result.size() > 0) {
+			player.set_pos(origin_pos);
+			Player::player_dx = predx;
+			Player::player_dy = predy;
+		}
+		plain_result.clear();
+		QuadTree::VSPlain.set_range(-Player::player_dx - offset, -Player::player_dy - offset, w_size_x + offset, w_size_y + offset);
 		for (auto i_enemy : enemy_factory.live_enemy) {
 			if (!i_enemy->is_dead()) {
 				QuadTree::VSPlain.insert((VSObject*)(i_enemy));
@@ -475,7 +489,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 				proj.collide_with_enemy(*((Enemy*)obj), player.get_duration());
 			}
 		}
-		for (auto 😈: enemy_factory.live_enemy) {
+		for (auto 😈: EnemyFactory::live_enemy) {
 			😈->update_pos(player.get_pos(), timer.get_ticks());
 			result = {};
 			QuadTree::VSPlain.query_by_type(result, (VSObject*)(😈), ENEMY);

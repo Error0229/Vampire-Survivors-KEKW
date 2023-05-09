@@ -4,8 +4,7 @@
 #include "VSUtil.h"
 #include "VSObject.h"
 #include "QuadTree.h"
-// usage 
-// QuadTree()
+
 QuadTree::QuadTree() = default;
 QuadTree::~QuadTree() = default;
 QuadTree::QuadTree(int x, int y, int w, int h, int max_objects, int max_levels, int level) : _x(x) , _y(y), w(w), h(h), max_objects(max_objects), max_levels(max_levels), level(level), objects({})
@@ -103,13 +102,13 @@ void QuadTree::query_by_type(vector<VSObject*>& result, VSObject* q, int type)
 {
     int index = this->get_quadrant(q);
     if (index != -1 && this->children[0] != nullptr) {
-        this->children[index]->query(result, q);
+        this->children[index]->query_by_type(result, q, type);
     }
     else {
         if (this->children[0] != nullptr) {
             for (int i = 0; i < 4; i++) {
                 if (is_overlapped_pure(this->children[i]->_x, this->children[i]->_y, this->children[i]->w, this->children[i]->h, q->_position.x, q->_position.y, q->get_width(), q->get_height())) {
-                    this->children[i]->query(result, q);
+                    this->children[i]->query_by_type(result, q, type);
                 }
             }
         }

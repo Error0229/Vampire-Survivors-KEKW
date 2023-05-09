@@ -20,9 +20,9 @@ public:
 	void set_scaler(double);
 	void enable_animation();
 	void disable_animation();
-	void set_pos(CPoint);
-	void set_pos(int, int);
-	void set_pos(double, double);
+	virtual void set_pos(CPoint);
+	virtual void set_pos(int, int);
+	virtual void set_pos(double, double);
 	void set_target_vec(CPoint);
 	void set_target_vec(int, int);
 	void set_pool_id(int);
@@ -43,8 +43,8 @@ public:
 	bool is_animation_done();
 	bool is_animation();
 	int get_direct();
-	int get_height();
-	int get_width();
+	virtual int get_height();
+	virtual int get_width();
 	int get_animation_frame();
 	void append_collide(VSObject&, double overlap_bound, double factor);
 	void update_collide();

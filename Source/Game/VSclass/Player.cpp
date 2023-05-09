@@ -11,6 +11,7 @@ using namespace game_framework;
 map<string, Player> Player::template_player;
 Player::Player() {
 	_type = PLAYER;
+	obj_type = PLAYER;
 };
 Player::~Player() = default;
 Player::Player(string name) {

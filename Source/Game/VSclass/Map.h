@@ -8,6 +8,7 @@ public:
 	void show_map();
 	void set_map_center(CPoint);
 	void map_padding(CPoint);
+	static vector <Obstacle> obs_all;
 private:
 	bool _show_enable = false;
 	CPoint _map_center;

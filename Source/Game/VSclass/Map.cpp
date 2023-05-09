@@ -2,6 +2,7 @@
 #include "../../Library/gameutil.h"
 #include "../config.h"
 #include "VSObject.h"
+#include "Obstacle.h"
 #include "Map.h"
 constexpr int PADDING_NUM = 4;
 
@@ -12,6 +13,7 @@ Map::Map()
 }
 Map::Map(vector<char*> filename) : VSObject(filename)
 {
+	obj_type = MAP;
 }
 Map::~Map()
 {
@@ -30,6 +32,31 @@ void Map::load_map(vector<char*> filename, COLORREF color)
 	_maps[0]->_show_enable = true;
 	_maps[0]->set_pos(0, 0);
 	_map_pos_set.insert({ 0,0 });
+
+	vector<RECT> tmp = {
+	{ 770, 1390, 260, 30 },
+	{ 770, 1420, 30, 130 },
+	{ 990, 1420, 30, 130 },
+	{ 770, 1520, 100, 30 },
+	{ 930, 1520, 100, 30 },
+	{ 130, 170, 25, 20 },
+	{ 355, 170, 25, 20 },
+	{ 425, 170, 25, 20 },
+	{ 485, 75, 25, 20 },
+	{ 455, 330, 25, 20 },
+	{ 295, 80, 25, 20 },
+	{ 230, 80, 25, 20 },
+	{ 197, 80, 25, 20 },
+	{ 230, 365, 25, 20 },
+	{ 550, 135, 25, 20 },
+	{ 290, 200, 25, 20 } };
+	Obstacle obst;
+	for (auto& r : tmp) {
+		obst.set_base_pos(CPoint(r.left - 1024 + (r.right >> 1), r.top - 1024 + (r.bottom >> 1)));
+		obst.set_width(r.right);
+		obst.set_height(r.bottom);
+		obs_all.emplace_back(obst);
+	}
 }
 void Map::set_map_center(CPoint p) {
 	_map_center = p;
@@ -89,4 +116,8 @@ void Map::map_padding(CPoint player_pos)
 			}
 		}
 	}
+	for (auto& obs : obs_all) {
+		obs.set_pos(obs.get_base_pos().x + _map_center.x, obs.get_base_pos().y + _map_center.y);
+	}
 }
+vector <Obstacle> Map::obs_all;
