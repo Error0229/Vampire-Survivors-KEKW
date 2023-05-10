@@ -22,7 +22,6 @@ public:
 	EnemyFactory();
 	~EnemyFactory();
 	void init();
-	void reset();
 	int get_number_type(int);
 	int get_number_all();
 	void update(clock_t tick, CPoint player_pos, int player_lvl, int luck, int curse);
@@ -30,7 +29,6 @@ public:
 	static vector<Enemy*> live_enemy;
 private:
 	static ObjPool<Enemy> _all_enemy;
-	static bool _is_init;
 	static vector<int> _number_type;
 	vector<Wave_enemy> wave_enemy;
 	vector<Wave_boss> wave_boss;

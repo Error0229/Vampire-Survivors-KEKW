@@ -36,6 +36,7 @@ CGameStateRun::~CGameStateRun()
 
 void CGameStateRun::OnBeginState()
 {
+	MAP_ID = 1;
 	QuadTree::VSPlain.clear();
 	Weapon::all_weapon.clear();
 	Passive::all_passive.clear();
@@ -43,7 +44,6 @@ void CGameStateRun::OnBeginState()
 	Xp::reset_XP();
 	Chest::reset_chest();
 	LightSourcePickup::reset();
-	enemy_factory.reset();
 	light_source_factory.reset();
 	timer.reset();
 	timer.start();
@@ -57,6 +57,7 @@ void CGameStateRun::OnBeginState()
 	player.set_speed(300);
 	map = Map();
 	MAP_ID = game->Get🗺️();
+	enemy_factory.init();
 	GOLD_NUM = 0;
 	KILL_NUM = 0;
 	switch (MAP_ID) {
@@ -83,7 +84,6 @@ void CGameStateRun::OnBeginState()
 void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 {
 	Weapon::load_weapon_stats();
-	enemy_factory.init();
 	light_source_factory.init();
 	Icon::load_filename();
 	Xp::init_XP();
@@ -195,6 +195,7 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	// C: spawn a chest above player
 
 	static int chest_cnt = 0; //tmp
+	static int type = 0;
 	switch (nChar) {
 	case('A'):
 		for (auto 😈 : enemy_factory.live_enemy) {
@@ -211,14 +212,17 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 		timer.add_time(10000);
 		break;
 	case('E'):
-		static int type = 0;
 		LightSourcePickup::spawn_lightsource_pickup(player.get_pos() + CPoint(0, -100), type++);
 		if (type == 7)
 			type = 0;
 		break;
+	case('F'):
+		for (int i = 0; i <= 48; i++) {
+			Enemy* a = enemy_factory.add_enemy(i, player.get_pos(), 1, 1, 1)[0]; //curse set to 1 to reduce speed/hp of enemies
+			a->set_spawn_pos();
+		}
+		break;
 	}
-	
-
 }
 
 void CGameStateRun::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
