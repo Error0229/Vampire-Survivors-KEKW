@@ -682,7 +682,7 @@ void CGameStateRun::OnShow()
 		break;
 	case(PAUSE):
 		button_resume.show();
-		evolution_chart.show(0.4);
+		evolution_chart.show();
 		inv_detail_frame.show();
 		show_inv();
 		stat_frame.show();

@@ -37,8 +37,8 @@ void CGameStateInit::OnInit()
 	button_go_upgrade.load_skin("resources/ui/button_go_upgrade.bmp");
 	button_restore.load_skin("resources/ui/money_restore.bmp");
 	background.load_skin("resources/ui/background_1.bmp");
-	select_bg.load_skin("resources/ui/event_background.bmp");
-	money_bg.load_skin("Resources/ui/button_c9_normal_mini.bmp");
+	select_bg.load_skin("resources/ui/powerup_bg.bmp");
+	money_bg.load_skin("Resources/ui/money_bg.bmp");
 	🆗.load_skin({"Resources/ui/ok.bmp"});
 	🆖.load_skin({"Resources/ui/no.bmp"});
 	Icon::load_filename();
@@ -130,13 +130,13 @@ void CGameStateInit::OnInit()
 	🆗.activate_hover = true;
 	🆖.activate_hover = true;
 	background.set_pos(0, 0);
-	money_bg.set_pos(0, -220);
-	button_start.set_pos(0, 0);
-	button_upgrade.set_pos(100, 200);
+	money_bg.set_pos(0, -280);
+	button_start.set_pos(0, 90);
+	button_upgrade.set_pos(100, 195);
 	button_go_upgrade.set_pos(0, 150);
-	button_restore.set_pos(0, -170);
-	🆗.set_pos( 100, 200);
-	🆖.set_pos(-100, 200);
+	button_restore.set_pos(0, -195);
+	🆗.set_pos( 100, 195);
+	🆖.set_pos(-100, 195);
 	select_bg.set_pos(0, 0);
 
 }
@@ -306,14 +306,14 @@ void CGameStateInit::OnShow()
 		button_restore.show_skin();
 		button_upgrade.show_skin();
 		money_bg.show_skin();
-		text_device.add_text(to_string(coin), CPoint(0, -220), 1, FONT_NORM, ALIGN_CENTER);
+		text_device.add_text(to_string(coin), CPoint(85, -280), 1, FONT_24x18_B, ALIGN_RIGHT);
 		if (passive_selected != -1 && passive_levels[passive_selected] == passive_max_level[passive_selected]) {
-			text_device.add_text("Level Max", CPoint(0, 155), 1, FONT_NORM, ALIGN_CENTER);
+			text_device.add_text("Level Max", CPoint(0, 165), 1, FONT_12x08, ALIGN_CENTER);
 		}
 		else if (passive_selected != -1) {
 			double sum = static_cast<double> (reduce(passive_levels.begin(), passive_levels.end()));
 			string s = "Price: " + to_string(init_price[passive_selected] * (1 + passive_levels[passive_selected]) + (sum > 0.1) * static_cast<int>(20.0 * pow(1.1, sum)));
-			text_device.add_text(s,  CPoint(0, 155), 1, FONT_NORM, ALIGN_CENTER);
+			text_device.add_text(s,  CPoint(0, 165), 1, FONT_12x08, ALIGN_CENTER);
 		}
 		for (int i = 0; i < 16; i++) {
 			character_bg[i].set_pos(-110 + (i % 4) * 73, -110 + (i / 4) * 73);
