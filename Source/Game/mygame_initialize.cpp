@@ -116,7 +116,7 @@ void CGameStateInit::OnInit()
 		weapons.emplace_back(weapon);
 		characters[i].set_pos(-90 + (i % 3) * 80, -103 + (i / 3) * 80);
 	}
-	maps = { Ui(), Ui() };
+	maps = { Ui(), Ui(), Ui()};
 	maps[0].load_skin("Resources/ui/stage_forest.bmp");
 	maps[0].set_pos(0, -90);
 	maps[0].set_name("Mad Forest");
@@ -125,6 +125,10 @@ void CGameStateInit::OnInit()
 	maps[1].set_pos(0, 20);
 	maps[1].set_name("Inlaid Library");
 	maps[1].activate_hover = true;
+	maps[2].load_skin("Resources/ui/stage_tower.bmp");
+	maps[2].set_pos(0, 130);
+	maps[2].set_name("Gallo Tower");
+	maps[2].activate_hover = true;
 	map_select_effect.load_skin("Resources/ui/map_selected.bmp");
 	map_selected = -1;
 	🆗.activate_hover = true;

@@ -73,6 +73,7 @@ public:
 	int get_xp_value();
 	int get_power();
 	int get_spawn_limit();
+	int get_swarm_type();
 	bool hurt(int damage); //this will return true if the enemy die from this damage, otherwise false
 	bool is_collide_with(VSObject&, double overlap_bound = 1);
 	bool is_collide_with(Enemy&, double overlap_bound = 0.5);
@@ -99,7 +100,8 @@ private:
 	enum Swarm_type {
 		NOT_SWARM, // make sense rigth?
 		SWARM,
-		WALL
+		WALL,
+		SIN
 	};
 	int _swarm_type, _swarm_pos_i;
 	clock_t _swarm_duration, _swarm_start_time;

@@ -80,7 +80,7 @@ void Enemy::show_skin(double factor)
 void Enemy::update_pos(CPoint pos, clock_t tick) {
 	if (_is_stun) {
 		this->_speed = (int)_stun_speed;
-		if (clock() - _last_time_got_hit > 240) { // set to 2x of wiki said (120ms) 
+		if (clock() - _last_time_got_hit > 120) { 
 			_is_stun = false;
 			_speed = _mspeed;
 		}
@@ -111,10 +111,9 @@ void Enemy::update_pos(CPoint pos, clock_t tick) {
 			VSObject::update_pos(pos);
 		}
 	}
-	if (MAP_ID == 1 && _swarm_type == NOT_SWARM) {
-		_position.y = (_position.y > 210) ? 210 : _position.y;
-		_position.y = (_position.y < -210) ? -210 : _position.y;
-	}
+}
+int Enemy::get_swarm_type() {
+	return _swarm_type;
 }
 
 bool Enemy::hurt(int damage) 
@@ -192,47 +191,53 @@ void Enemy::set_chest(bool can_evo, int chance0, int chance1)
 void Enemy::set_spawn_pos(int count, int amount)
 {
 	static vector<double> random_pos_weights(88, 1);
-	if(_swarm_type == NOT_SWARM){
-		int i = poll(random_pos_weights);
-		switch (MAP_ID) {
-		case 0: 
-			if (i <= 21)
-				_position += CPoint(-440 + i * 40, -330);
-			else if (i <= 43)
-				_position += CPoint(440, -330 + (i - 21) * 30);
-			else if (i <= 65)
-				_position += CPoint(440 - (i - 43) * 40, 330);
-			else
-				_position += CPoint(-440, 330 - (i - 65) * 30);
+	int i;
+	CPoint pos, offset;
+	switch (_swarm_type) {
+		case NOT_SWARM:
+			i = poll(random_pos_weights);
+			switch (MAP_ID) {
+			case 0:
+				if (i <= 21)
+					_position += CPoint(-440 + i * 40, -330);
+				else if (i <= 43)
+					_position += CPoint(440, -330 + (i - 21) * 30);
+				else if (i <= 65)
+					_position += CPoint(440 - (i - 43) * 40, 330);
+				else
+					_position += CPoint(-440, 330 - (i - 65) * 30);
+				break;
+			case 1:
+				i >>= 2;
+				if (i <= 11)
+					_position += CPoint(440, -200 + i * 30);
+				else
+					_position += CPoint(-440, 200 - (i - 11) * 30);
+				break;
+			}
 			break;
-		case 1:
-			i >>= 2;
-			if (i <= 11)
-				_position += CPoint(440, -330 + i * 30);
+
+		case SWARM:
+			if (_swarm_pos_i <= 4)
+				pos = CPoint(-440 + 176 * _swarm_pos_i, -330);
+			else if (_swarm_pos_i <= 9)
+				pos = CPoint(440, -330 + 110 * (_swarm_pos_i - 5));
+			else if (_swarm_pos_i <= 14)
+				pos = CPoint(440 - 176 * (_swarm_pos_i - 10), 330);
 			else
-				_position += CPoint(-440, 330 - (i - 11) * 30);
+				pos = CPoint(-440, 330 - 110 * (_swarm_pos_i - 15));
+			_position += pos;
+			_target_vec.x = -pos.x;
+			_target_vec.y = -pos.y;
 			break;
-		}
-	}
-	else if(_swarm_type == SWARM){
-		//set target
-		CPoint pos;
-		if (_swarm_pos_i <= 4)
-			pos = CPoint(-440 + 176 * _swarm_pos_i, -330);
-		else if (_swarm_pos_i <= 9)
-			pos = CPoint(440, -330 + 110 * (_swarm_pos_i - 5));
-		else if (_swarm_pos_i <= 14)
-			pos = CPoint(440 - 176 * (_swarm_pos_i - 10), 330);
-		else
-			pos = CPoint(-440, 330 - 110 * (_swarm_pos_i - 15));
-		_position += pos;
-		_target_vec.x = -pos.x;
-		_target_vec.y = -pos.y;
-	}
-	else if(_swarm_type == WALL){
-		//eclipse WIP
-		CPoint offset = get_ellipse_point(CPoint( 0,0 ), 440, 550 , count, amount);
-		_position += offset;
+
+		case WALL:
+			offset = get_ellipse_point(CPoint(0, 0), 440, 550, count, amount);
+			_position += offset;
+			break;
+
+		case SIN:
+			break;
 	}
 }
 
