@@ -217,7 +217,7 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			type = 0;
 		break;
 	case('F'):
-		for (int i = 0; i <= 48; i++) {
+		for (int i = 0; i <= BOSS_XLCRAB; i++) {
 			Enemy* a = enemy_factory.add_enemy(i, player.get_pos(), 1, 1, 1)[0]; //curse set to 1 to reduce speed/hp of enemies
 			a->set_spawn_pos();
 		}

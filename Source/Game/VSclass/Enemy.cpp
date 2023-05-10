@@ -232,9 +232,14 @@ void Enemy::set_spawn_pos(int count, int amount)
 				else
 					_position += CPoint(-440, 200 - (i - 11) * 30);
 				break;
+			case 2:
+				i >>= 2;
+				if (i <= 11)
+					_position += CPoint(-330 + i * 30, -330);
+				else
+					_position += CPoint(330 + (i - 11) * 30, 330);
+				break;
 			}
-			break;
-
 		case SWARM:
 			if (_swarm_pos_i <= 4)
 				pos = CPoint(-440 + 176 * _swarm_pos_i, -330);
@@ -329,7 +334,7 @@ Enemy Enemy::load_enemy(int id, char* name, int health, int power, int mspeed, d
 {
 	Enemy enemy;
 	char tmp[100];
-	for (int i = 0; i < 6; i++) {
+	for (int i = 0; i < 10; i++) {
 		memset(tmp, 0, sizeof(tmp));
 		sprintf(tmp, ".\\Resources\\enemy\\%s_i0%d.bmp", name, (i + 1));
 		struct stat buffer;
@@ -344,7 +349,7 @@ Enemy Enemy::load_enemy(int id, char* name, int health, int power, int mspeed, d
 		}
 	}
 	enemy.load_mirror_skin();
-	for (int i = 0; i < 20; i++) {
+	for (int i = 0; i < 50; i++) {
 		memset(tmp, 0, sizeof(tmp));
 		sprintf(tmp, ".\\Resources\\enemy\\%s_%d.bmp", name, i);
 		struct stat buffer;
