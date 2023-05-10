@@ -228,6 +228,11 @@ Passive::Passive(int type) {
 Passive::~Passive()
 {
 }
+void Passive::init() {
+	for (int i = POWER; i <= PANDORA; i++) {
+		base_passive.emplace_back(Passive(i));
+	}
+}
 void Passive::level_up()
 {
 	if (is_max_level()) {
@@ -300,3 +305,4 @@ int Passive::passive_count()
 }
 
 deque<Passive> Passive::all_passive;
+vector<Passive> Passive::base_passive;

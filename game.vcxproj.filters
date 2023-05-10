@@ -27,6 +27,7 @@
     <None Include="Source\Game\VSclass\stage1_wave_boss.csv" />
     <None Include="Source\Game\VSclass\stage1_wave_enemy.csv" />
     <None Include="Source\Game\VSclass\stage1_wave_swarm.csv" />
+    <None Include="Source\Game\VSclass\player_data.csv" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Library\audio.cpp">
@@ -76,6 +77,7 @@
     <ClCompile Include="Source\Game\VSclass\ObjPool.cpp" />
     <ClCompile Include="Source\Game\VSclass\EnemyFactory.cpp" />
     <ClCompile Include="Source\Game\VSclass\LightSource.cpp" />
+    <ClCompile Include="Source\Game\VSclass\Obstacle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Library\audio.h">
@@ -126,10 +128,22 @@
     <ClInclude Include="Source\Game\VSclass\ObjPool.h" />
     <ClInclude Include="Source\Game\VSclass\EnemyFactory.h" />
     <ClInclude Include="Source\Game\VSclass\LightSource.h" />
+    <ClInclude Include="Source\Game\VSclass\Obstacle.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Source\Core\game.rc">
       <Filter>MFC</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\enemy\Brazier1.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\enemy\Brazier2.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\enemy\Brazier3.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

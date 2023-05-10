@@ -54,6 +54,11 @@ void Projectile::collide_with_enemy(Enemy& 🥵, int player_duration) {
 void Projectile::collide_with_lightsource(LightSource& ls) {
 	ls.hurt(static_cast<int>(this->_damage));
 }
+void Projectile::collide_with_obstacle() {
+	if (_block_by_wall == 1) {
+		_is_over = true;
+	}
+}
 void Projectile::create_projectile(Projectile& proj, CPoint position, CPoint target_pos, int type, int delay, double area, double damage, int speed, int duration, int pierce, int proj_interval, int hitbox_delay, double knock_back, int pool_limit, int chance, int criti_multi, int block_by_wall, bool is_mirror) {
 	proj._type = type;
 	proj._position = position;
@@ -173,7 +178,7 @@ void Projectile::update_position() {
 		}	break;
 		case (HOLYBOOK): case (VESPERS): {
 			double radius = proj._angle;
-			double speed = proj._speed / (1000.0 / GAME_CYCLE_TIME);
+			double speed = static_cast<double>(proj._speed) / (1000.0 / static_cast<double>(GAME_CYCLE_TIME));
 			CPoint origin_pos = player_pos + proj._offset;
 			double angular_velocity = speed / radius / 20;
 			double initial_angle = atan2(origin_pos.y - player_pos.y, origin_pos.x - player_pos.x);

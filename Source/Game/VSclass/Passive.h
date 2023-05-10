@@ -14,8 +14,10 @@ public:
 	string get_level_up_msg(bool is_new=false);
 	int get_rarity();
 	void upgrade();
+	static void init();
 	static void upgrade(int type);
 	static deque<Passive> all_passive;
+	static vector<Passive> base_passive;
 	static int passive_count();
 private:
 	int _level, _stacking;

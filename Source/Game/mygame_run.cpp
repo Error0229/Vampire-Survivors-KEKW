@@ -66,8 +66,14 @@ void CGameStateRun::OnBeginState()
 	case 1:
 		map.load_map({ "resources/map/dummy2.bmp" });
 		break;
+	case 2:
+		map.load_map({ "resources/map/dummy4.bmp" });
+		break;
+	default:
+		break;
 	}
 	map.set_pos(0, 0);
+	map.set_obstacle(MAP_ID);
 	event_background.set_base_pos(0, 0);
 	_gamerun_status = PLAYING;
 	_next_status = PLAYING;
@@ -82,8 +88,10 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	Icon::load_filename();
 	Xp::init_XP();
 	Chest::init_chest();
+	Passive::init();
 	LightSourcePickup::init_lightsource_pickup();
 	Damage::damage_device()->init();
+	RuntimeText::RTD()->init();
 	Player::init_player();
 	map.load_map({ "resources/map/dummy1.bmp" });
 	event_background.load_skin("resources/ui/event_background.bmp");
@@ -92,8 +100,8 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	button_pause.load_skin("Resources/ui/pause.bmp");
 	button_resume.load_skin("Resources/ui/button_resume.bmp");
 	evolution_chart.load_skin("Resources/ui/evolutions.bmp");
-	coin.set_base_pos(373, -260);
-	skull.set_base_pos(373, -240);
+	coin.set_base_pos(373, -258);
+	skull.set_base_pos(373, -237);
 	button_pause.set_base_pos(370, -210);
 	button_resume.set_base_pos(0 , 200);
 	evolution_chart.set_base_pos(0, 0);
@@ -437,28 +445,61 @@ void CGameStateRun::update_mouse_pos()
 void CGameStateRun::OnMove()							// 移動遊戲元素
 {
 	update_mouse_pos();
+	map.map_padding(get_player_pos());
 	vector <VSObject*> result;
-	
 	//polling
 	vector<double> weights(2, 0);
 
 	//open chest
 	int chest_item_count;
+	bool flag = false;
 	static bool can_evo = false;
 	static int chest_upgrade_chance_0 = 0, chest_upgrade_chance_1 = 0;
-
+	int predx, predy;
+	CPoint origin_pos, tmp_pos;
 	_gamerun_status = _next_status;
 	vector <VSObject*> plain_result = {};
 	int offset = 300;
+	auto check_overlapped = [&](VSObject* obj) noexcept -> bool {
+		for (auto& i : plain_result) {
+			if (is_overlapped(obj, i))
+				return true;
+		}
+		return false;
+	};
 	switch (_gamerun_status) {
 	case(PLAYING):
 		//--------------------------------------------------------
 		//playing status
 		//--------------------------------------------------------
 		timer.resume();
+		origin_pos = player.get_pos();
+		predx = VSObject::player_dx;
+		predy = VSObject::player_dy;
 		Damage::damage_device()->update();
+		for (auto& obs : Map::obs_all) {
+			QuadTree::VSPlain.insert((VSObject*)(&obs));
+		}
 		player.update_pos(mouse_pos);
-		QuadTree::VSPlain.set_range(-Player::player_dx - offset, -Player::player_dy - offset, (OPEN_AS_FULLSCREEN ? RESOLUTION_X : SIZE_X) + offset, (OPEN_AS_FULLSCREEN ? RESOLUTION_Y : SIZE_Y) + offset);
+		tmp_pos = player.get_pos();
+		QuadTree::VSPlain.query_by_type(plain_result, (VSObject*)(&player), OBSTACLE);
+		if (plain_result.size() > 0) {
+			player.set_pos(tmp_pos.x, origin_pos.y);
+			if(check_overlapped((VSObject*)(&player))){
+				player.set_pos(origin_pos.x, tmp_pos.y);
+				VSObject::player_dx = predx;
+				if (check_overlapped((VSObject*)(&player))) {
+					player.set_pos(origin_pos);
+					VSObject::player_dy = predy;
+				}
+			}
+			else {
+				VSObject::player_dy = predy;
+			}
+		}
+		plain_result.clear();
+
+		QuadTree::VSPlain.set_range(get_player_pos().x -1000, get_player_pos().y - 1000, w_size_x + 2000, w_size_y + 2000);
 		for (auto i_enemy : enemy_factory.live_enemy) {
 			if (!i_enemy->is_dead()) {
 				QuadTree::VSPlain.insert((VSObject*)(i_enemy));
@@ -468,13 +509,38 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		Projectile::update_position();
 		for (Projectile& proj : Projectile::all_proj) {
 			plain_result.clear();
+			QuadTree::VSPlain.query_by_type(plain_result, (VSObject*)(&proj), OBSTACLE);
+			if (plain_result.size() > 0) {
+				proj.collide_with_obstacle();
+			}
+			plain_result.clear();
 			QuadTree::VSPlain.query_by_type(plain_result, (VSObject*)(&proj), ENEMY);
 			for (VSObject* obj : plain_result) {
 				proj.collide_with_enemy(*((Enemy*)obj), player.get_duration());
 			}
 		}
-		for (auto 😈: enemy_factory.live_enemy) {
+		for (auto 😈: EnemyFactory::live_enemy) {
+			plain_result.clear();
+			origin_pos = 😈->get_pos();
 			😈->update_pos(player.get_pos(), timer.get_ticks());
+			tmp_pos = 😈->get_pos();
+			QuadTree::VSPlain.query_by_type(plain_result, (VSObject*)(😈), OBSTACLE);
+			if (😈->get_swarm_type() == NOT_SWARM && plain_result.size() > 0){  // its kinda cursed i know sorry
+				😈->set_pos(tmp_pos.x, origin_pos.y);
+				if (check_overlapped(😈)) {
+					😈->set_pos(origin_pos.x, tmp_pos.y);
+					if (check_overlapped(😈)) {
+						😈->set_pos(origin_pos);
+						if (check_overlapped(😈)) {
+							for (int i = 2; i <= 16; i++) {
+								😈->set_pos(origin_pos + CPoint(rand()%i - rand()%i, rand()%i - rand()%i));
+								if (!check_overlapped(😈))
+									break;// im sorry lord
+							}
+						}
+					}
+				}
+			}
 			result = {};
 			QuadTree::VSPlain.query_by_type(result, (VSObject*)(😈), ENEMY);
 			for (VSObject* obj : result) {
@@ -639,7 +705,8 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 void CGameStateRun::OnShow()
 {
 	CPoint player_pos = player.get_pos();
-	map.map_padding(player_pos);
+	
+	
 	map.show_map();
 	Weapon::show();
 	Xp::show();
@@ -647,8 +714,8 @@ void CGameStateRun::OnShow()
 	LightSourcePickup::show();
 	coin.show();
 	skull.show();
-	text_device.add_text(to_string(GOLD_NUM), CPoint(368, -260) + player_pos, 1, FONT_NORM, ALIGN_RIGHT);
-	text_device.add_text(to_string(KILL_NUM), CPoint(368, -240) + player_pos, 1, FONT_NORM, ALIGN_RIGHT);
+	RuntimeText::RTD()->add_text(to_string(GOLD_NUM), CPoint(368, -260), 1);
+	RuntimeText::RTD()->add_text(to_string(KILL_NUM), CPoint(368, -240), 1);
 	player.show_skin();
 	for(auto 😈: enemy_factory.live_enemy)
 		😈->show_skin();
@@ -727,9 +794,9 @@ void CGameStateRun::OnShow()
 						}
 					}
 					if (!is_own) {
-						type_text = Passive(level_up_choice[i]).get_name();
+						type_text = Passive::base_passive.at(level_up_choice[i] - POWER).get_name(); //?
 						level_text = "New!";
-						level_up_desc = Passive(level_up_choice[i]).get_level_up_msg(true);
+						level_up_desc = Passive::base_passive.at(level_up_choice[i] - POWER).get_level_up_msg(true); // so bad
 					}
 				}
 				text_device.add_text(type_text, CPoint(-85, -95 + 75 * i) + player_pos, 1, FONT_12x08, ALIGN_LEFT);
@@ -766,11 +833,13 @@ void CGameStateRun::OnShow()
 		game_over_button.show();
 		break;
 	case (REVIVE):
+		timer.pause();
 		game_over_frame.show();
 		button_revive.show();
 		break;
 	}
-	text_device.add_text(timer.get_minute_string() + ":" + timer.get_second_string(), CPoint(0, -265) + player_pos, 1, FONT_24x18_B, ALIGN_CENTER);
-	text_device.add_text("LV " + to_string(player.get_level()), CPoint(380, -287) + player_pos, 1, FONT_24x18_B, ALIGN_RIGHT);
+	RuntimeText::RTD()->add_text(timer.get_minute_string() + ":" + timer.get_second_string(), CPoint(59, -265), 2);
+	RuntimeText::RTD()->add_text("LV " + to_string(player.get_level()), CPoint(380, -290), 1);
+	RuntimeText::RTD()->show_text();
 	text_device.print_all();
 }

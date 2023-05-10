@@ -193,44 +193,25 @@ void VSObject::update_pos()
 	this->_direct = (this->_target.x > this->_position.x) ? RIGHT : LEFT;
 	this->_is_mirror = (_direct != _default_direct);
 	update_pos_by_vec(_target_vec);
-	return;
-	int dis = distance(_target, this->_position);
-	if (dis < 1) return;
-	int dx = VSOM(this->_speed * square(this->_target.x - this->_position.x) / dis);
-	int dy = VSOM(this->_speed * square(this->_target.y - this->_position.y) / dis);
-	_fx += (_speed * (double)square(this->_target.x - this->_position.x) / (double)dis / 100) - (double)dx;
-	_fy += (_speed * (double)square(this->_target.y - this->_position.y) / (double)dis / 100) - (double)dy;
-	if (abs(_fx) > 1) {
-		dx += static_cast<int>(_fx);
-		_fx -= static_cast<int>(_fx);
-	}
-	if (abs(_fy) > 1) {
-		dy += static_cast<int>(_fy);
-		_fy -= static_cast<int>(_fy);
-	}
-	this->_position.x += dx;
-	this->_position.y += dy;
 }
 void VSObject::update_pos_by_vec(CPoint vec) {
-	double speed = static_cast<double>(_speed) / (1000.0 / GAME_CYCLE_TIME);
+	double speed = static_cast<double>(_speed) * (static_cast<double>(GAME_CYCLE_TIME) / 1000.0);
 	if (_target_vec == CPoint{ 0, 0 })
 		return;
 	if (vec != CPoint{ 0, 0 })
 		_target_vec = vec;
-	//this->_direct = (this->_target.x > this->_position.x) ? RIGHT : LEFT;
-	//this->_is_mirror = (_direct != _default_direct);
-	double dis = static_cast<double>((square(_target_vec.x) + square(_target_vec.y)));
-	double vx = (_target_vec.x > 0 ? 1.0 : -1.0) * speed * square(_target_vec.x) / dis;
-	double vy = (_target_vec.y > 0 ? 1.0 : -1.0) * speed * square(_target_vec.y) / dis;
+	double dis = static_cast<double>(_target_vec.x * _target_vec.x + _target_vec.y * _target_vec.y);
+	double vx = (_target_vec.x > 0 ? 1.0 : -1.0) * speed * static_cast<double>(_target_vec.x * _target_vec.x) / dis;
+	double vy = (_target_vec.y > 0 ? 1.0 : -1.0) * speed * static_cast<double>(_target_vec.y * _target_vec.y) / dis;
 	int dx = static_cast<int> (vx);
 	int dy = static_cast<int> (vy);
 	_fx += vx - (double)dx;
 	_fy += vy - (double)dy;
-	if (fabs(_fx) > 1) {
+	if (fabs(_fx) > 1.0) {
 		dx += static_cast<int>(_fx);
 		_fx -= static_cast<int>(_fx);
 	}
-	if (fabs(_fy) > 1) {
+	if (fabs(_fy) > 1.0) {
 		dy += static_cast<int>(_fy);
 		_fy -= static_cast<int>(_fy);
 	}
@@ -251,6 +232,10 @@ bool is_overlapped(VSObject& obj1, VSObject& obj2, double overlap_bound)
 			dx < ((int)((obj1.get_width() + obj2.get_width()) >> 1) * overlap_bound) &&
 			dy < ((int)((obj1.get_height() + obj2.get_height()) >> 1) * overlap_bound)
 		);
+}
+bool is_overlapped(VSObject* obj1, VSObject* obj2)
+{
+	return is_overlapped(*obj1, *obj2, 1.0);
 }
 int VSObject::get_height()
 {
@@ -318,7 +303,8 @@ void VSObject::update_collide()
 {
 	// apply the collision to _position
 	// maight integrated into update_pos in the future if we need the real vector implentment
-	this->_position += _collision;
+	// stuck in obstacle TBF
+	this->_position += _collision; 
 	_collision = { 0, 0 };
 }
 CPoint get_player_pos() {

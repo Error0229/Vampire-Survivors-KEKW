@@ -75,7 +75,7 @@ void Xp::spawnXP(CPoint pos, int val) {
 	// Xp xp = Xp(pos, val);
 	Xp* xp = Xp::pool.get_obj_ptr(XP);
 	xp-> spawn(pos, val);
-	xp->_speed = 200;
+	xp->_speed = 400;
 	xp_all.emplace_back(xp);
 }
 void Xp::update_XP_pos(int player_magnet) {
