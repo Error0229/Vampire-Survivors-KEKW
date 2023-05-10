@@ -88,28 +88,46 @@ void Enemy::update_pos(CPoint pos, clock_t tick) {
 	else {
 		this->_speed = _mspeed;
 	}
-
-	if(_swarm_type == NOT_SWARM){
+	switch (_swarm_type) {
+	case NOT_SWARM:
 		//apporch player
 		VSObject::update_pos(pos);
-	}
-	else if(_swarm_type == SWARM){
+		break;
+
+	case SWARM:
 		//charge toward target
 		//check disappear
-		if(_skin.Top() < -200 || _skin.Top() > 800 || _skin.Left() < -200 || _skin.Left() > 1000){
+		if (_skin.Top() < -200 || _skin.Top() > 800 || _skin.Left() < -200 || _skin.Left() > 1000)
 			_is_enable = false;
-		}
-		else{
+		else 
 			update_pos_by_vec();
-		}
-	}
-	else if(_swarm_type == WALL){
+		break;
+
+	case WALL:
 		//apporch player
-		if(_swarm_duration > 0 && tick-_swarm_start_time > _swarm_duration){
+		if (_swarm_duration > 0 && tick - _swarm_start_time > _swarm_duration)
 			_is_enable = false;
-		}else{
+		else
 			VSObject::update_pos(pos);
+		break;
+
+	case SIN:
+		//charge toward target
+		//check disappear
+		if (_skin.Top() < -200 || _skin.Top() > 800 || _skin.Left() < -200 || _skin.Left() > 1000)
+			_is_enable = false;
+		else {
+			_target_vec.x = _origin_target.x;
+			_target_vec.y = _sin_scale * _origin_target.y / 4;
+			if (_sin_scale == 20 || _sin_scale == -20)
+				_sin_dir = !_sin_dir;
+			if (_sin_dir)
+				_sin_scale++;
+			else
+				_sin_scale--;
 		}
+		update_pos_by_vec();
+		break;
 	}
 }
 int Enemy::get_swarm_type() {
@@ -237,6 +255,33 @@ void Enemy::set_spawn_pos(int count, int amount)
 			break;
 
 		case SIN:
+			i = poll(random_pos_weights);
+			switch (MAP_ID) {
+			case 0:
+				if (i <= 21)
+					pos = CPoint(-440 + i * 40, -330);
+				else if (i <= 43)
+					pos = CPoint(440, -330 + (i - 21) * 30);
+				else if (i <= 65)
+					pos = CPoint(440 - (i - 43) * 40, 330);
+				else
+					pos = CPoint(-440, 330 - (i - 65) * 30);
+				break;
+			case 1:
+				i >>= 2;
+				if (i <= 11)
+					pos = CPoint(440, -200 + i * 30);
+				else
+					pos = CPoint(-440, 200 - (i - 11) * 30);
+				break;
+			}
+			_position += pos;
+			//_target_vec.x = -pos.x;
+			//_target_vec.y = -pos.y;
+			_origin_target.x = -pos.x;
+			_origin_target.y = -pos.y;
+			_sin_scale = 0;
+			_sin_dir = 1;
 			break;
 	}
 }

@@ -107,4 +107,7 @@ private:
 	clock_t _swarm_duration, _swarm_start_time;
 	VSObject _death_animation;
 	VSObject _hit_animation;
+	CPoint _origin_target;
+	int _sin_scale;
+	bool _sin_dir;
 };
