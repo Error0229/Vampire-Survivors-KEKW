@@ -278,7 +278,7 @@ Enemy Enemy::load_enemy(int id, char* name, int health, int power, int mspeed, d
 {
 	Enemy enemy;
 	char tmp[100];
-	for (int i = 0; i < 5; i++) {
+	for (int i = 0; i < 6; i++) {
 		memset(tmp, 0, sizeof(tmp));
 		sprintf(tmp, ".\\Resources\\enemy\\%s_i0%d.bmp", name, (i + 1));
 		struct stat buffer;

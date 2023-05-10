@@ -261,6 +261,9 @@
     <None Include="Source\Game\VSclass\stage1_wave_boss.csv" />
     <None Include="Source\Game\VSclass\stage1_wave_enemy.csv" />
     <None Include="Source\Game\VSclass\stage1_wave_swarm.csv" />
+    <None Include="Source\Game\VSclass\stage2_wave_boss.csv" />
+    <None Include="Source\Game\VSclass\stage2_wave_enemy.csv" />
+    <None Include="Source\Game\VSclass\stage2_wave_swarm.csv" />
     <None Include="Source\Game\VSclass\stage_event_1.csv" />
     <None Include="Source\Game\VSclass\stage_event_1.xlsx" />
     <None Include="Source\Game\VSclass\weapon_stats.csv" />
