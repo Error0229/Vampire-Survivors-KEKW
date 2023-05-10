@@ -61,3 +61,17 @@ private:
 	int _number_width; 
 	vector<VSObject> num_bmp;
 };
+class RuntimeText : public Ui{
+public:
+	void init();
+	static RuntimeText* RTD();
+	void add_text(string, CPoint, int size);
+	void show_text();
+	~RuntimeText();
+private:
+	map<char, int> letter_map;
+	static RuntimeText runtime_text_device;
+	RuntimeText();
+	ObjPool<Ui> letter_pool;
+	vector<Ui*> all_letter;
+};

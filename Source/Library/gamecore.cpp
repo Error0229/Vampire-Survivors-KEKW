@@ -57,8 +57,10 @@ namespace game_framework {
 	}
 
 	void CGame::OnDraw()
-	{
-		CDDraw::BltBackColor(DEFAULT_BG_COLOR);	// 將 Back Plain 塗黑
+	{ 
+		// CDDraw::BltBackColor(DEFAULT_BG_COLOR);	// 將 Back Plain 塗黑 
+		// cost almost 12ms average per cycle 
+		// this is useless, since we have background image
 		gameState->OnDraw();					// 顯示遊戲中的每個元素
 		if (!running) {
 			//
@@ -101,7 +103,7 @@ namespace game_framework {
 		//
 		// 以下是遊戲的主迴圈
 		//
-		CDDraw::BltBackColor(DEFAULT_BG_COLOR);	// 將 Back Plain 塗上預設的顏色
+		// CDDraw::BltBackColor(DEFAULT_BG_COLOR);	// 將 Back Plain 塗上預設的顏色
 		gameState->OnCycle();
 		CDDraw::BltBackToPrimary();				// 將 Back Plain 貼到螢幕
 		//

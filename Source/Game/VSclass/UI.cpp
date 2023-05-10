@@ -8,16 +8,19 @@
 
 Ui::Ui(CPoint base_pos)
 {
+	_type = UI;
 	_base_pos = base_pos;
 	activate_hover = false;
 }
 Ui::Ui(int, int)
 {
+	_type = UI;
 	_base_pos = CPoint(0, 0);
 	activate_hover = false;
 }
 Ui::Ui()
 {
+	_type = UI;
 	_base_pos = CPoint(0, 0);
 	activate_hover = false;
 }
@@ -216,4 +219,50 @@ void Damage::show_damage() {
 		return d->done();
 	});
 	all_dmg.erase(iter, all_dmg.end());
+}
+RuntimeText RuntimeText::runtime_text_device;
+RuntimeText::RuntimeText() : Ui() {
+}
+RuntimeText::~RuntimeText() = default;
+RuntimeText* RuntimeText::RTD() {
+	return &runtime_text_device;
+}
+void RuntimeText::init() {
+	vector<string> files;
+	string letters = "0123456789: LV";
+	string tmp;
+	int cnt = 0;
+	for (auto i : letters) {
+		tmp = "Resources/chars_bmp/" + to_string(static_cast<int>(i));
+		files.emplace_back(tmp + "_S.bmp");
+		files.emplace_back(tmp + "_M.bmp");
+		files.emplace_back(tmp + "_L.bmp");
+		letter_map[i] = cnt;
+		cnt += 3;
+	}
+	Ui letter;
+	letter.load_skin(files);
+	letter_pool.add_obj(letter, 20);
+}
+void RuntimeText::add_text(string text, CPoint pos, int size) {
+	Ui* ptr = letter_pool.get_obj_ptr(UI);
+	ptr->set_selector(size);
+	int w = ptr->get_width() * static_cast<int>(text.size());
+	int x = pos.x - w;
+	int y = pos.y;
+	for (auto chr : text) {
+		ptr->set_base_pos(x,y);
+		ptr->set_selector(letter_map[chr] + size);
+		all_letter.push_back(ptr);
+		x += ptr->get_width();
+		ptr = letter_pool.get_obj_ptr(UI);
+	}
+	letter_pool.free_obj_ptr(ptr);
+}
+void RuntimeText::show_text() {
+	for (auto ptr : all_letter) {
+		ptr->show();
+		letter_pool.free_obj_ptr(ptr);
+	}
+	all_letter.clear();
 }

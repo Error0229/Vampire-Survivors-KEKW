@@ -141,6 +141,7 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
+      <Profile>true</Profile>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -265,6 +266,7 @@
     <None Include="Source\Game\VSclass\weapon_stats.csv" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Game\VSclass\Obstacle.cpp" />
     <ClCompile Include="Source\Game\VSclass\EnemyFactory.cpp" />
     <ClCompile Include="Source\Game\VSclass\LightSource.cpp" />
     <ClCompile Include="Source\Game\VSclass\ObjPool.cpp" />
@@ -295,6 +297,7 @@
     <ClCompile Include="Source\Game\VSclass\VSObject.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Game\VSclass\Obstacle.h" />
     <ClInclude Include="Source\Game\VSclass\EnemyFactory.h" />
     <ClInclude Include="Source\Game\VSclass\LightSource.h" />
     <ClInclude Include="Source\Game\VSclass\ObjPool.h" />

@@ -9,7 +9,10 @@
 #include <sstream>
 using namespace game_framework;
 map<string, Player> Player::template_player;
-Player::Player() = default;
+Player::Player() {
+	_type = PLAYER;
+	obj_type = PLAYER;
+};
 Player::~Player() = default;
 Player::Player(string name) {
 	*this = template_player[name];
@@ -19,7 +22,7 @@ Player::Player(string name) {
 void Player::init_stats() {
 	static array<int, 16> power_up = {5, 1, 1, 1, 3, 5, 10, 15, 1, 5, 25, 10, 3, 10, 1, 10};
 	ifstream fin("save/save_data.csv");
-	static vector <int> data;
+	vector <int> data;
 	string line, token;
 	getline(fin, line); // header
 	getline(fin, line);
@@ -105,10 +108,6 @@ void Player::init_player() {
 void Player::update_pos(CPoint target) {
 	CPoint pos = _position;
 	VSObject::update_pos(target);
-	if (MAP_ID == 1) {
-		_position.y = (_position.y > 210) ? 210 : _position.y;
-		_position.y = (_position.y < -210) ? -210 : _position.y;
-	}
 	VSObject::player_dx -= _position.x - pos.x ;
 	VSObject::player_dy -= _position.y - pos.y ;
 }

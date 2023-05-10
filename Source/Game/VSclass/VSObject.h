@@ -20,9 +20,9 @@ public:
 	void set_scaler(double);
 	void enable_animation();
 	void disable_animation();
-	void set_pos(CPoint);
-	void set_pos(int, int);
-	void set_pos(double, double);
+	virtual void set_pos(CPoint);
+	virtual void set_pos(int, int);
+	virtual void set_pos(double, double);
 	void set_target_vec(CPoint);
 	void set_target_vec(int, int);
 	void set_pool_id(int);
@@ -43,15 +43,16 @@ public:
 	bool is_animation_done();
 	bool is_animation();
 	int get_direct();
-	int get_height();
-	int get_width();
+	virtual int get_height();
+	virtual int get_width();
 	int get_animation_frame();
 	void append_collide(VSObject&, double overlap_bound, double factor);
 	void update_collide();
 	void is_collide_with(VSObject* other);
 	static int player_dx;
 	static int player_dy; // every time player move should update these
-	friend bool is_overlapped(VSObject&, VSObject&, double overlap_bound=1);
+	friend bool is_overlapped(VSObject&, VSObject&, double overlap_bound = 1.0);
+	friend bool is_overlapped(VSObject*, VSObject*);
 	static int distance(VSObject&, VSObject&);
 	static int distance(CPoint&, CPoint&);
 	friend class QuadTree; 

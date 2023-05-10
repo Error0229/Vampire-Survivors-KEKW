@@ -80,7 +80,7 @@ void Enemy::show_skin(double factor)
 void Enemy::update_pos(CPoint pos, clock_t tick) {
 	if (_is_stun) {
 		this->_speed = (int)_stun_speed;
-		if (clock() - _last_time_got_hit > 240) { // set to 2x of wiki said (120ms) 
+		if (clock() - _last_time_got_hit > 120) { 
 			_is_stun = false;
 			_speed = _mspeed;
 		}
@@ -111,10 +111,9 @@ void Enemy::update_pos(CPoint pos, clock_t tick) {
 			VSObject::update_pos(pos);
 		}
 	}
-	if (MAP_ID == 1 && _swarm_type == NOT_SWARM) {
-		_position.y = (_position.y > 210) ? 210 : _position.y;
-		_position.y = (_position.y < -210) ? -210 : _position.y;
-	}
+}
+int Enemy::get_swarm_type() {
+	return _swarm_type;
 }
 
 bool Enemy::hurt(int damage) 
