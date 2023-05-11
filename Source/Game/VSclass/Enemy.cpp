@@ -227,19 +227,29 @@ void Enemy::set_spawn_pos(int count, int amount)
 				break;
 			case 1:
 				i >>= 2;
-				if (i <= 11)
-					_position += CPoint(440, -200 + i * 30);
-				else
-					_position += CPoint(-440, 200 - (i - 11) * 30);
+				if (i < 11) {
+					_position.x += -440;
+					_position.y = -165 + 30 * i;
+				}
+				else {
+					_position.x += 440; //(65, -209)(41, 210)
+					_position.y = 165 - (i - 11) * 30;
+				}
 				break;
 			case 2:
 				i >>= 2;
-				if (i <= 11)
-					_position += CPoint(-330 + i * 30, -330);
-				else
-					_position += CPoint(330 + (i - 11) * 30, 330);
+				//220 ~ -220
+				if (i < 11) {
+					_position.x = -220 + i * 40;
+					_position.y += -330;
+				}
+				else {
+					_position.x = 220 - (i - 11) * 40;
+					_position.y += 330;
+				}
 				break;
 			}
+			break;
 		case SWARM:
 			if (_swarm_pos_i <= 4)
 				pos = CPoint(-440 + 176 * _swarm_pos_i, -330);

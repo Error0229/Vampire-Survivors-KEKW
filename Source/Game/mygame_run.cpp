@@ -222,6 +222,9 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			a->set_spawn_pos();
 		}
 		break;
+	case('G'):
+		TRACE("player is at (%d, %d)\n", player.get_pos().x, player.get_pos().y);
+		break;
 	}
 }
 
