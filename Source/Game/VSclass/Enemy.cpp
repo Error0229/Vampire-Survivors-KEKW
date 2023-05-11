@@ -122,7 +122,7 @@ bool Enemy::hurt(int damage)
 	Damage::damage_device()->add_damage(damage, _position);
 	if (!is_dead()) {
 		_hp -= damage;
-		// game_framework::CAudio::Instance()->Play(2, false);
+		game_framework::CAudio::Instance()->Play(2, false);
 		if (is_dead()) {
 			unshow_skin();
 			Xp::spawnXP(this->_position, static_cast<int>(_xp_value));

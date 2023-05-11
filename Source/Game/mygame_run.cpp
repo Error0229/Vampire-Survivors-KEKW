@@ -45,7 +45,7 @@ void CGameStateRun::OnBeginState()
 	light_source_factory.reset();
 	timer.reset();
 	timer.start();
-	// CAudio::Instance()->Play(0, true); // 🉑
+	CAudio::Instance()->Play(0, true); // 🉑
 	player = Player(game->Get🚹());
 	player.set_default_direct(RIGHT);
 	player.set_animation(150, false);
@@ -102,12 +102,12 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	chest_animation.set_animation(30, true);
 	// chest_animation.set_base_pos(5, 75);
 	chest_animation.set_base_pos(0, -33);
-	/*CAudio::Instance()->Load(0, "Resources/AudioClip/bgm_elrond_bone.wav");
+	CAudio::Instance()->Load(0, "Resources/AudioClip/bgm_elrond_bone.wav");
 	CAudio::Instance()->Load(1, "Resources/AudioClip/sfx_gem.wav");
 	CAudio::Instance()->Load(2, "Resources/AudioClip/sfx_enemyHit.wav");
-	CAudio::Instance()->SetVolume(0, 10);
-	CAudio::Instance()->SetVolume(1, 10);
-	CAudio::Instance()->SetVolume(2, 10);*/
+	//CAudio::Instance()->SetVolume(0, 10);
+	//CAudio::Instance()->SetVolume(1, 10);
+	//CAudio::Instance()->SetVolume(2, 10);
 	CPoint chest_item_pos[] = { CPoint(0,-50), CPoint(-80,-110), CPoint(80,-110), CPoint(-100,-10), CPoint(100,-10) };
 	for (int i = 0; i < 5; i++) {
 		chest_item_icon[i].load_icon();
@@ -456,7 +456,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		Xp::update_XP_pos(player.get_pickup_range());
 		for (auto i : Xp::xp_all) {
 			if (is_overlapped(player, *i)) {
-				// CAudio::Instance()->Play(1, false);
+				CAudio::Instance()->Play(1, false);
 				i->despawn();
 				player.pick_up_xp(i->get_xp_value());
 			}
