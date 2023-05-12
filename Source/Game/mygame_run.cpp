@@ -253,6 +253,10 @@ void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的
 		for (int i = 0; i < 4; i++) {
 			if (level_up_button[i].is_hover(mouse_pos)) {
 				player.obtain_item(level_up_choice[i]);
+				if (level_up_choice[i] == FILLER_MONEY)
+					GOLD_NUM += 50;
+				else if (level_up_choice[i] == FILLER_CHICKEN)
+					player.regen(30);
 				//reset all choice/button
 				for (int j = 0; j < 4; j++) {
 					level_up_choice[j] = -1;
@@ -321,7 +325,7 @@ int CGameStateRun::draw_level_up(bool pull_from_inv)
 		}
 		if (player.all_max()) {
 			if (player.full_inv()) {
-				TRACE("level up: inv full and all max.\n");
+				//TRACE("level up: inv full and all max.\n");
 				return -1;
 			}
 			else {
@@ -396,8 +400,8 @@ int CGameStateRun::draw_open_chest(bool pull_evo)
 			all_max = false;
 	}
 	if (all_max && (!can_evo || !pull_evo)) {
-		TRACE("open chest: all max and cant evo.\n");
-		return -2;
+		//TRACE("open chest: all max and cant evo.\n");
+		return FILLER_MONEY;
 	}
 	for (auto& i : Passive::all_passive) {
 		if (!i.is_max_level()) {
@@ -460,6 +464,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 	vector <VSObject*> result;
 	//polling
 	vector<double> weights(2, 0);
+	bool all_empty;
 
 	//open chest
 	int chest_item_count;
@@ -668,13 +673,24 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		level_up_choice[3] = (poll(weights, true)) ? draw_level_up(false) : -1;
 
 		// set which choice can be click
+		all_empty = true;
 		for (int i = 0; i < 4; i++) {
-			if (level_up_choice[i] != -1)
+			if (level_up_choice[i] != -1) {
 				level_up_button[i].activate_hover = true;
-			else
+				all_empty = false;
+			}
+			else {
 				level_up_button[i].activate_hover = false;
+			}
 		}
 
+		// if all empty, add money_beg and chicken
+		if (all_empty) {
+			level_up_choice[0] = FILLER_MONEY;
+			level_up_choice[1] = FILLER_CHICKEN;
+			level_up_button[0].activate_hover = true;
+			level_up_button[1].activate_hover = true;
+		}
 		break;
 	case(OPEN_CHEST):
 		//--------------------------------------------------------
@@ -704,9 +720,11 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		// poll chest item
 		for (int i = 0; i < chest_item_count; i++) {
 			chest_item[i] = draw_open_chest(can_evo);
-			if (chest_item[i] > -1) {
-				// -2 means pull empty
-				player.obtain_item(chest_item[i]);
+			if (chest_item[i] != -1) {
+				if (chest_item[i] != FILLER_MONEY)
+					player.obtain_item(chest_item[i]);
+				else
+					GOLD_NUM += 50;
 			}
 		}
 		current_chest_itemcount = chest_item_count;
@@ -797,7 +815,7 @@ void CGameStateRun::OnShow()
 						level_up_desc = Weapon::_base_weapon[level_up_choice[i]].get_level_up_msg(true);
 					}
 				}
-				else {
+				else if (level_up_choice[i] < 84){
 					for (auto& p : Passive::all_passive) {
 						if (p.get_type() == level_up_choice[i]) {
 							type_text = p.get_name();
@@ -813,6 +831,17 @@ void CGameStateRun::OnShow()
 						level_up_desc = Passive::base_passive.at(level_up_choice[i] - POWER).get_level_up_msg(true); // so bad
 					}
 				}
+				else if (level_up_choice[i] == FILLER_MONEY) {
+					type_text = "Money Bag.";
+					level_text = "";
+					level_up_desc = "Gain 50 gold.";
+				}
+				else if (level_up_choice[i] == FILLER_CHICKEN) {
+					type_text = "Chicken.";
+					level_text = "";
+					level_up_desc = "Heal for 30 hp.";
+				}
+					
 				text_device.add_text(type_text, CPoint(-85, -95 + 75 * i) + player_pos, 1, FONT_12x08, ALIGN_LEFT);
 				text_device.add_text(level_text, CPoint(70, -95 + 75 * i) + player_pos, 1, FONT_12x08, ALIGN_LEFT);
 				text_device.add_text(level_up_desc, CPoint(-130, -70 + 75 * i) + player_pos, 1, FONT_12x08, MULTILINE_LEFT);

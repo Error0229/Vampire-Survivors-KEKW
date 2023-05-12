@@ -89,6 +89,10 @@ enum Swarm_type {
 	SWARM,
 	WALL
 };
+enum filler_type {
+	FILLER_MONEY = 84,
+	FILLER_CHICKEN
+};
 #define BLACK (RGB(0,0,0))
 #define WHITE (RGB(255,255,255))
 const double MATH_PI = 3.1415926;
