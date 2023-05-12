@@ -117,16 +117,19 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 		level_up_choice[i] = -1;
 	}
 	// chest_animation.load_skin({ "resources/ui/TreasureIdle_01_big.bmp", "resources/ui/TreasureIdle_02_big.bmp" , "resources/ui/TreasureIdle_03_big.bmp" , "resources/ui/TreasureIdle_04_big.bmp" , "resources/ui/TreasureIdle_05_big.bmp" , "resources/ui/TreasureIdle_06_big.bmp" ,"resources/ui/TreasureIdle_07_big.bmp" ,"resources/ui/TreasureIdle_08_big.bmp", "resources/ui/TreasureOpen_01_big.bmp", "resources/ui/TreasureOpen_02_big.bmp" , "resources/ui/TreasureOpen_03_big.bmp" , "resources/ui/TreasureOpen_04_big.bmp" , "resources/ui/TreasureOpen_05_big.bmp" , "resources/ui/TreasureOpen_06_big.bmp" , "resources/ui/TreasureOpen_07_big.bmp" , "resources/ui/TreasureOpen_08_big.bmp" });
-	string base = "Resources/chest_animation/Chest1/chest1_";
+	string base = "Resources/chest_animation/newChest5/";
 	vector<string> chest_animation_filename;
-	for (int i = 1; i <= 330; i++) {
+	//for (int i = 1; i <= 330; i++) {
+	//	chest_animation_filename.emplace_back(base + to_string(i) + ".bmp");
+	//}
+	for (int i = 1; i <= 8; i++) {
 		chest_animation_filename.emplace_back(base + to_string(i) + ".bmp");
 	}
 	chest_animation.load_skin(chest_animation_filename);
 	//chest_animation.set_animation(100, true);
-	chest_animation.set_animation(30, true);
+	chest_animation.set_animation(100, true);
 	// chest_animation.set_base_pos(5, 75);
-	chest_animation.set_base_pos(0, -33);
+	chest_animation.set_base_pos(0, 0);
 	/*CAudio::Instance()->Load(0, "Resources/AudioClip/bgm_elrond_bone.wav");
 	CAudio::Instance()->Load(1, "Resources/AudioClip/sfx_gem.wav");
 	CAudio::Instance()->Load(2, "Resources/AudioClip/sfx_enemyHit.wav");

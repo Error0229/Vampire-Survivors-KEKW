@@ -8,7 +8,7 @@ for directory in directorys:
         if filename.endswith(".bmp"):
             img = cv2.imread(os.path.join(directory, filename))
             height, width = img.shape[:2]
-            res = cv2.resize(img, (round(width*1.25), round(height*1.25)), interpolation=cv2.INTER_NEAREST)
+            res = cv2.resize(img, (round(width*3), round(height*3)), interpolation=cv2.INTER_NEAREST)
             cv2.imwrite(os.path.join(directory, filename), res)
             print('Scaled up ' + filename)
             continue

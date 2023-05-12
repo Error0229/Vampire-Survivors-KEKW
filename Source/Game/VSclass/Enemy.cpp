@@ -191,7 +191,6 @@ void Enemy::set_scale(int player_lvl, int curse)
 	//hp scale
 	if(_hp_scale)
 		_hp *= player_lvl;
-	_hp = player_lvl * _hp;
 	_hp_max = _hp;
 
 	//speed scale
