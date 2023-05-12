@@ -60,6 +60,7 @@ void CGameStateRun::OnBeginState()
 	enemy_factory.init();
 	GOLD_NUM = 0;
 	KILL_NUM = 0;
+	current_chest_itemcount = -1;
 	switch (MAP_ID) {
 	case 0:
 		map.load_map({ "resources/map/dummy1.bmp" });
@@ -116,20 +117,17 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 		level_up_icon[i].load_icon();
 		level_up_choice[i] = -1;
 	}
-	// chest_animation.load_skin({ "resources/ui/TreasureIdle_01_big.bmp", "resources/ui/TreasureIdle_02_big.bmp" , "resources/ui/TreasureIdle_03_big.bmp" , "resources/ui/TreasureIdle_04_big.bmp" , "resources/ui/TreasureIdle_05_big.bmp" , "resources/ui/TreasureIdle_06_big.bmp" ,"resources/ui/TreasureIdle_07_big.bmp" ,"resources/ui/TreasureIdle_08_big.bmp", "resources/ui/TreasureOpen_01_big.bmp", "resources/ui/TreasureOpen_02_big.bmp" , "resources/ui/TreasureOpen_03_big.bmp" , "resources/ui/TreasureOpen_04_big.bmp" , "resources/ui/TreasureOpen_05_big.bmp" , "resources/ui/TreasureOpen_06_big.bmp" , "resources/ui/TreasureOpen_07_big.bmp" , "resources/ui/TreasureOpen_08_big.bmp" });
-	string base = "Resources/chest_animation/newChest5/";
-	vector<string> chest_animation_filename;
-	//for (int i = 1; i <= 330; i++) {
-	//	chest_animation_filename.emplace_back(base + to_string(i) + ".bmp");
-	//}
+	vector<string> chest_animation_filename[3];
 	for (int i = 1; i <= 8; i++) {
-		chest_animation_filename.emplace_back(base + to_string(i) + ".bmp");
+		chest_animation_filename[0].emplace_back("Resources/chest_animation/newChest1/" + to_string(i) + ".bmp");
+		chest_animation_filename[1].emplace_back("Resources/chest_animation/newChest3/" + to_string(i) + ".bmp");
+		chest_animation_filename[2].emplace_back("Resources/chest_animation/newChest5/" + to_string(i) + ".bmp");
 	}
-	chest_animation.load_skin(chest_animation_filename);
-	//chest_animation.set_animation(100, true);
-	chest_animation.set_animation(100, true);
-	// chest_animation.set_base_pos(5, 75);
-	chest_animation.set_base_pos(0, 0);
+	for (int i = 0; i < 3; i++) {
+		chest_animation[i].load_skin(chest_animation_filename[i]);
+		chest_animation[i].set_animation(30, true);
+		chest_animation[i].set_base_pos(0, 0);
+	}
 	/*CAudio::Instance()->Load(0, "Resources/AudioClip/bgm_elrond_bone.wav");
 	CAudio::Instance()->Load(1, "Resources/AudioClip/sfx_gem.wav");
 	CAudio::Instance()->Load(2, "Resources/AudioClip/sfx_enemyHit.wav");
@@ -202,7 +200,8 @@ void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	switch (nChar) {
 	case('A'):
 		for (auto 😈 : enemy_factory.live_enemy) {
-			😈->hurt(1000);
+			if(!😈->is_dead())
+				😈->hurt(10000000);
 		}
 		break;
 	case('B'):
@@ -266,16 +265,18 @@ void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的
 					_next_status = PLAYING;
 				break;
 			}
-
 		}
 		break;
 	case(OPEN_CHEST):
-		if (!chest_animation.done())
+		//if (!chest_animation[0].done() || !chest_animation[1].done() || !chest_animation[2].done())
+		// 	break;
+		if (current_chest_itemcount != -1 && !chest_animation[current_chest_itemcount >> 1].done())
 			break;
 		for (int i = 0; i < 5; i++)
 			chest_item[i] = -1;
-		chest_animation.reset();
-		chest_animation.set_animation(30, true);
+		chest_animation[current_chest_itemcount >> 1].reset();
+		chest_animation[current_chest_itemcount >> 1].set_animation(30, true);
+		current_chest_itemcount = -1;
 		_next_status = PLAYING;
 		break;
 	case (REVIVE): {
@@ -679,23 +680,24 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		//--------------------------------------------------------
 		// chest status
 		//--------------------------------------------------------
-		if (chest_item[0] != -1)
+		if (current_chest_itemcount != -1)
 			break;
+		
+		//if (chest_item[0] != -1)
+		//	break;
 
 		timer.pause();
 
-		chest_animation.enable_animation();
 		// poll chest item count
 		weights[1] = (double)chest_upgrade_chance_0 / 100 * (double)player.get_luck() / 100;
 		weights[0] = 1 - weights[1];
 		chest_item_count = 1;
-		TRACE("1:%lf\n", weights[1]);
+		// TRACE("1:%lf\n", weights[1]);
 		if (poll(weights, true))
 			chest_item_count = 5;
 		else {
 			weights[1] = (double)chest_upgrade_chance_1 / 100 * (double)player.get_luck() / 100;
 			weights[0] = 1 - weights[1];
-			TRACE("2:%lf\n", weights[1]);
 			if (poll(weights, true))
 				chest_item_count = 3;
 		}
@@ -707,6 +709,8 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 				player.obtain_item(chest_item[i]);
 			}
 		}
+		current_chest_itemcount = chest_item_count;
+		chest_animation[current_chest_itemcount >> 1].enable_animation();
 		break;
 	case (GAME_OVER): case (REVIVE):
 		break;
@@ -826,10 +830,12 @@ void CGameStateRun::OnShow()
 		show_stat(player_stats, player_pos);
 		break;
 	case(OPEN_CHEST):
-		event_background.show();
-		chest_animation.start();
-		chest_animation.show();
-		if (chest_animation.done()) {
+		if (current_chest_itemcount == -1)
+			break;
+
+		chest_animation[current_chest_itemcount >> 1].start();
+		chest_animation[current_chest_itemcount >> 1].show();
+		if (chest_animation[current_chest_itemcount >> 1].done()) {
 			for (int i = 0; i < 5; i++) {
 				if (chest_item[i] > -1) {
 					chest_item_frame[i].show();
