@@ -172,6 +172,7 @@ namespace game_framework {
 		Ui button_pause;
 		Ui button_resume;
 		Ui evolution_chart;
+		Ui revive_animation;
 	};
 
 	/////////////////////////////////////////////////////////////////////////////

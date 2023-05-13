@@ -357,7 +357,7 @@ bool Text::is_remain()
 
 TextDevice::TextDevice()
 {
-	set_font(fonts[FONT_24x18_B], 24, 18, FW_BOLD, false, false);
+	set_font(fonts[FONT_24x18_B], 24, 16, FW_BOLD, false, false);
 	set_font(fonts[FONT_12x08], 12, 8, FW_BOLD, false, false);
 	set_font(fonts[FONT_NORM], 12, 7, FW_BOLD, false, false);
 	set_font(fonts[FONT_L], 14, 8, FW_BOLD, false, false);

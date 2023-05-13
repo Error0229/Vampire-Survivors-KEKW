@@ -58,10 +58,25 @@ void LightSource::set_spawn(CPoint player_pos)
         break;
     case 1:
         i >>= 2;
-        if (i <= 11)
-            _position += CPoint(440, -330 + i * 30);
-        else
-            _position += CPoint(-440, 330 - (i - 11) * 30);
+        if (i < 11) {
+            _position.x += -440;
+            _position.y = -165 + 30 * i;
+        }
+        else {
+            _position.x += 440;
+            _position.y = 165 - (i - 11) * 30;
+        }
+        break;
+    case 2:
+        i >>= 2;
+        if (i < 11) {
+            _position.x = -220 + i * 40;
+            _position.y += -330;
+        }
+        else {
+            _position.x = 220 - (i - 11) * 40;
+            _position.y += 330;
+        }
         break;
     }
 }

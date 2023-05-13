@@ -143,7 +143,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 		chest_item[i] = -1;
 	}
 	game_over_frame.load_skin("Resources/ui/gameOver.bmp");
-	game_over_frame.set_base_pos(0, 0);
+	game_over_frame.set_base_pos(0, -100);
 	game_over_button.load_skin("Resources/ui/button_play_again.bmp");
 	game_over_button.set_base_pos(0, 80);
 	game_over_button.activate_hover = true;
@@ -187,6 +187,10 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	button_revive.load_skin("resources/ui/button_revive.bmp");
 	button_revive.set_base_pos(0, 80);
 	button_revive.activate_hover = true;
+
+	revive_animation.load_skin({ "resources/character/angel_1.bmp", "resources/character/angel_2.bmp", "resources/character/angel_3.bmp", "resources/character/angel_4.bmp", "resources/character/angel_5.bmp", "resources/character/angel_6.bmp", "resources/character/angel_7.bmp", "resources/character/angel_8.bmp" });
+	revive_animation.set_animation(80, true);
+	revive_animation.set_base_pos(0, 0);
 }
 
 void CGameStateRun::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
@@ -288,6 +292,9 @@ void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的
 			_next_status = PLAYING;
 			player.revive();
 		}
+		revive_animation.reset();
+		revive_animation.set_animation(80, true);
+		revive_animation.start();
 		break;
 	}
 	case(GAME_OVER):
@@ -738,7 +745,6 @@ void CGameStateRun::OnShow()
 {
 	CPoint player_pos = player.get_pos();
 	
-	
 	map.show_map();
 	Weapon::show();
 	Xp::show();
@@ -765,7 +771,7 @@ void CGameStateRun::OnShow()
 	string level_up_desc, level_text, type_text;
 
 	vector<stat_struct> player_stats;
-	string 🍆;
+	char money_text[100] = { 0 };
 	switch (_gamerun_status) {
 	case(PLAYING):
 		inv_slot.show();
@@ -778,6 +784,10 @@ void CGameStateRun::OnShow()
 			inv_icon[i + 6].show(Passive::all_passive[i].get_type());
 		hp_bar.set_selector((player.get_hp_percent() - 1) / 5);
 		hp_bar.show();
+
+		if (!revive_animation.done())
+			revive_animation.show();
+
 		break;
 	case(PAUSE):
 		button_resume.show();
@@ -874,8 +884,14 @@ void CGameStateRun::OnShow()
 		}
 		break;
 	case (GAME_OVER):
+		timer.pause();
 		game_over_frame.show();
 		game_over_button.show();
+		if (money_text[0] == 0) {
+			snprintf(money_text, sizeof(money_text), "Gold: %4dx%4d%%=%4d", GOLD_NUM, player.get_greed(), GOLD_NUM * player.get_greed() / 100);
+			GOLD_NUM = GOLD_NUM * player.get_greed() / 100;
+		}
+		text_device.add_text(money_text, CPoint(0, -20) + player_pos, 1, FONT_24x18_B, ALIGN_CENTER);
 		break;
 	case (REVIVE):
 		timer.pause();
