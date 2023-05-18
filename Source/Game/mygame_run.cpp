@@ -738,6 +738,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		chest_animation[current_chest_itemcount >> 1].enable_animation();
 		break;
 	case (GAME_OVER): case (REVIVE):
+		//TRACE(_T("%d\n"), player.get_revival());
 		break;
 	}
 }

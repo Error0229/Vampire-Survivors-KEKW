@@ -184,6 +184,7 @@ void Enemy::set_spawn(CPoint pos, int move_animation_delay, int death_animation_
 	_swarm_type = NOT_SWARM;
 	_swarm_duration = -1;
 	_swarm_start_time = -1;
+	_last_time_got_hit = -10000;
 }
 
 void Enemy::set_scale(int player_lvl, int curse)
