@@ -173,6 +173,10 @@ namespace game_framework {
 		Ui button_resume;
 		Ui evolution_chart;
 		Ui revive_animation;
+
+		Ui gameover_bg;
+		Ui gameover_animation;
+		char money_text[100];
 	};
 
 	/////////////////////////////////////////////////////////////////////////////

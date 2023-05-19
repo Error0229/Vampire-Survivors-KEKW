@@ -77,6 +77,9 @@ void CGameStateRun::OnBeginState()
 	map.set_pos(0, 0);
 	map.set_obstacle(MAP_ID);
 	event_background.set_base_pos(0, 0);
+	memset(money_text, 0, sizeof(money_text));
+	gameover_animation.reset();
+	gameover_animation.set_animation(60, true);
 	_gamerun_status = PLAYING;
 	_next_status = PLAYING;
 }
@@ -143,10 +146,17 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 		chest_item[i] = -1;
 	}
 	game_over_frame.load_skin("Resources/ui/gameOver.bmp");
-	game_over_frame.set_base_pos(0, -100);
+	game_over_frame.set_base_pos(0, -150);
 	game_over_button.load_skin("Resources/ui/button_play_again.bmp");
-	game_over_button.set_base_pos(0, 80);
+	game_over_button.set_base_pos(0, 150);
 	game_over_button.activate_hover = true;
+	gameover_bg.load_skin("Resources/ui/gameover_bg.bmp");
+	vector<string> gameover_animation_text;
+	for (int i = 1; i <= 7; i++)
+		gameover_animation_text.push_back("Resources/ui/gameover_animation_" + to_string(i) + ".bmp");
+	gameover_animation.load_skin(gameover_animation_text);
+	gameover_animation.set_animation(60, true);
+	memset(money_text, 0, sizeof(money_text));
 
 	xp_bar_frame.load_skin("resources/ui/xp_bar_frame.bmp");
 	xp_bar_frame.set_base_pos(-8, -300 + (xp_bar_frame.get_height() >> 1));
@@ -753,8 +763,13 @@ void CGameStateRun::OnShow()
 	LightSourcePickup::show();
 	coin.show();
 	skull.show();
-	RuntimeText::RTD()->add_text(to_string(GOLD_NUM), CPoint(368, -260), 1);
-	RuntimeText::RTD()->add_text(to_string(KILL_NUM), CPoint(368, -240), 1);
+	if (_gamerun_status != GAME_OVER) {
+		RuntimeText::RTD()->add_text(to_string(GOLD_NUM), CPoint(368, -260), 1);
+		RuntimeText::RTD()->add_text(to_string(KILL_NUM), CPoint(368, -240), 1);
+		RuntimeText::RTD()->add_text(timer.get_minute_string() + ":" + timer.get_second_string(), CPoint(59, -265), 2);
+		RuntimeText::RTD()->add_text("LV " + to_string(player.get_level()), CPoint(380, -290), 1);
+		RuntimeText::RTD()->show_text();
+	}
 	player.show_skin();
 	for(auto 😈: enemy_factory.live_enemy)
 		😈->show_skin();
@@ -772,7 +787,7 @@ void CGameStateRun::OnShow()
 	string level_up_desc, level_text, type_text;
 
 	vector<stat_struct> player_stats;
-	char money_text[100] = { 0 };
+	
 	switch (_gamerun_status) {
 	case(PLAYING):
 		inv_slot.show();
@@ -886,13 +901,26 @@ void CGameStateRun::OnShow()
 		break;
 	case (GAME_OVER):
 		timer.pause();
+		gameover_animation.enable_animation();
+		gameover_animation.start();
+		gameover_animation.show();
+		gameover_bg.show();
 		game_over_frame.show();
 		game_over_button.show();
 		if (money_text[0] == 0) {
-			snprintf(money_text, sizeof(money_text), "Gold: %4dx%4d%%=%4d", GOLD_NUM, player.get_greed(), GOLD_NUM * player.get_greed() / 100);
 			GOLD_NUM = GOLD_NUM * player.get_greed() / 100;
+			snprintf(money_text, sizeof(money_text), "%4d(x%3d%%)", GOLD_NUM, player.get_greed());
 		}
-		text_device.add_text(money_text, CPoint(0, -20) + player_pos, 1, FONT_24x18_B, ALIGN_CENTER);
+		text_device.add_text("Survived:", CPoint(-200, -60) + player_pos, 1, FONT_24x18_B, ALIGN_LEFT);
+		text_device.add_text("Gold earned:", CPoint(-200, -20) + player_pos, 1, FONT_24x18_B, ALIGN_LEFT);
+		text_device.add_text("Level reached:", CPoint(-200, 20) + player_pos, 1, FONT_24x18_B, ALIGN_LEFT);
+		text_device.add_text("Enemies defeated:", CPoint(-200, 60) + player_pos, 1, FONT_24x18_B, ALIGN_LEFT);
+
+		text_device.add_text(timer.get_minute_string() + ":" + timer.get_second_string(), CPoint(200, -60) + player_pos, 1, FONT_24x18_B, ALIGN_RIGHT);
+		text_device.add_text(money_text, CPoint(200, -20) + player_pos, 1, FONT_24x18_B, ALIGN_RIGHT);
+		text_device.add_text(to_string(player.get_level()), CPoint(200, 20) + player_pos, 1, FONT_24x18_B, ALIGN_RIGHT);
+		text_device.add_text(to_string(KILL_NUM), CPoint(200, 60) + player_pos, 1, FONT_24x18_B, ALIGN_RIGHT);
+
 		break;
 	case (REVIVE):
 		timer.pause();
@@ -900,8 +928,6 @@ void CGameStateRun::OnShow()
 		button_revive.show();
 		break;
 	}
-	RuntimeText::RTD()->add_text(timer.get_minute_string() + ":" + timer.get_second_string(), CPoint(59, -265), 2);
-	RuntimeText::RTD()->add_text("LV " + to_string(player.get_level()), CPoint(380, -290), 1);
-	RuntimeText::RTD()->show_text();
+	
 	text_device.print_all();
 }
