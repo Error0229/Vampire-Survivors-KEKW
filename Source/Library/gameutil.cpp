@@ -75,6 +75,8 @@ namespace game_framework {
 		location.right = nx + bitmapSize.bmWidth;
 		location.bottom = ny + bitmapSize.bmHeight;
 		_bitmap_size.push_back({ bitmapSize.bmWidth ,bitmapSize.bmHeight });
+		max_height = max(max_height, bitmapSize.bmHeight);
+		max_width = max(max_width, bitmapSize.bmWidth);
 		SurfaceID.push_back(CDDraw::RegisterBitmap(filename, color));
 		isBitmapLoaded = true;
 
@@ -258,7 +260,7 @@ namespace game_framework {
 	int CMovingBitmap::Width()
 	{
 		GAME_ASSERT(isBitmapLoaded, "A bitmap must be loaded before Width() is called !!!");
-		return static_cast<int>(_bitmap_size[ selector ].cx * (1.0 + scaler));
+		return static_cast<int>(_bitmap_size[selector].cx * (1.0 + scaler));
 	}
 
 	int CMovingBitmap::Height()
@@ -266,7 +268,14 @@ namespace game_framework {
 		GAME_ASSERT(isBitmapLoaded, "A bitmap must be loaded before Height() is called !!!");
 		return static_cast<int>(_bitmap_size[selector].cy * (1.0 + scaler));
 	}
-
+	int CMovingBitmap::MaxHeight()
+	{
+		return static_cast<int>(max_height * (1.0 + scaler));
+	}
+	int CMovingBitmap::MaxWidth()
+	{
+		return static_cast<int>(max_width * (1.0 + scaler));
+	}
 	int CMovingBitmap::Left()
 	{
 		GAME_ASSERT(isBitmapLoaded, "A bitmap must be loaded before Left() is called !!!");

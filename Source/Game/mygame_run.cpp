@@ -484,25 +484,30 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		for (auto& obs : Map::obs_all) {
 			QuadTree::VSPlain.insert((VSObject*)(&obs));
 		}
-		player.update_pos(mouse_pos);
-		tmp_pos = player.get_pos();
+		tmp_pos = player.update_pos(mouse_pos, false);
+		player.set_pos(origin_pos.x + tmp_pos.x, origin_pos.y);
+		plain_result.clear();
 		QuadTree::VSPlain.query_by_type(plain_result, (VSObject*)(&player), OBSTACLE);
 		if (plain_result.size() > 0) {
-			player.set_pos(tmp_pos.x, origin_pos.y);
-			if(check_overlapped((VSObject*)(&player))){
-				player.set_pos(origin_pos.x, tmp_pos.y);
-				VSObject::player_dx = predx;
-				if (check_overlapped((VSObject*)(&player))) {
-					player.set_pos(origin_pos);
-					VSObject::player_dy = predy;
-				}
-			}
-			else {
-				VSObject::player_dy = predy;
-			}
+			player.set_pos(origin_pos.x, origin_pos.y);
+		}
+		else {
+			VSObject::player_dx -= tmp_pos.x;
 		}
 		plain_result.clear();
+		player.set_pos(player.get_pos().x, origin_pos.y + tmp_pos.y);
+		QuadTree::VSPlain.query_by_type(plain_result, (VSObject*)(&player), OBSTACLE);
+		if (plain_result.size() > 0) {
+			player.set_pos(player.get_pos().x, origin_pos.y);
+		}
+		else {
+			VSObject::player_dy -= tmp_pos.y;
+		}
 
+		TRACE(_T("tmp_x: %d, tmp_y: %d\n"), tmp_pos.x, tmp_pos.y);
+
+		TRACE(_T("dx: %d, dy: %d\n"), player.get_pos().x - origin_pos.x, player.get_pos().y - origin_pos.y);
+		plain_result.clear();
 		QuadTree::VSPlain.set_range(get_player_pos().x -1000, get_player_pos().y - 1000, w_size_x + 2000, w_size_y + 2000);
 		for (auto i_enemy : enemy_factory.live_enemy) {
 			if (!i_enemy->is_dead()) {

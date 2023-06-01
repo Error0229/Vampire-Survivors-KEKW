@@ -10,7 +10,7 @@ public:
 	Player();
 	Player(string);
 	~Player();
-	void update_pos(CPoint) override;
+	CPoint update_pos(CPoint, bool ensure);
 	void show_skin(double factor = 1.0);
 	static void init_player();
 	void init_stats();

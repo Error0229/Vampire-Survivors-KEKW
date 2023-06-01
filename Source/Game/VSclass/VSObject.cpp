@@ -239,10 +239,14 @@ bool is_overlapped(VSObject* obj1, VSObject* obj2)
 }
 int VSObject::get_height()
 {
+	if (obj_type == ENEMY || obj_type == PLAYER)
+		return static_cast<int>(static_cast<double>(this->_skin.MaxHeight()) * _scaler);
 	return static_cast<int>(static_cast<double>(this->_skin.Height()) * _scaler);
 }
 int VSObject::get_width()
 {
+	if (obj_type == ENEMY || obj_type == PLAYER)
+		return static_cast<int>(static_cast<double>(this->_skin.MaxWidth()) * _scaler);
 	return static_cast<int>(static_cast<double>(this->_skin.Width()) * _scaler);
 }
 bool VSObject::is_animation() {

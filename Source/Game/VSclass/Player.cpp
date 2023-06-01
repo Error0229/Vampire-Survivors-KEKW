@@ -105,11 +105,14 @@ void Player::init_player() {
 		template_player[p._name] = p;
 	}
 }
-void Player::update_pos(CPoint target) {
+CPoint Player::update_pos(CPoint target, bool ensure) {
 	CPoint pos = _position;
 	VSObject::update_pos(target);
-	VSObject::player_dx -= _position.x - pos.x ;
-	VSObject::player_dy -= _position.y - pos.y ;
+	if (ensure) {
+		VSObject::player_dx -= _position.x - pos.x ;
+		VSObject::player_dy -= _position.y - pos.y ;
+	}
+	return _position - pos;
 }
 void Player::load_bleed() {
 	_bleed_animation.load_skin({ "resources/character/Blood1.bmp", "resources/character/Blood2.bmp", "resources/character/Blood3.bmp" });
