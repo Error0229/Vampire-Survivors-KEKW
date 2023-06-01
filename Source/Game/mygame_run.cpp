@@ -504,9 +504,6 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 			VSObject::player_dy -= tmp_pos.y;
 		}
 
-		TRACE(_T("tmp_x: %d, tmp_y: %d\n"), tmp_pos.x, tmp_pos.y);
-
-		TRACE(_T("dx: %d, dy: %d\n"), player.get_pos().x - origin_pos.x, player.get_pos().y - origin_pos.y);
 		plain_result.clear();
 		QuadTree::VSPlain.set_range(get_player_pos().x -1000, get_player_pos().y - 1000, w_size_x + 2000, w_size_y + 2000);
 		for (auto i_enemy : enemy_factory.live_enemy) {
