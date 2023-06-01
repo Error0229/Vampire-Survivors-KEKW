@@ -116,6 +116,8 @@ namespace game_framework {
 		void  SyncMirror(const CMovingBitmap & other);
 		int   Top();						// 取得圖形的左上角的 y 座標
 		int   Width();						// 取得圖形的寬度
+		int MaxWidth();
+		int MaxHeight();
 		bool  IsAnimationDone();
 		int   GetMovingBitmapFrame();
 		bool  IsAnimation();
@@ -131,6 +133,8 @@ namespace game_framework {
 		bool once = false;
 		bool isPause = false;
 		double scaler = 0.0;
+		int max_width = 0;
+		int max_height= 0;
 		vector<unsigned> SurfaceID;
 		bool     isBitmapLoaded = false;	// whether a bitmap has been loaded
 		CRect    location;			// location of the bitmap
