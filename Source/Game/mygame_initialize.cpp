@@ -332,7 +332,7 @@ void CGameStateInit::OnShow()
 		break;
 	}
 	case menu_state::select_character: {
-		text_device.add_text("Character selection", CPoint(0, -180), 1, FONT_24x18_B, ALIGN_CENTER);
+		text_device.add_text("Character selection", CPoint(0, -165), 1, FONT_24x18_B, ALIGN_CENTER);
 		select_bg.show_skin();
 		🆗.show_skin();
 		🆖.show_skin();
@@ -347,7 +347,7 @@ void CGameStateInit::OnShow()
 		break;
 	}
 	case menu_state::select_map: {
-		text_device.add_text("Map selection", CPoint(0, -180), 1, FONT_24x18_B, ALIGN_CENTER);
+		text_device.add_text("Map selection", CPoint(0, -165), 1, FONT_24x18_B, ALIGN_CENTER);
 		select_bg.show_skin();
 		if (map_selected != -1) {
 			map_select_effect.show_skin();

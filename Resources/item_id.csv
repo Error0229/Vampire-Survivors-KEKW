@@ -31,16 +31,16 @@ number,id(enum),old id,filename,type
 29,CANDYBOX,Candybox,candybox,weapon
 30,MISSING,Victory_Sword,victory1,weapon
 31,MISSING,Flame_of_Misspell,flame1,weapon
-32,MISSING,Bloody_Tear,Whip2,evolution
-33,MISSING,Holy_Wand,WandHoly2,evolution
-34,MISSING,Thousand_Edge,Knife2,evolution
-35,MISSING,Death_Spiral,Scythe,evolution
-36,MISSING,Heaven_Sword,HeavenSword,evolution
-37,MISSING,Unholy_Vespers,UnholyBook,evolution
-38,MISSING,Hellfire,Hellfire,evolution
-39,MISSING,Soul_Easter,OrbOrange,evolution
-40,MISSING,La_Borra,Water2,evolution
-41,MISSING,NO_FUTURE,Carnage,evolution
+32,a,Bloody_Tear,Whip2,evolution
+33,a,Holy_Wand,WandHoly2,evolution
+34,a,Thousand_Edge,Knife2,evolution
+35,a,Death_Spiral,Scythe,evolution
+36,a,Heaven_Sword,HeavenSword,evolution
+37,a,Unholy_Vespers,UnholyBook,evolution
+38,a,Hellfire,Hellfire,evolution
+39,a,Soul_Easter,OrbOrange,evolution
+40,a,La_Borra,Water2,evolution
+41,a,NO_FUTURE,Carnage,evolution
 42,MISSING,Thunder_Loop,Thunderloop,evolution
 43,MISSING,Gorgeous_Moon,Pentagram2,evolution
 44,MISSING,Vicious_Hunger,cateye,evolution
@@ -83,3 +83,5 @@ number,id(enum),old id,filename,type
 81,pLEFT,pLEFT,Metaglio Left,passive
 82,pRIGHT,pRIGHT,Metaglio Right,passive
 83,PANDORA,PANDORA,Torronas Box,passive
+84,MONEY,a,a,money
+85,CHICKEN,a,a,chicken

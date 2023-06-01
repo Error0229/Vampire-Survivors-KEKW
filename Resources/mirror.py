@@ -1,7 +1,7 @@
 # change a directory's bmp files to mirrored image
 import os
 import cv2
-directorys = ['enemy/']
+directorys = ['tmp/']
 
 for directory in directorys:
     for filename in os.listdir(directory):
@@ -16,3 +16,4 @@ for directory in directorys:
             continue
         else:
             continue
+

@@ -145,8 +145,9 @@ namespace game_framework {
 		Ui level_up_icon_frame[4];
 
 		int chest_item[5];
+		int current_chest_itemcount;
 		Icon chest_item_icon[5];
-		Ui chest_animation;
+		Ui chest_animation[3];
 		Ui chest_item_frame[5];
 
 		Ui xp_bar_frame;
@@ -171,6 +172,11 @@ namespace game_framework {
 		Ui button_pause;
 		Ui button_resume;
 		Ui evolution_chart;
+		Ui revive_animation;
+
+		Ui gameover_bg;
+		Ui gameover_animation;
+		char money_text[100];
 	};
 
 	/////////////////////////////////////////////////////////////////////////////

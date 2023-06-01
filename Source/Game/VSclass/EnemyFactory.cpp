@@ -46,6 +46,8 @@ void EnemyFactory::load_wave_enemy()
 		file = ifstream("source/game/VSclass/stage1_wave_enemy.csv");
 	else if(MAP_ID==1)
 		file = ifstream("source/game/VSclass/stage2_wave_enemy.csv");
+	else if (MAP_ID == 2)
+		file = ifstream("source/game/VSclass/stage3_wave_enemy.csv");
 	else
 		file = ifstream("source/game/VSclass/stage1_wave_enemy.csv");
 	string header, line;
@@ -81,6 +83,8 @@ void EnemyFactory::load_wave_boss()
 		file = ifstream("source/game/VSclass/stage1_wave_boss.csv");
 	else if (MAP_ID == 1)
 		file = ifstream("source/game/VSclass/stage2_wave_boss.csv");
+	else if (MAP_ID == 2)
+		file = ifstream("source/game/VSclass/stage3_wave_boss.csv");
 	else
 		file = ifstream("source/game/VSclass/stage1_wave_boss.csv");
 	string header, line;
@@ -116,6 +120,8 @@ void EnemyFactory::load_wave_swarm()
 		file = ifstream("source/game/VSclass/stage1_wave_swarm.csv");
 	else if (MAP_ID == 1)
 		file = ifstream("source/game/VSclass/stage2_wave_swarm.csv");
+	else if (MAP_ID == 2)
+		file = ifstream("source/game/VSclass/stage3_wave_swarm.csv");
 	else
 		file = ifstream("source/game/VSclass/stage1_wave_swarm.csv");
 	string header, line;
@@ -128,9 +134,9 @@ void EnemyFactory::load_wave_swarm()
 		wave_swarm.push_back(Wave_swarm());
 		getline(ss, 👀, ',');
 		wave_swarm[cnt].time = stoi(👀);
-		getline(ss, 👀, ',');
-		wave_swarm[cnt].swarm_type = stoi(👀);
 		for(int i=0; i<2; i++){
+			getline(ss, 👀, ',');
+			wave_swarm[cnt].swarm_type[i] = stoi(👀);
 			getline(ss, 👀, ',');
 			wave_swarm[cnt].type[i][0] = stoi(👀);
 			getline(ss, 👀, ',');
@@ -264,7 +270,7 @@ void EnemyFactory::update_swarm(clock_t tick, CPoint player_pos, int player_lvl,
 					int amount = wave_swarm[swarm_cnt].amount[i] * curse / 100;
 					for (int j = 0; j < amount; j++) {
 						😈 = add_enemy(wave_swarm[swarm_cnt].type[i][j & 1], player_pos, 1, player_lvl, curse)[0];
-						😈->set_swarm(wave_swarm[swarm_cnt].swarm_type, wave_swarm[swarm_cnt].duration[i], tick, swarm_pos_i);
+						😈->set_swarm(wave_swarm[swarm_cnt].swarm_type[i], wave_swarm[swarm_cnt].duration[i], tick, swarm_pos_i);
 						😈->set_spawn_pos(j, amount);
 					}
 				}
@@ -272,7 +278,7 @@ void EnemyFactory::update_swarm(clock_t tick, CPoint player_pos, int player_lvl,
 					//one enemy type
 					😈😈😈 = add_enemy(wave_swarm[swarm_cnt].type[i][0], player_pos, wave_swarm[swarm_cnt].amount[i] * curse / 100, player_lvl, curse);
 					for (auto 😈 : 😈😈😈) {
-						😈->set_swarm(wave_swarm[swarm_cnt].swarm_type, wave_swarm[swarm_cnt].duration[i], tick, swarm_pos_i);
+						😈->set_swarm(wave_swarm[swarm_cnt].swarm_type[i], wave_swarm[swarm_cnt].duration[i], tick, swarm_pos_i);
 						😈->set_spawn_pos();
 					}
 				}
