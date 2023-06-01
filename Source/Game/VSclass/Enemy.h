@@ -52,7 +52,37 @@ enum enemy_names {
 	BOSS_MEDUSA,
 	BOSS_COUNT,
 	BOSS_HAG,
-	SWARM_MEDUSA
+	SWARM_MEDUSA,
+	SKULLINO,
+	SKULOROSSO,
+	SKELANGUE,
+	DULL0,
+	DEVIL1,
+	DEVIL2,
+	BAT6,
+	GHOST2,
+	IMP,
+	HARPY,
+	XLDRAGON1,
+	XLDRAGON2,
+	XLMAGIO,
+	SKELEWING,
+	XLARMOR1,
+	XLARMOR2,
+	XLCOCKATRICE,
+	XLCHIMERA,
+	XLGOLEM3,
+	XLGOLEM4,
+	BOSS_XLDRAGON1,
+	BOSS_XLDRAGON2,
+	BOSS_XLARMOR2,
+	BOSS_XLCOCKATRICE,
+	BOSS_XLCHIMERA,
+	BOSS_DEVIL3,
+	BOSS_SKULL2,
+	BOSS_HARPY,
+	BOSS_GALLO,
+	BOSS_XLCRAB
 };
 
 class Enemy : public VSObject {
@@ -97,8 +127,17 @@ private:
 	bool _is_drop_chest, _chest_can_evo;
 	int _chest_upgrade_chance_0, _chest_upgrade_chance_1;
 	//swarm thing
+	enum Swarm_type {
+		NOT_SWARM, // make sense rigth?
+		SWARM,
+		WALL,
+		SIN
+	};
 	int _swarm_type, _swarm_pos_i;
 	clock_t _swarm_duration, _swarm_start_time;
 	VSObject _death_animation;
 	VSObject _hit_animation;
+	CPoint _origin_target;
+	int _sin_scale;
+	bool _sin_dir;
 };

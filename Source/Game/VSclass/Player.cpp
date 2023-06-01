@@ -334,7 +334,7 @@ void Player::obtain_item(int type)
 	else if (type < 63) {
 		Weapon::evolution(type);
 	}
-	else {
+	else if (type < 84){
 		//passive
 		if (this->have(type)) {
 			level_up_passive(type);

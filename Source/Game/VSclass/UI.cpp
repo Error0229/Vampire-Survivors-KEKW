@@ -132,12 +132,16 @@ void Icon::load_filename()
 		getline(ss, filename, ',');
 		getline(ss, type, ',');
 		memset(🍆, 0, sizeof(🍆));
-		if (filename == "MISSING")
+		if (id == "MISSING")
 			sprintf(🍆, "resources/weapon/nightSword.bmp"); //placeholder
-		else if (type != "passive")
+		else if (type == "weapon" || type == "evolution")
 			sprintf(🍆, "resources/weapon/%s.bmp", filename.c_str());
 		else if (type == "passive")
 			sprintf(🍆, "resources/passive/%s.bmp", filename.c_str());
+		else if (type == "money") 
+			sprintf(🍆, "resources/pickup/MoneyBagGreen.bmp");//84
+		else if (type == "chicken") 
+			sprintf(🍆, "resources/pickup/Roast.bmp");//85
 		for (int i = 1; i < (int)id.size(); i++)
 			id[i] = tolower(id[i]);
 		icon_name.emplace_back(id);

@@ -28,6 +28,12 @@
     <None Include="Source\Game\VSclass\stage1_wave_enemy.csv" />
     <None Include="Source\Game\VSclass\stage1_wave_swarm.csv" />
     <None Include="Source\Game\VSclass\player_data.csv" />
+    <None Include="Source\Game\VSclass\stage2_wave_boss.csv" />
+    <None Include="Source\Game\VSclass\stage2_wave_enemy.csv" />
+    <None Include="Source\Game\VSclass\stage2_wave_swarm.csv" />
+    <None Include="Source\Game\VSclass\stage3_wave_boss.csv" />
+    <None Include="Source\Game\VSclass\stage3_wave_enemy.csv" />
+    <None Include="Source\Game\VSclass\stage3_wave_swarm.csv" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Library\audio.cpp">
