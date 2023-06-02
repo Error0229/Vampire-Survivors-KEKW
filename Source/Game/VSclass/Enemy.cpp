@@ -139,7 +139,7 @@ bool Enemy::hurt(int damage)
 	Damage::damage_device()->add_damage(damage, _position);
 	if (!is_dead()) {
 		_hp -= damage;
-		// game_framework::CAudio::Instance()->Play(2, false);
+		game_framework::CAudio::Instance()->Play(HIT, false);
 		if (is_dead()) {
 			KILL_NUM += 1;
 			unshow_skin();

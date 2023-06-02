@@ -22,6 +22,7 @@ enum gamerun_status {
 	REVIVE
 };
 
+
 /////////////////////////////////////////////////////////////////////////////
 // 這個class為遊戲的遊戲執行物件，主要的遊戲程式都在這裡
 /////////////////////////////////////////////////////////////////////////////
@@ -64,12 +65,15 @@ void CGameStateRun::OnBeginState()
 	switch (MAP_ID) {
 	case 0:
 		map.load_map({ "resources/map/dummy1.bmp" });
+		CAudio::Instance()->Play(MAP1_BGM, true);
 		break;
 	case 1:
 		map.load_map({ "resources/map/dummy2.bmp" });
+		CAudio::Instance()->Play(MAP2_BGM, true);
 		break;
 	case 2:
 		map.load_map({ "resources/map/dummy4.bmp" });
+		CAudio::Instance()->Play(MAP3_BGM, true);
 		break;
 	default:
 		break;
@@ -131,12 +135,14 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 		chest_animation[i].set_animation(30, true);
 		chest_animation[i].set_base_pos(0, 0);
 	}
-	/*CAudio::Instance()->Load(0, "Resources/AudioClip/bgm_elrond_bone.wav");
-	CAudio::Instance()->Load(1, "Resources/AudioClip/sfx_gem.wav");
-	CAudio::Instance()->Load(2, "Resources/AudioClip/sfx_enemyHit.wav");
-	CAudio::Instance()->SetVolume(0, 10);
-	CAudio::Instance()->SetVolume(1, 10);
-	CAudio::Instance()->SetVolume(2, 10);*/
+	CAudio::Instance()->Load(MAP1_BGM, "Resources/AudioClip/bgm_elrond_forest.wav");
+	CAudio::Instance()->Load(MAP2_BGM, "Resources/AudioClip/bgm_elrond_library.wav");
+	CAudio::Instance()->Load(MAP3_BGM, "Resources/AudioClip/bgm_elrond_tower.wav");
+	CAudio::Instance()->Load(GEM, "Resources/AudioClip/sfx_gem.wav");
+	CAudio::Instance()->Load(HIT, "Resources/AudioClip/sfx_enemyHit.wav");
+	//CAudio::Instance()->SetVolume(MAP1_BGM, 100);
+	//CAudio::Instance()->SetVolume(MAP2_BGM, 100);
+	// CAudio::Instance()->SetVolume(MAP3_BGM, 100);
 	CPoint chest_item_pos[] = { CPoint(0,-50), CPoint(-80,-110), CPoint(80,-110), CPoint(-100,-10), CPoint(100,-10) };
 	for (int i = 0; i < 5; i++) {
 		chest_item_icon[i].load_icon();
@@ -309,6 +315,7 @@ void CGameStateRun::OnLButtonDown(UINT nFlags, CPoint point)  // 處理滑鼠的
 	}
 	case(GAME_OVER):
 		if (game_over_button.is_hover(mouse_pos)) {
+			CAudio::Instance()->Stop(MAP_ID);
 			GotoGameState(GAME_STATE_OVER);
 		}
 		break;
@@ -615,7 +622,7 @@ void CGameStateRun::OnMove()							// 移動遊戲元素
 		Xp::update_XP_pos(player.get_pickup_range());
 		for (auto i : Xp::xp_all) {
 			if (is_overlapped(player, *i)) {
-				// CAudio::Instance()->Play(1, false);
+				CAudio::Instance()->Play(GEM, false);
 				i->despawn();
 				player.pick_up_xp(i->get_xp_value());
 			}
@@ -765,13 +772,6 @@ void CGameStateRun::OnShow()
 	LightSourcePickup::show();
 	coin.show();
 	skull.show();
-	if (_gamerun_status != GAME_OVER) {
-		RuntimeText::RTD()->add_text(to_string(GOLD_NUM), CPoint(368, -260), 1);
-		RuntimeText::RTD()->add_text(to_string(KILL_NUM), CPoint(368, -240), 1);
-		RuntimeText::RTD()->add_text(timer.get_minute_string() + ":" + timer.get_second_string(), CPoint(59, -265), 2);
-		RuntimeText::RTD()->add_text("LV " + to_string(player.get_level()), CPoint(380, -290), 1);
-		RuntimeText::RTD()->show_text();
-	}
 	player.show_skin();
 	for(auto 😈: enemy_factory.live_enemy)
 		😈->show_skin();
@@ -785,6 +785,13 @@ void CGameStateRun::OnShow()
 	xp_bar.show();
 	xp_bar_frame.show();
 
+	if (_gamerun_status != GAME_OVER) {
+		RuntimeText::RTD()->add_text(to_string(GOLD_NUM), CPoint(368, -260), 1);
+		RuntimeText::RTD()->add_text(to_string(KILL_NUM), CPoint(368, -240), 1);
+		RuntimeText::RTD()->add_text(timer.get_minute_string() + ":" + timer.get_second_string(), CPoint(59, -265), 2);
+		RuntimeText::RTD()->add_text("LV " + to_string(player.get_level()), CPoint(380, -290), 1);
+		RuntimeText::RTD()->show_text();
+	}
 	bool is_own;
 	string level_up_desc, level_text, type_text;
 

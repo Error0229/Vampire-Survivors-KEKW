@@ -254,6 +254,7 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="resources\gamecurs.cur" />
     <None Include="Resources\item_id.csv" />
     <None Include="RES\GAME.RC2" />
     <None Include="Source\Game\VSclass\enemy_stats.csv" />
@@ -338,6 +339,9 @@
     <Image Include="Resources\enemy\Brazier1.bmp" />
     <Image Include="Resources\enemy\Brazier2.bmp" />
     <Image Include="Resources\enemy\Brazier3.bmp" />
+    <Image Include="resources\game.ico" />
+    <Image Include="resources\gameDoc.ico" />
+    <Image Include="resources\Toolbar.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
