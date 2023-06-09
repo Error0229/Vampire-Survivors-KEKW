@@ -6,7 +6,9 @@
 #include "QuadTree.h"
 
 QuadTree::QuadTree() = default;
-QuadTree::~QuadTree() = default;
+QuadTree::~QuadTree() {
+    clear();
+}
 QuadTree::QuadTree(int x, int y, int w, int h, int max_objects, int max_levels, int level) : _x(x) , _y(y), w(w), h(h), max_objects(max_objects), max_levels(max_levels), level(level), objects({})
 {
     for (int i = 0; i < 4; i++) {

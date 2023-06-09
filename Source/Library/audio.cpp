@@ -102,7 +102,7 @@ CAudio::~CAudio()
 void CAudio::ExecuteMciCommand(char *command)
 {
 	bool shouldExecuteCommand = true;
-	char action[20], device[20];
+	char action[50], device[50];
 	int ret = sscanf(command, "%s %s", action, device);
 	GAME_ASSERT(ret == 2, "MCI command error: internal error!");
 	if (strcmp(action, "pause") == 0) {

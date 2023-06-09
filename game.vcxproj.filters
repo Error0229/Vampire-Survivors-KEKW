@@ -34,6 +34,9 @@
     <None Include="Source\Game\VSclass\stage3_wave_boss.csv" />
     <None Include="Source\Game\VSclass\stage3_wave_enemy.csv" />
     <None Include="Source\Game\VSclass\stage3_wave_swarm.csv" />
+    <None Include="resources\gamecurs.cur">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Library\audio.cpp">
@@ -149,6 +152,15 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Resources\enemy\Brazier3.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resources\Toolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resources\game.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="resources\gameDoc.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

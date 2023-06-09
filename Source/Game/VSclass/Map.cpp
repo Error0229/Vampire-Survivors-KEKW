@@ -17,16 +17,13 @@ Map::Map(vector<char*> filename) : VSObject(filename)
 }
 Map::~Map()
 {
-	for (auto mp : _maps) {
-		delete mp;
-	}
 }
 void Map::load_map(vector<char*> filename, COLORREF color)
 {
 	VSObject::load_skin(filename);
 	int len = filename.size();
 	for (int i = 0; i < PADDING_NUM; i++) {
-		_maps.emplace_back(new Map({ filename[i % len] }));
+		_maps.push_back(make_shared<Map>(Map({ filename[i % len] })));
 		_maps[i]->_show_enable = false;
 	}
 	_maps[0]->_show_enable = true;

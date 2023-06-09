@@ -93,6 +93,13 @@ enum filler_type {
 	FILLER_MONEY = 84,
 	FILLER_CHICKEN
 };
+enum AUDIOCLIP {
+	MAP1_BGM,
+	MAP2_BGM,
+	MAP3_BGM,
+	GEM,
+	HIT
+};
 #define BLACK (RGB(0,0,0))
 #define WHITE (RGB(255,255,255))
 const double MATH_PI = 3.1415926;
