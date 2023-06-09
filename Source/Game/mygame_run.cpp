@@ -58,7 +58,7 @@ void CGameStateRun::OnBeginState()
 	player.set_speed(300);
 	map = Map();
 	MAP_ID = game->Get🗺️();
-	enemy_factory.init();
+	enemy_factory.load();
 	GOLD_NUM = 0;
 	KILL_NUM = 0;
 	current_chest_itemcount = -1;
@@ -101,6 +101,7 @@ void CGameStateRun::OnInit()  								// 遊戲的初值及圖形設定
 	Damage::damage_device()->init();
 	RuntimeText::RTD()->init();
 	Player::init_player();
+	enemy_factory.init();
 	map.load_map({ "resources/map/dummy1.bmp" });
 	event_background.load_skin("resources/ui/event_background.bmp");
 	coin.load_skin("Resources/pickup/CoinGold.bmp");

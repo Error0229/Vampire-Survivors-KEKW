@@ -34,6 +34,8 @@ void EnemyFactory::init()
 		_all_enemy.add_obj(😈, 😈.get_spawn_limit());
 		_number_type.push_back(0);
 	}
+}
+void EnemyFactory::load() {
 	load_wave_enemy();
 	load_wave_boss();
 	load_wave_swarm();

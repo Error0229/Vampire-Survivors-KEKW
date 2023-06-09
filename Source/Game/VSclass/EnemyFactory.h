@@ -22,6 +22,7 @@ public:
 	EnemyFactory();
 	~EnemyFactory();
 	void init();
+	void load();
 	int get_number_type(int);
 	int get_number_all();
 	void update(clock_t tick, CPoint player_pos, int player_lvl, int luck, int curse);
