@@ -20,12 +20,6 @@ EnemyFactory::~EnemyFactory()
 
 void EnemyFactory::init()
 {
-	//delete old enemy
-	for (auto 😈 : live_enemy) {
-		_all_enemy.free_obj_ptr(😈);
-	}
-	live_enemy.clear();
-
 	//load template enemy, init pool
 	Enemy::load_template_enemies();
 	Enemy 😈;
@@ -36,6 +30,11 @@ void EnemyFactory::init()
 	}
 }
 void EnemyFactory::load() {
+	//delete old enemy
+	for (auto 😈 : live_enemy) {
+		_all_enemy.free_obj_ptr(😈);
+	}
+	live_enemy.clear();
 	load_wave_enemy();
 	load_wave_boss();
 	load_wave_swarm();
