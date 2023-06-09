@@ -14,5 +14,5 @@ private:
 	bool _show_enable = false;
 	CPoint _map_center;
 	set<pair<int, int>> _map_pos_set;
-	deque <Map*> _maps;
+	deque <shared_ptr<Map>> _maps;
 };
