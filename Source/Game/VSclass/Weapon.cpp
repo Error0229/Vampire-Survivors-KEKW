@@ -718,7 +718,7 @@ void Weapon::upgrade()
 	recalaulte_stat();
 }
 void Weapon::load_weapon_stats() {
-	ifstream file("source/game/VSclass/weapon_stats.csv");
+	ifstream file("Resources/weapon_stats.csv");
 	int type;
 	string header, line, skin_file, base_proj, name, token;
 	getline(file, header); // no use

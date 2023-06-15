@@ -60,7 +60,7 @@ void CGameStateInit::OnInit()
 		"resources/weapon/cross.bmp",
 		"resources/weapon/heavensword.bmp"
 	};
-	ifstream file("source/game/VSclass/player_data.csv");
+	ifstream file("Resources/player_data.csv");
 	string line, skin_file, token;
 	getline(file, token); // no use
 	passive_levels = vector<int>(16);
