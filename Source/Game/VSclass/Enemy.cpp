@@ -316,7 +316,7 @@ void Enemy::load_template_enemies()
 	if (is_loaded)
 		return;
 	is_loaded = true;
-	ifstream file("source/game/VSclass/enemy_stats.csv");
+	ifstream file("Resources/enemy_stats.csv");
 	string header, line;
 	string number, id, file_name, hp, power, mspeed, kb, kb_max, res_f, res_k, res_d, xp_value, hp_scale, spawn_limit;
 	getline(file, header);

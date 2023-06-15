@@ -44,13 +44,13 @@ void EnemyFactory::load_wave_enemy()
 {
 	ifstream file;
 	if(MAP_ID==0)
-		file = ifstream("source/game/VSclass/stage1_wave_enemy.csv");
+		file = ifstream("Resources/wave/stage1_wave_enemy.csv");
 	else if(MAP_ID==1)
-		file = ifstream("source/game/VSclass/stage2_wave_enemy.csv");
+		file = ifstream("Resources/wave/stage2_wave_enemy.csv");
 	else if (MAP_ID == 2)
-		file = ifstream("source/game/VSclass/stage3_wave_enemy.csv");
+		file = ifstream("Resources/wave/stage3_wave_enemy.csv");
 	else
-		file = ifstream("source/game/VSclass/stage1_wave_enemy.csv");
+		file = ifstream("Resources/wave/stage1_wave_enemy.csv");
 	string header, line;
 	string 👀; // 👀: string for reading
 	int cnt = 0;
@@ -81,13 +81,13 @@ void EnemyFactory::load_wave_boss()
 {
 	ifstream file;
 	if (MAP_ID == 0)
-		file = ifstream("source/game/VSclass/stage1_wave_boss.csv");
+		file = ifstream("Resources/wave/stage1_wave_boss.csv");
 	else if (MAP_ID == 1)
-		file = ifstream("source/game/VSclass/stage2_wave_boss.csv");
+		file = ifstream("Resources/wave/stage2_wave_boss.csv");
 	else if (MAP_ID == 2)
-		file = ifstream("source/game/VSclass/stage3_wave_boss.csv");
+		file = ifstream("Resources/wave/stage3_wave_boss.csv");
 	else
-		file = ifstream("source/game/VSclass/stage1_wave_boss.csv");
+		file = ifstream("Resources/wave/stage1_wave_boss.csv");
 	string header, line;
 	string 👀; // 👀: string for reading
 	int cnt = 0;
@@ -118,13 +118,13 @@ void EnemyFactory::load_wave_swarm()
 {
 	ifstream file;
 	if (MAP_ID == 0)
-		file = ifstream("source/game/VSclass/stage1_wave_swarm.csv");
+		file = ifstream("Resources/wave/stage1_wave_swarm.csv");
 	else if (MAP_ID == 1)
-		file = ifstream("source/game/VSclass/stage2_wave_swarm.csv");
+		file = ifstream("Resources/wave/stage2_wave_swarm.csv");
 	else if (MAP_ID == 2)
-		file = ifstream("source/game/VSclass/stage3_wave_swarm.csv");
+		file = ifstream("Resources/wave/stage3_wave_swarm.csv");
 	else
-		file = ifstream("source/game/VSclass/stage1_wave_swarm.csv");
+		file = ifstream("Resources/wave/stage1_wave_swarm.csv");
 	string header, line;
 	string 👀; // 👀: string for reading
 	int cnt = 0;

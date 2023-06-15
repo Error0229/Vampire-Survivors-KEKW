@@ -83,7 +83,7 @@ void Player::init_stats() {
 }
 void Player::init_player() {
 
-	ifstream file("source/game/VSclass/player_data.csv");
+	ifstream file("Resources/player_data.csv");
 	string header, line, skin_file, name, token;
 	getline(file, header); // no use
 	while (getline(file, line)) {
